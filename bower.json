@@ -1,0 +1,19 @@
+{
+  "name": "jsbest",
+  "description": "Javascript Performance Test",
+  "authors": [
+    "An Ha"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "assets/lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "foundation-sites": "^6.2.3",
+    "typi": "~2.3.0"
+  }
+}

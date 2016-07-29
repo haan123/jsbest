@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Javascript Benmark</title>
+  <meta name="description" content="Javascript Performance Test">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="assets/lib/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body>
+  <nav class="top-bar">
+    <div class="top-bar-left">
+      <ul class="dropdown menu" data-dropdown-menu>
+        <li class="menu-text">Site Title</li>
+        <li><a href="#">One</a></li>
+        <li><a href="#">Two</a></li>
+        <li><a href="#">Three</a></li>
+      </ul>
+    </div>
+  </nav>
+  <!--[if lt IE 8]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
+
+  <!-- Add your site or application content here -->
+  <div class="container">
+    <div class="row">
+      <div class="medium-12 medium-centered columns">
+        <div class="row">
+          <div class="medium-6 columns">
+            <h5>Setup</h5>
+            <div class="sample-item">
+              <label class="sample-item__form">
+                <textarea id="setup" class="setup">&lt;button id="test"&gt;Button&lt;/button&gt;</textarea>
+              </label>
+              <div class="button-group text-right">
+                <button class="js-case success button" data-type="setup" type="button">Save</button>
+              </div>
+            </div>
+
+            <h5>Samples <button class="js-case success button tiny" data-type="setup" type="button"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></button></h5>
+
+            <div class="sample-item">
+              <div class="sample-item__form">
+                <div class="row">
+                  <div class="small-2 columns">
+                    <label for="case-name" class="sample-item__label">Name</label>
+                  </div>
+                  <div class="small-6 columns end">
+                    <input id="case-name" type="text" value="test">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="small-2 columns">
+                    <label for="case-code" class="sample-item__label">Code</label>
+                  </div>
+                  <div class="small-10 columns">
+                    <textarea id="case-code" class="case-code">var button = document.getElementById('test');</textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="button-group text-right">
+                <button class="js-case success button" data-type="save" type="button">Save</button>
+                <button class="js-case warning button" data-type="save" type="button">Edit</button>
+                <button class="js-case alert button" data-type="save" type="button">Delete</button>
+              </div>
+            </div>
+          </div>
+          <div class="medium-6 columns">
+            <iframe id="iframe" class="o-iframe"><p>Your browser does not support iframes.</p></iframe>
+            <div class="process">
+              <h5>Process</h5>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Ops/sec</th>
+                  </tr>
+                </thead>
+                <tbody id="process"></tbody>
+              </table>
+
+              <div class="button-group text-right">
+                <button class="js-case button" data-type="run" type="button">Run</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/template" id="process-row-templ">
+    <tr id="sample-{name}"><td>{name}</td><td>0</td></tr>
+  </script>
+  <script src="assets/scripts/vendor.js"></script>
+  <script src="assets/lib/platform.js/platform.js"></script>
+  <script src="assets/lib/benchmark/benchmark.js"></script>
+  <script src="assets/scripts/main.js"></script>
+
+  <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+  <script>
+    window.ga = function() {
+      ga.q.push(arguments)
+    };
+    ga.q = [];
+    ga.l = +new Date;
+    ga('create', 'UA-XXXXX-Y', 'auto');
+    ga('send', 'pageview')
+  </script>
+  <script src="https://www.google-analytics.com/analytics.js" async defer></script>
+</body>
+
+</html>

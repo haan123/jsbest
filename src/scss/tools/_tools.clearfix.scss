@@ -1,0 +1,17 @@
+//  clearfix
+//
+//  Clearfix mixin
+//
+//  Markup: @include clearfix;
+//
+//  Style guide: mixins.clearfix
+
+@mixin clearfix {
+  &:before, &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}

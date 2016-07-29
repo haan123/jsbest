@@ -1,0 +1,33 @@
+//  Visibility Utilities
+//
+//  Responsive utilities for visibility
+//
+// .u-hidden@small-up - Hidden class
+// .u-visible@small-up - Visible class
+// .u-show-for-sr@small-up - Show for screen reader only
+//
+//  Markup: <p class="{{modifier_class}}">Example text</p>
+//
+//  Style guide: utilities.visibility
+
+@each $bpname in $breakpoint-classes {
+  @each $val, $class in $bp-values {
+    @include breakpoint($bpname $val) {
+      .u-hidden\@#{$bpname}#{$class} {
+        display: none !important;
+      }
+
+      .u-visible\@#{$bpname}#{$class} {
+        display: block !important;
+      }
+
+      .u-show-for-sr\@#{$bpname}#{$class} {
+        clip: rect(1px, 1px, 1px, 1px) !important;
+        height: 1px !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        width: 1px !important;
+      }
+    }
+  }
+}
