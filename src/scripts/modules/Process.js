@@ -1,11 +1,10 @@
-import C from '../utils/C';
-
-const $ = C('dom').$;
+import utils from '../utils/utils';
+import DOM from '../utils/dom';
 
 class Process {
   constructor() {
-    this.context = C('dom').$('iframe').contentWindow;
-    this.context.document.body.innerHTML = '<script></script>';
+    this.context = DOM.$('iframe').contentWindow;
+    this.context.document.head.appendChild(DOM.toDOM('<script></script>'));
     Benchmark = Benchmark.runInContext(this.context);
     this.context.Benchmark = Benchmark;
 
@@ -13,7 +12,7 @@ class Process {
   }
 
   initialize() {
-    let suite = this.suite = new Benchmark.Suite;
+    let suite = this.suite = new Benchmark.Suite();
     suite.benchmarks = [];
 
     suite.on('add', (event) => {
@@ -27,7 +26,7 @@ class Process {
       bench.on('start cycle', this._cycle.bind(this));
     })
     .on('start cycle', (event) => {
-      console.log(event)
+      console.log(event);
     })
     .on('complete', () => {
       let benches = Benchmark.filter(suite.benchmarks, 'successful'),
@@ -35,7 +34,7 @@ class Process {
           slowest = Benchmark.filter(benches, 'slowest')[0];
 
       // highlight result cells
-      C('utils').forEach(benches, (bench) => {
+      utils.forEach(benches, (bench) => {
         let fastestHz = this._hz(fastest),
             hz = this._hz(bench),
             percent = (1 - (hz / fastestHz)) * 100,
@@ -45,9 +44,7 @@ class Process {
 
           // mark fastest
         } else {
-          text = isFinite(hz)
-            ? Benchmark.formatNumber(percent < 1 ? percent.toFixed(2) : Math.round(percent)) + '% slower'
-            : '';
+          text = isFinite(hz) ? Benchmark.formatNumber(percent < 1 ? percent.toFixed(2) : Math.round(percent)) + '% slower' : '';
 
           // mark slowest
           if (slowest.id === bench.id ) {
@@ -56,6 +53,25 @@ class Process {
         }
       });
     });
+  }
+
+  /**
+   * Remove bench
+   *
+   * @public
+   * @param {String} name
+   */
+  removeBench(name) {
+    let suite = this.suite;
+
+    for( let i = 0, len = suite.length; i < len; i++ )  {
+      let bench = suite[i];
+
+      if( bench.name == name ) {
+        suite.splice(i, 1);
+        suite.benchmarks.splice(i, 1);
+      }
+    }
   }
 
   /**
@@ -80,7 +96,7 @@ class Process {
     const size = bench.stats.sample.length;
     const msg = '&times; ' + Benchmark.formatNumber(bench.count) + ' (' + size + ' sample' + (size == 1 ? '' : 's') + ')';
 
-    $('sample-' + bench.name).lastChild.innerHTML = msg;
+    DOM.$('sample-' + bench.name).lastChild.innerHTML = msg;
   }
 
   /**

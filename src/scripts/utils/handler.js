@@ -5,7 +5,8 @@
  * - mouserover
  *
  */
-import C from './C';
+import utils from './utils';
+import DOM from './dom';
 
 // matches all handlers in element
 let rjs = /js-([\w]+)/g;
@@ -40,7 +41,7 @@ function handler(e) {
   let type = e.type;
   let that = e.target;
 
-  C('dom').parents(that, function(parent) {
+  DOM.parents(that, function(parent) {
     let className = parent.className;
     let m, mod;
 
@@ -68,8 +69,8 @@ class Handler {
 
   static setup(context) {
     // _hids.set(this, settings.hid);
-    C('utils').forEach(supportedEvents, (obj) => {
-      C('event').on(context || document, obj.name, handler);
+    utils.forEach(supportedEvents, (obj) => {
+      utils.Event.on(context || document, obj.name, handler);
       handlers[obj.name] = obj.fn;
     });
   }

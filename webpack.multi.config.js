@@ -15,10 +15,7 @@ module.exports = function(env) {
     plugins: [],
     resolve: {
       root: jsSrc,
-      extensions: [''].concat(extensions),
-      alias: {
-        codemirror: '../../assets/lib/codemirror/lib/codemirror.js'
-      }
+      extensions: [''].concat(extensions)
     },
     module: {
       loaders: [
@@ -58,10 +55,11 @@ module.exports = function(env) {
 
     webpackConfig.entry = {
       "main": "./main.js",
-      "vendor": ["lodash", "codemirror",
-      "../../assets/lib/codemirror/mode/javascript/javascript.js",
-      "../../assets/lib/codemirror/mode/xml/xml.js",
-      "../../assets/lib/codemirror/addon/edit/closebrackets.js"
+      "vendor": ["lodash", "codemirror", "../../node_modules/codemirror/mode/javascript/javascript.js",
+      "../../node_modules/codemirror/mode/xml/xml.js",
+      "../../node_modules/codemirror/addon/edit/closebrackets.js",
+      "prismjs", "hogan.js",
+      "../../node_modules/prismjs/components/prism-javascript.js",
     ]
     };
 
@@ -74,9 +72,7 @@ module.exports = function(env) {
     // Factor out common dependencies into a shared.js
     webpackConfig.plugins.push(
       new webpack.optimize.DedupePlugin(),
-      new webpack.ProvidePlugin({
-        $: "jquery"
-      }),
+      new webpack.ProvidePlugin({}),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         minChunks: Infinity

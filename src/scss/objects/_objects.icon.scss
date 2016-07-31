@@ -1,6 +1,12 @@
 .icon {
-  width: 16px;
-  height: 16px;
+  width: rem-calc(16);
+  height: rem-calc(16);
   vertical-align: middle;
+  cursor: pointer;
   fill: #fff;
+}
+
+.icon--lg {
+  width: rem-calc(22);
+  height: rem-calc(22);
 }

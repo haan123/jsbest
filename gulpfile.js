@@ -28,14 +28,16 @@ var gulp = require('gulp'),
     path = require('path'),
     __basedir = './',
     imagemin = require('gulp-imagemin'),
+    sourcemaps  = require('gulp-sourcemaps'),
     webpackConfig = require('./webpack.multi.config.js'),
-    webpack = require('webpack');;
+    webpack = require('webpack');
 
 var webpackWatchTask = function(callback) {
   var initialCompile = false;
 
   webpack(webpackConfig('development')).watch(200, function(err, stats) {
     browserSync.reload();
+    if( err ) console.log(err);
     // On the initial compile, let gulp know the task is done
     if(!initialCompile) {
       initialCompile = true;
@@ -115,10 +117,12 @@ function handleErrors() {
  */
 gulp.task('styles', function() {
   return gulp.src('./src/scss/main.scss')
+    .pipe(sourcemaps.init())
     .pipe(sass().on('error', handleErrors))
     .pipe(autoprefixer({
-        browsers: ['last 5 versions']
+        browsers: ['last 3 versions']
     }))
+    .pipe(sourcemaps.write())
     .pipe(notify({title: 'Styles Compiled!', message: 'Good hustle', icon: './src/icon.png'}))
     .pipe(gulp.dest('./assets/css/'))
     .pipe(browserSync.stream());

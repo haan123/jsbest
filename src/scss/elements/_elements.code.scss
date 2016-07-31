@@ -1,0 +1,21 @@
+// General
+$code-color:                  #bd4147 !default;
+$code-bg:                     #f7f7f9 !default;
+
+$pre-bg:                      #f7f7f9 !default;
+$pre-color:                   #abb2bf !default;
+$pre-border-color:            #ccc !default;
+
+// Blocks of code
+pre {
+  display: block;
+  font-size: 90%;
+  color: $pre-color;
+  background: $white;
+  border-radius: $global-radius;
+
+  // Account for some code outputs that place code tags in pre tags
+  code {
+    display: block;
+  }
+}

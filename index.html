@@ -6,12 +6,11 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>Javascript Benmark</title>
   <meta name="description" content="Javascript Performance Test">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <!-- Place favicon.ico in the root directory -->
 
-  <link rel="stylesheet" href="assets/lib/codemirror/lib/codemirror.css">
   <link rel="stylesheet" href="assets/css/main.css">
 </head>
 
@@ -37,59 +36,31 @@
         <div class="row">
           <div class="medium-6 columns">
             <h5>Setup</h5>
-            <div class="sample-item">
-              <label class="sample-item__form">
-                <textarea id="setup" class="setup">&lt;button id="test"&gt;Button&lt;/button&gt;</textarea>
-              </label>
-              <div class="button-group text-right">
-                <button class="js-case success button" data-type="setup" type="button">Save</button>
-              </div>
-            </div>
+            <div id="setup-add" class="js-sample sample-item sample-item--idle animated setup" data-type="openSetup">Add Setup Code…</div>
 
-            <h5>Samples <button class="js-case success button tiny" data-type="setup" type="button"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></button></h5>
+            <h5>Samples</h5>
 
-            <div class="sample-item">
-              <div class="sample-item__form">
-                <div class="row">
-                  <div class="small-2 columns">
-                    <label for="case-name" class="sample-item__label">Name</label>
-                  </div>
-                  <div class="small-6 columns end">
-                    <input id="case-name" type="text" value="test">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="small-2 columns">
-                    <label for="case-code" class="sample-item__label">Code</label>
-                  </div>
-                  <div class="small-10 columns">
-                    <textarea id="case-code" class="case-code">var button = document.getElementById('test');</textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="button-group text-right">
-                <button class="js-case success button" data-type="save" type="button">Save</button>
-                <button class="js-case warning button" data-type="save" type="button">Edit</button>
-                <button class="js-case alert button" data-type="save" type="button">Delete</button>
-              </div>
-            </div>
+            <div id="sample-add" class="js-sample sample-item sample-item--idle animated" data-type="openSample">Add Sample…</div>
           </div>
           <div class="medium-6 columns">
-            <iframe id="iframe" class="o-iframe"><p>Your browser does not support iframes.</p></iframe>
-            <div class="process">
-              <h5>Process</h5>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Ops/sec</th>
-                  </tr>
-                </thead>
-                <tbody id="process"></tbody>
-              </table>
+            <div class="sample-item process">
+              <iframe id="iframe" class="o-iframe"><p>Your browser does not support iframes.</p></iframe>
 
-              <div class="button-group text-right">
-                <button class="js-case button" data-type="run" type="button">Run</button>
+              <div class="process__content">
+                <h5>Process</h5>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Ops/sec</th>
+                    </tr>
+                  </thead>
+                  <tbody id="process"></tbody>
+                </table>
+
+                <div class="button-group text-right">
+                  <button class="js-sample button" data-type="run" type="button">Run</button>
+                </div>
               </div>
             </div>
           </div>
@@ -99,7 +70,46 @@
   </div>
 
   <script type="text/template" id="process-row-templ">
-    <tr id="sample-{name}"><td>{name}</td><td>0</td></tr>
+    <tr id="sample-{{id}}"><td>{{name}}</td><td>0</td></tr>
+  </script>
+  <script type="text/template" id="saved-templ">
+    <div class="sample-item__controls">
+      <a class="js-sample" data-type="edit{{name}}" href="#"><svg class="icon icon--lg" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
+      <a class="js-sample" data-type="remove{{name}}" href="#"><svg class="icon icon--lg" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></a>
+    </div>
+
+    {{#sample}}
+    <h5>{{id}}</h5>
+    {{/sample}}
+
+    <pre class="sample-item__static"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
+  </script>
+  <script type="text/template" id="sample-form-templ">
+    <div class="sample-item__form">
+      <div class="row">
+        <div class="medium-6 columns">
+          <input id="sample-name" type="text" placeholder="Name">
+        </div>
+      </div>
+
+      <textarea id="sample-ta" class="sample-code" style="display:none;"></textarea>
+      <pre class="sample-item__static"><code class="language-html"></code></pre>
+
+      <div class="button-group text-right">
+        <button class="js-sample success button" data-type="save" type="button">Save</button>
+        <button class="js-sample warning button" data-type="cancel" type="button">Cancel</button>
+      </div>
+    </div>
+  </script>
+  <script type="text/template" id="setup-form-templ">
+    <div class="setup__form">
+      <textarea id="setup-ta" class="setup" style="display:none;"></textarea>
+
+      <div class="button-group text-right">
+        <button class="js-sample success button" data-type="setup" type="button">Save</button>
+        <button class="js-sample warning button" data-type="cancelSetup" type="button">Cancel</button>
+      </div>
+    </div>
   </script>
   <script src="assets/scripts/vendor.js"></script>
   <script src="assets/lib/platform.js/platform.js"></script>
