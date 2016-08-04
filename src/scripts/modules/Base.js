@@ -96,7 +96,7 @@ class Base extends Handler {
     return this._initEditor(name, config, id);
   }
 
-  _getStateClass(name) {
+  getStateClass(name) {
     return SAMPLE_ITEM_CLASS + '--' + name;
   }
 
@@ -209,15 +209,15 @@ class Base extends Handler {
    * @private
    * @param {String} name
    */
-  _remove(name, id) {
+  remove(name, id) {
     let item = this.getItem(this.cel);
     let cache = _cache.get(id);
 
     item.parentNode.removeChild(item);
 
-    DOM.removeClass(item, this._getStateClass('saved'));
+    DOM.removeClass(item, this.getStateClass('saved'));
 
-    _cache.delete(id);
+    this.removeFromCache(id);
 
     this.revealAddButton(name);
   }

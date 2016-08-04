@@ -86,7 +86,7 @@ class Sample extends Base {
     let row = DOM.$('sample-' + id);
 
     row.parentNode.removeChild(row);
-    this._remove('sample', id);
+    this.remove('sample', id);
 
     this.process.removeBench(id);
   }
@@ -145,7 +145,7 @@ class Sample extends Base {
 
     if( name !== oldId ) {
       this.removeFromCache(oldId);
-      this.process.removeBench(oldId)
+      this.process.removeBench(oldId);
     }
 
     this.renderSavedState('sample', item, code, name, {
@@ -172,7 +172,7 @@ class Sample extends Base {
   cancel() {
     let elem = this.cel;
     let item = this.getItem(elem);
-    let isEdit = item.className.indexOf('sample-item--edit');
+    let isEdit = ~item.className.indexOf(this.getStateClass('edit'));
 
     if( !isEdit ) {
       item.parentNode.removeChild(item);

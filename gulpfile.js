@@ -126,8 +126,8 @@ gulp.task('styles', function() {
     }))
     .pipe(sourcemaps.write())
     .pipe(notify({title: 'Styles Compiled!', message: 'Good hustle', icon: './src/icon.png'}))
-    .pipe(cssmin())
-    .pipe(rename({suffix: '.min'}))
+    // .pipe(cssmin())
+    // .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('./assets/css/'))
     .pipe(browserSync.stream());
 });

@@ -35,7 +35,7 @@ class Setup extends Base {
 
   openSetup(edit) {
     let elem = this.cel;
-    let item = edit === true ? elem : this.createSampleItem(elem);
+    let item = edit ? elem : this.createSampleItem(elem);
 
     let editor = this.showForm(item, 'setup', {
       mode: "xml",
@@ -47,29 +47,22 @@ class Setup extends Base {
     editor.focus();
   }
 
-  setup(data) {
-    let editor = this.setupEditor;
-    let feeded = data && data.code;
-    let item, code, urls;
+  /**
+   * Save and render setup data
+   * @param  {Object} data
+   */
+  _save(data, item) {
+    let code = data.code;
+    let urls = data.urls;
 
-    if( feeded ) {
+    if( !item ) {
       item = this.createSampleItem(DOM.$('setup-add'));
-      code = data.code;
-      urls = data.urls;
       utils.forEach(urls, (url) => this._cachedUrl(url));
-    } else {
-      item = this.getItem(this.cel);
-      code = editor.getValue().trim();
-      urls = this.cache.urls;
-    }
-
-    if( !code ) {
-      editor.focus();
-      return;
     }
 
     this.context.document.body.innerHTML = code;
-    urls && this._embedUrls(urls);
+
+    if( urls ) this._embedUrls(urls);
 
     this.renderSavedState('setup', item, code, 'setup', {
       handler: 'setup',
@@ -78,6 +71,24 @@ class Setup extends Base {
       language: 'markup',
       urls: urls
     });
+  }
+
+  setup() {
+    let editor = this.setupEditor;
+
+    let item = this.getItem(this.cel);
+    let code = editor.getValue().trim();
+    let urls = this.cache.urls;
+
+    if( !code ) {
+      editor.focus();
+      return;
+    }
+
+    this._save({
+      code: code,
+      urls: urls
+    }, item);
   }
 
   /**
@@ -182,8 +193,9 @@ class Setup extends Base {
    * @public
    */
   removeSetup() {
-    let id = this.getItem(this.cel);
-    this._remove('setup', id);
+    let item = this.getItem(this.cel);
+    let id = item.getAttribute('data-uid');
+    this.remove('setup', id);
 
     this.context.document.body.innerHTML = '';
   }
@@ -206,13 +218,16 @@ class Setup extends Base {
   cancelSetup() {
     let elem = this.cel;
     let item = this.getItem(elem);
-    let isEdit = !!item.className.indexOf('sample-item--edit');
+    let isAdd = ~item.className.indexOf(this.getStateClass('add'));
 
-    if( !isEdit ) {
+    if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('setup');
-    } else {
-      this.setup();
+    } else {console.log(this.cache)
+      this._save({
+        code: this.cache.code,
+        urls: this.cache.urls
+      }, item);
     }
   }
 }
