@@ -29,7 +29,7 @@ class Sample extends Base {
   _click(e) {
     const type = this.cel.getAttribute('data-type');
 
-    this[type](e);
+    this[type]();
   }
 
   /**
@@ -72,7 +72,7 @@ class Sample extends Base {
    * @public
    */
   editSample() {
-    this.openSample.call(this, true);
+    this.openSample.call(this, 'edit');
   }
 
   /**
@@ -98,9 +98,9 @@ class Sample extends Base {
    */
   openSample(edit) {
     let elem = this.cel;
-    let item = edit === true ? this.getItem(elem) : this.createSampleItem(elem);
+    let item = edit ? this.getItem(elem) : this.createSampleItem(elem);
 
-    this.showForm(item, 'sample');
+    this.showForm(item, 'sample', {}, null, edit);
 
     if( edit === true ) {
       DOM.$('sample-name').value = item.getAttribute('data-uid');
@@ -116,10 +116,21 @@ class Sample extends Base {
   save(data) {
     let item, name, code;
 
-    if( data && data.name ) {
+    if( data ) {
       item = this.createSampleItem(DOM.$('sample-add'));
-      name = data.name;
-      code = data.code;
+
+      // handle data input from outside
+      if( data.name ) {
+        name = data.name;
+        code = data.code;
+
+      // get old data when user click cancel
+      } else {
+        name = item.getAttribute('data-uid');
+
+        let cache =  this.getCacheItem(name);
+        code = cache.code;
+      }
     } else {
       item = this.getItem(this.cel);
       name = DOM.$('sample-name').value;
@@ -161,13 +172,15 @@ class Sample extends Base {
   cancel() {
     let elem = this.cel;
     let item = this.getItem(elem);
-    let isEdit = !!item.getAttribute('sample-item--saved');
+    let isEdit = item.className.indexOf('sample-item--edit');
 
-    if( isEdit ) {
+    if( !isEdit ) {
       item.parentNode.removeChild(item);
+      this.revealAddButton('sample');
     } else {
       this.save('cancel');
     }
+
   }
 
   /**

@@ -4,20 +4,23 @@
   "description": "Javascript Benchmark Test",
   "author": "An Ha",
   "scripts": {
-    "setup": "npm install && bower install"
+    "setup": "npm install && bower install",
+    "production": "webpack -p"
   },
   "devDependencies": {
     "babel-core": "6.7.2",
     "babel-loader": "6.2.4",
-    "babel-preset-es2015": "^6.3.13",
     "babel-plugin-transform-runtime": "^6.6.0",
+    "babel-preset-es2015": "^6.3.13",
     "browser-sync": "^2.13.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
+    "gulp-cssmin": "^0.1.7",
     "gulp-if": "^2.0.1",
     "gulp-imagemin": "^3.0.1",
     "gulp-notify": "^2.2.0",
     "gulp-postcss": "^6.1.1",
+    "gulp-rename": "^1.2.2",
     "gulp-run": "^1.7.1",
     "gulp-sass": "^2.3.2",
     "gulp-sourcemaps": "^2.0.0-alpha",

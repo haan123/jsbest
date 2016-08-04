@@ -86,12 +86,12 @@ class Base extends Handler {
     }
   }
 
-  showForm(elem, name, config, obj) {
+  showForm(elem, name, config, obj, type) {
     let item = DOM.closest(elem, '.' + SAMPLE_ITEM_CLASS);
     let id = item.getAttribute('data-uid');
 
     item.innerHTML = this[name + 'FormTempl'].render(obj);
-    this._setStateClass(item, 'add');
+    this._setStateClass(item, type || 'add');
 
     return this._initEditor(name, config, id);
   }

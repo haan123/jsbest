@@ -30,7 +30,7 @@ class Setup extends Base {
   _click(e) {
     const type = this.cel.getAttribute('data-type');
 
-    this[type](e);
+    this[type]();
   }
 
   openSetup(edit) {
@@ -42,7 +42,7 @@ class Setup extends Base {
       htmlMode: true
     }, {
       urls: this.cache.urls
-    });
+    }, edit);
 
     editor.focus();
   }
@@ -194,7 +194,7 @@ class Setup extends Base {
    * @public
    */
   editSetup() {
-    this.openSetup.call(this, true);
+    this.openSetup.call(this, 'edit');
   }
 
 
@@ -206,10 +206,11 @@ class Setup extends Base {
   cancelSetup() {
     let elem = this.cel;
     let item = this.getItem(elem);
-    let isEdit = !!item.getAttribute('sample-item--saved');
+    let isEdit = !!item.className.indexOf('sample-item--edit');
 
-    if( isEdit ) {
+    if( !isEdit ) {
       item.parentNode.removeChild(item);
+      this.revealAddButton('setup');
     } else {
       this.setup();
     }

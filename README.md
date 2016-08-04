@@ -19,6 +19,7 @@ Client side testing for javascript performance, compare with multiple sample to 
 - Get sample code from gist of Github
 - Allow to save url to share samples with others people
 - Chart visualization
+- Local Storage
 
 
 ### Dev

@@ -30,6 +30,8 @@ var gulp = require('gulp'),
     imagemin = require('gulp-imagemin'),
     sourcemaps  = require('gulp-sourcemaps'),
     webpackConfig = require('./webpack.multi.config.js'),
+    cssmin = require('gulp-cssmin'),
+    rename = require('gulp-rename'),
     webpack = require('webpack');
 
 var webpackWatchTask = function(callback) {
@@ -124,6 +126,8 @@ gulp.task('styles', function() {
     }))
     .pipe(sourcemaps.write())
     .pipe(notify({title: 'Styles Compiled!', message: 'Good hustle', icon: './src/icon.png'}))
+    .pipe(cssmin())
+    .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('./assets/css/'))
     .pipe(browserSync.stream());
 });

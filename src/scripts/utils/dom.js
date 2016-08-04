@@ -21,6 +21,14 @@ DOM.toDOM = (function(div, tbody) {
  * @param {String|Node} selector
  * @return {Node}
  */
+
+let docElem = document.documentElement;
+let matches = docElem.matches ||
+                docElem.webkitMatchesSelector ||
+                docElem.mozMatchesSelector ||
+                docElem.oMatchesSelector ||
+                docElem.msMatchesSelector;
+
 DOM.closest = function(el, selector) {
   let cur = el, matched;
   let docElem = cur.ownerDocument.documentElement;
@@ -29,7 +37,7 @@ DOM.closest = function(el, selector) {
     // using native matches, this function return true or false
     // when selector matched
     // supporting IE9+
-    if ( docElem.matches.call( cur, selector ) ) {
+    if ( matches.call( cur, selector ) ) {
       matched = cur;
       break;
     }

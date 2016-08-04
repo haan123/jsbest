@@ -40,19 +40,6 @@ module.exports = function(env) {
   };
 
   if(env !== 'test') {
-    // Karma doesn't need entry points or output settings
-    // webpackConfig.entry = {
-    //   "docs": "./docs.js",
-    //   "main": "./main.js",
-    //   "vendor": [
-    //     "jquery",
-    //     "prismjs",
-    //     "../../node_modules/prismjs/components/prism-scss.js",
-    //     "underscore",
-    //     "backbone"
-    //   ]
-    // };
-
     webpackConfig.entry = {
       "main": "./main.js",
       "vendor": ["lodash", "codemirror", "../../node_modules/codemirror/mode/javascript/javascript.js",
@@ -87,11 +74,6 @@ module.exports = function(env) {
 
   if(env === 'production') {
     webpackConfig.plugins.push(
-      new webpack.DefinePlugin({
-        'process.env': {
-          'NODE_ENV': JSON.stringify('production')
-        }
-      }),
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin(),
       new webpack.NoErrorsPlugin()
