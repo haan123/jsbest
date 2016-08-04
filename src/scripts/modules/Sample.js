@@ -1,25 +1,9 @@
-import Handler from '../utils/handler';
+import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
-import CodeMirror from 'codemirror';
-import Prism from 'prismjs';
 import hogan from 'hogan.js';
 
-const MIN_LINE = '\n\n\n\n';
-const SAMPLE_ITEM_CLASS = 'sample-item';
-const rstateclass = new RegExp('(' + SAMPLE_ITEM_CLASS + '--)' + '[\\w]+', 'g');
-const EDITOR_CONFIG = {
-  lineNumbers: true,
-  tabSize: 2,
-  styleActiveLine: true,
-  autoCloseBrackets: true,
-  viewportMargin: Infinity,
-  lineWrapping: true
-};
-
-let _cache = new Map();
-
-class Sample extends Handler {
+class Sample extends Base {
   constructor(process) {
     super({
       mid: 'sample',
@@ -29,15 +13,12 @@ class Sample extends Handler {
     });
 
     this.suite = process.suite;
-    this.context = process.context;
 
     this.processList = DOM.$('process');
     this.process = process;
 
     this.rowTempl = hogan.compile(DOM.$('process-row-templ').innerHTML);
     this.sampleFormTempl = hogan.compile(DOM.$('sample-form-templ').innerHTML);
-    this.savedTempl = hogan.compile(DOM.$('saved-templ').innerHTML);
-    this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
   }
 
   /**
@@ -48,7 +29,7 @@ class Sample extends Handler {
   _click(e) {
     const type = this.cel.getAttribute('data-type');
 
-    this[type]();
+    this[type](e);
   }
 
   /**
@@ -73,214 +54,16 @@ class Sample extends Handler {
     return false;
   }
 
-  openSetup(edit) {
-    if( edit ) {}
-    let elem = this.cel;
-    let item = edit ? elem : document.createElement('div');
-
-    if( !edit ) {
-      item.className += 'sample-item';
-
-      elem.parentNode.insertBefore(item, elem);
-      elem.style.display = 'none';
-    }
-
-    let editor = this._showForm(item, 'setup', {
-      mode: "xml",
-      htmlMode: true
-    });
-
-    editor.focus();
-  }
-
-  _getStateClass(name) {
-    return SAMPLE_ITEM_CLASS + '--' + name;
-  }
-
   /**
-   * Switch between state classes
+   * Get process item row
    *
    * @private
-   * @param {String} name
+   * @param {Node} elem
    *
-   * @return {String}
+   * @return {Node}
    */
-  _setStateClass(item, name) {
-    let className = item.className;
-
-    if( rstateclass.test(className) ) {
-      className = item.className.replace(rstateclass, '$1' + name);
-    } else {
-      className += ' ' + SAMPLE_ITEM_CLASS + '--' + name;
-    }
-
-    return (item.className = className);
-  }
-
-  _showForm(elem, name, config, obj) {
-    let item = DOM.closest(elem, '.' + SAMPLE_ITEM_CLASS);
-    let id = item.getAttribute('data-uid');
-
-    item.innerHTML = this[name + 'FormTempl'].render(obj);
-    this._setStateClass(item, 'add');
-
-    return this._initEditor(name, config, id);
-  }
-
-  /**
-   * Init editor and assign it to class's property by name
-   *
-   * @private
-   * @param name
-   *
-   * @return {Object} editor
-   */
-  _initEditor(name, config, id) {
-    config = utils.extend({}, EDITOR_CONFIG, config || {});
-
-    let cache = _cache.get(id);
-    let ta = DOM.$(name + '-ta');
-    ta.value = cache ? cache.code : '';
-
-    let editor = this[name + 'Editor'] = CodeMirror.fromTextArea(ta, config);
-    editor.setValue(ta.value + MIN_LINE);
-
-    return editor;
-  }
-
-  setup() {
-    let editor = this.setupEditor;
-    let item = DOM.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
-    let code = editor.getValue().trim();
-
-    if( !code ) {
-      editor.focus();
-      return;
-    }
-
-    this.context.document.body.innerHTML = code;
-
-    this._renderSavedState('setup', item, code, 'setup', {
-      name: 'Setup',
-      id: 'setup',
-      language: 'markup'
-    });
-  }
-
-  /**
-   * Remove setup
-   *
-   * @public
-   */
-  removeSetup() {
-    let id = DOM.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
-    this._remove('setup', id);
-
-    this.context.document.body.innerHTML = '';
-  }
-
-  /**
-   * Edit setup code
-   *
-   * @public
-   */
-  editSetup() {
-    this.openSetup.call(this, true);
-  }
-
-
-  /**
-   *  cancel edit/add setup
-   *
-   * @public
-   */
-  cancelSetup() {
-
-  }
-
-  /**
-   * Render saved state
-   * @private
-   * @param {String} id
-   */
-  _renderSavedState(name, item, value, id, data) {
-    let editor = this[name + 'Editor'];
-
-    _cache.set(id, {
-      code: editor.getValue().trim()
-    });
-
-    editor.toTextArea();
-    item.innerHTML = this.savedTempl.render(data);
-    item.setAttribute('data-uid', id);
-
-    // render uneditable state's code editor
-    this._toStaticCode(id, value, data.language);
-
-    this._setStateClass(item, 'saved');
-
-    delete this[name + 'Editor'];
-  }
-
-  /**
-   * Disable edit actions from editor
-
-   * @private
-   * @param {String} id
-   * @param {String} value
-   * @param {String} lang
-   */
-  _toStaticCode(id, value, lang) {
-    let className = 'sample-item__static';
-
-    DOM.$('static-' + id).innerHTML = this._highlight(value, lang);
-  }
-
-  /**
-   * Highlight static code
-   *
-   * @private
-   * @param {String} code
-   * @param {String} lang
-   * @return {String}
-   */
-  _highlight(code, lang='javascript') {
-    const language = Prism.languages[lang];
-
-    return Prism.highlight(code, language);
-  }
-
-  /**
-   * remove sample/setup
-   *
-   * @private
-   * @param {String} name
-   */
-  _remove(name, id) {
-    let item = DOM.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
-    let cache = _cache.get(id);
-
-    item.parentNode.removeChild(item);
-
-    DOM.removeClass(item, this._getStateClass('saved'));
-
-    _cache.delete(id);
-
-    this._revealAddButton(name);
-  }
-
-  /**
-   * Show and animate add button
-   *
-   * @private
-   * @param {Param} name
-   */
-  _revealAddButton(name) {
-    let add = DOM.$(name + '-add');
-
-    DOM.removeClass(add, 'pulse');
-    add.className += ' pulse';
-    add.style.display = 'block';
+  _getItemRow(elem, id) {
+    return DOM.$('samle-' + id);
   }
 
   /**
@@ -289,7 +72,7 @@ class Sample extends Handler {
    * @public
    */
   editSample() {
-
+    this.openSample.call(this, true);
   }
 
   /**
@@ -298,7 +81,7 @@ class Sample extends Handler {
    * @public
    */
   removeSample() {
-    let item = DOM.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
+    let item = this.getItem(this.cel);
     let id = item.getAttribute('data-uid');
     let row = DOM.$('sample-' + id);
 
@@ -313,54 +96,96 @@ class Sample extends Handler {
    *
    * @public
    */
-  openSample() {
+  openSample(edit) {
     let elem = this.cel;
-    let item = document.createElement('div');
-    item.className += 'sample-item';
+    let item = edit === true ? this.getItem(elem) : this.createSampleItem(elem);
 
-    elem.parentNode.insertBefore(item, elem);
-    elem.style.display = 'none';
+    this.showForm(item, 'sample');
 
-    this._showForm(item, 'sample');
+    if( edit === true ) {
+      DOM.$('sample-name').value = item.getAttribute('data-uid');
+    }
   }
 
   /**
-   * Save sample
+   * Save sample, if data passed in from first initialize, create new div then render
    *
    * @public
+   * @param {Object} data
    */
-  save() {
-    const name = DOM.$('sample-name').value;
-    const code = this.sampleEditor.getValue();
+  save(data) {
+    let item, name, code;
 
-    if( !name|| !code || this._exist(name) ) return;
-    let item = DOM.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
+    if( data && data.name ) {
+      item = this.createSampleItem(DOM.$('sample-add'));
+      name = data.name;
+      code = data.code;
+    } else {
+      item = this.getItem(this.cel);
+      name = DOM.$('sample-name').value;
+      code = this.sampleEditor.getValue().trim();
+    }
+
+    let oldId = item.getAttribute('data-uid');
+    if( !name|| !code || (!oldId && this._exist(name)) ) return;
 
     this.suite.add(name, code);
-    this._revealAddButton('sample');
+    this.revealAddButton('sample');
 
-    this._renderSavedState('sample', item, code, name, {
+    if( name !== oldId ) {
+      this.removeFromCache(oldId);
+      this.process.removeBench(oldId)
+    }
+
+    this.renderSavedState('sample', item, code, name, {
+      handler: 'sample',
       name: 'Sample',
       id: name,
       language: 'javascript',
       sample: [{ id: name }]
     });
 
+    if( data === 'cancel' ) return;
+
     this.renderRow({
       id: name,
       name: name
-    });
+    }, oldId);
   }
 
+  /**
+   * Cancel edit
+   *
+   * @public
+   */
+  cancel() {
+    let elem = this.cel;
+    let item = this.getItem(elem);
+    let isEdit = !!item.getAttribute('sample-item--saved');
+
+    if( isEdit ) {
+      item.parentNode.removeChild(item);
+    } else {
+      this.save('cancel');
+    }
+  }
+
+  /**
+   * Run benchmark
+   *
+   * @public
+   */
   run() {
-    this.suite.run({
-      'async': true,
-      'queued': true
-    });
+    this.process.run();
   }
 
-  renderRow(obj) {
+  renderRow(obj, oldId) {
     let row = DOM.toDOM(this.rowTempl.render(obj));
+
+    if( oldId ) {
+      let orow = DOM.$('sample-' + oldId);
+      orow.parentNode.removeChild(orow);
+    }
 
     this.processList.appendChild(row);
   }

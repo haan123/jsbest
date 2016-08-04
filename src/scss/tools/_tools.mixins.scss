@@ -160,3 +160,15 @@
     @content
   }
 }
+
+// Text Truncate
+//
+// Truncate text
+//
+// Markup: li { @include text-truncate() }
+
+@mixin text-truncate() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

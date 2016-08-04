@@ -55,6 +55,7 @@
 // -------------------------------------
 
 @import 'tools/tools.clearfix';
+@import 'tools/tools.fixed';
 @import 'tools/tools.functions';
 @import 'tools/tools.mixins';
 // Though this is a vendor dependency, we need this loaded first in order to use it
@@ -100,6 +101,8 @@
 @import 'objects/_objects.top-bar';
 @import 'objects/_objects.process';
 @import 'objects/_objects.setup';
+@import 'objects/_objects.table';
+@import 'objects/_objects.badge';
 
 // -------------------------------------
 //   6. Components - UI Styles

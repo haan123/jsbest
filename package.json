@@ -1,7 +1,7 @@
 {
   "name": "jsbest",
   "version": "1.1.0",
-  "description": "Javascript Performance Test",
+  "description": "Javascript Benchmark Test",
   "author": "An Ha",
   "scripts": {
     "setup": "npm install && bower install"
@@ -27,7 +27,6 @@
   "dependencies": {
     "codemirror": "^5.17.0",
     "hogan.js": "^3.0.2",
-    "jquery": "^3.1.0",
     "lodash": "^4.14.0",
     "prismjs": "^1.5.1"
   }

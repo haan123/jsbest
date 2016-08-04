@@ -8,14 +8,19 @@ webpackJsonp([0],[
 	
 	var _Sample2 = _interopRequireDefault(_Sample);
 	
-	var _Process = __webpack_require__(54);
+	var _Setup = __webpack_require__(55);
+	
+	var _Setup2 = _interopRequireDefault(_Setup);
+	
+	var _Process = __webpack_require__(56);
 	
 	var _Process2 = _interopRequireDefault(_Process);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var _process = new _Process2.default();
-	var _case = new _Sample2.default(_process);
+	new _Sample2.default(_process);
+	new _Setup2.default(_process);
 
 /***/ },
 /* 1 */
@@ -43,48 +48,26 @@ webpackJsonp([0],[
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _handler = __webpack_require__(46);
+	var _Base2 = __webpack_require__(46);
 	
-	var _handler2 = _interopRequireDefault(_handler);
+	var _Base3 = _interopRequireDefault(_Base2);
 	
-	var _utils = __webpack_require__(47);
+	var _utils = __webpack_require__(48);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _dom = __webpack_require__(48);
+	var _dom = __webpack_require__(49);
 	
 	var _dom2 = _interopRequireDefault(_dom);
 	
-	var _codemirror = __webpack_require__(49);
-	
-	var _codemirror2 = _interopRequireDefault(_codemirror);
-	
-	var _prismjs = __webpack_require__(50);
-	
-	var _prismjs2 = _interopRequireDefault(_prismjs);
-	
-	var _hogan = __webpack_require__(51);
+	var _hogan = __webpack_require__(52);
 	
 	var _hogan2 = _interopRequireDefault(_hogan);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var MIN_LINE = '\n\n\n\n';
-	var SAMPLE_ITEM_CLASS = 'sample-item';
-	var rstateclass = new RegExp('(' + SAMPLE_ITEM_CLASS + '--)' + '[\\w]+', 'g');
-	var EDITOR_CONFIG = {
-	  lineNumbers: true,
-	  tabSize: 2,
-	  styleActiveLine: true,
-	  autoCloseBrackets: true,
-	  viewportMargin: Infinity,
-	  lineWrapping: true
-	};
-	
-	var _cache = new Map();
-	
-	var Sample = function (_Handler) {
-	  (0, _inherits3.default)(Sample, _Handler);
+	var Sample = function (_Base) {
+	  (0, _inherits3.default)(Sample, _Base);
 	
 	  function Sample(process) {
 	    (0, _classCallCheck3.default)(this, Sample);
@@ -97,15 +80,12 @@ webpackJsonp([0],[
 	    }));
 	
 	    _this.suite = process.suite;
-	    _this.context = process.context;
 	
 	    _this.processList = _dom2.default.$('process');
 	    _this.process = process;
 	
 	    _this.rowTempl = _hogan2.default.compile(_dom2.default.$('process-row-templ').innerHTML);
 	    _this.sampleFormTempl = _hogan2.default.compile(_dom2.default.$('sample-form-templ').innerHTML);
-	    _this.savedTempl = _hogan2.default.compile(_dom2.default.$('saved-templ').innerHTML);
-	    _this.setupFormTempl = _hogan2.default.compile(_dom2.default.$('setup-form-templ').innerHTML);
 	    return _this;
 	  }
 	
@@ -121,7 +101,7 @@ webpackJsonp([0],[
 	    value: function _click(e) {
 	      var type = this.cel.getAttribute('data-type');
 	
-	      this[type]();
+	      this[type](e);
 	    }
 	
 	    /**
@@ -148,247 +128,20 @@ webpackJsonp([0],[
 	
 	      return false;
 	    }
-	  }, {
-	    key: 'openSetup',
-	    value: function openSetup(edit) {
-	      if (edit) {}
-	      var elem = this.cel;
-	      var item = edit ? elem : document.createElement('div');
-	
-	      if (!edit) {
-	        item.className += 'sample-item';
-	
-	        elem.parentNode.insertBefore(item, elem);
-	        elem.style.display = 'none';
-	      }
-	
-	      var editor = this._showForm(item, 'setup', {
-	        mode: "xml",
-	        htmlMode: true
-	      });
-	
-	      editor.focus();
-	    }
-	  }, {
-	    key: '_getStateClass',
-	    value: function _getStateClass(name) {
-	      return SAMPLE_ITEM_CLASS + '--' + name;
-	    }
 	
 	    /**
-	     * Switch between state classes
+	     * Get process item row
 	     *
 	     * @private
-	     * @param {String} name
+	     * @param {Node} elem
 	     *
-	     * @return {String}
+	     * @return {Node}
 	     */
 	
 	  }, {
-	    key: '_setStateClass',
-	    value: function _setStateClass(item, name) {
-	      var className = item.className;
-	
-	      if (rstateclass.test(className)) {
-	        className = item.className.replace(rstateclass, '$1' + name);
-	      } else {
-	        className += ' ' + SAMPLE_ITEM_CLASS + '--' + name;
-	      }
-	
-	      return item.className = className;
-	    }
-	  }, {
-	    key: '_showForm',
-	    value: function _showForm(elem, name, config, obj) {
-	      var item = _dom2.default.closest(elem, '.' + SAMPLE_ITEM_CLASS);
-	      var id = item.getAttribute('data-uid');
-	
-	      item.innerHTML = this[name + 'FormTempl'].render(obj);
-	      this._setStateClass(item, 'add');
-	
-	      return this._initEditor(name, config, id);
-	    }
-	
-	    /**
-	     * Init editor and assign it to class's property by name
-	     *
-	     * @private
-	     * @param name
-	     *
-	     * @return {Object} editor
-	     */
-	
-	  }, {
-	    key: '_initEditor',
-	    value: function _initEditor(name, config, id) {
-	      config = _utils2.default.extend({}, EDITOR_CONFIG, config || {});
-	
-	      var cache = _cache.get(id);
-	      var ta = _dom2.default.$(name + '-ta');
-	      ta.value = cache ? cache.code : '';
-	
-	      var editor = this[name + 'Editor'] = _codemirror2.default.fromTextArea(ta, config);
-	      editor.setValue(ta.value + MIN_LINE);
-	
-	      return editor;
-	    }
-	  }, {
-	    key: 'setup',
-	    value: function setup() {
-	      var editor = this.setupEditor;
-	      var item = _dom2.default.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
-	      var code = editor.getValue().trim();
-	
-	      if (!code) {
-	        editor.focus();
-	        return;
-	      }
-	
-	      this.context.document.body.innerHTML = code;
-	
-	      this._renderSavedState('setup', item, code, 'setup', {
-	        name: 'Setup',
-	        id: 'setup',
-	        language: 'markup'
-	      });
-	    }
-	
-	    /**
-	     * Remove setup
-	     *
-	     * @public
-	     */
-	
-	  }, {
-	    key: 'removeSetup',
-	    value: function removeSetup() {
-	      var id = _dom2.default.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
-	      this._remove('setup', id);
-	
-	      this.context.document.body.innerHTML = '';
-	    }
-	
-	    /**
-	     * Edit setup code
-	     *
-	     * @public
-	     */
-	
-	  }, {
-	    key: 'editSetup',
-	    value: function editSetup() {
-	      this.openSetup.call(this, true);
-	    }
-	
-	    /**
-	     *  cancel edit/add setup
-	     *
-	     * @public
-	     */
-	
-	  }, {
-	    key: 'cancelSetup',
-	    value: function cancelSetup() {}
-	
-	    /**
-	     * Render saved state
-	     * @private
-	     * @param {String} id
-	     */
-	
-	  }, {
-	    key: '_renderSavedState',
-	    value: function _renderSavedState(name, item, value, id, data) {
-	      var editor = this[name + 'Editor'];
-	
-	      _cache.set(id, {
-	        code: editor.getValue().trim()
-	      });
-	
-	      editor.toTextArea();
-	      item.innerHTML = this.savedTempl.render(data);
-	      item.setAttribute('data-uid', id);
-	
-	      // render uneditable state's code editor
-	      this._toStaticCode(id, value, data.language);
-	
-	      this._setStateClass(item, 'saved');
-	
-	      delete this[name + 'Editor'];
-	    }
-	
-	    /**
-	     * Disable edit actions from editor
-	      * @private
-	     * @param {String} id
-	     * @param {String} value
-	     * @param {String} lang
-	     */
-	
-	  }, {
-	    key: '_toStaticCode',
-	    value: function _toStaticCode(id, value, lang) {
-	      var className = 'sample-item__static';
-	
-	      _dom2.default.$('static-' + id).innerHTML = this._highlight(value, lang);
-	    }
-	
-	    /**
-	     * Highlight static code
-	     *
-	     * @private
-	     * @param {String} code
-	     * @param {String} lang
-	     * @return {String}
-	     */
-	
-	  }, {
-	    key: '_highlight',
-	    value: function _highlight(code) {
-	      var lang = arguments.length <= 1 || arguments[1] === undefined ? 'javascript' : arguments[1];
-	
-	      var language = _prismjs2.default.languages[lang];
-	
-	      return _prismjs2.default.highlight(code, language);
-	    }
-	
-	    /**
-	     * remove sample/setup
-	     *
-	     * @private
-	     * @param {String} name
-	     */
-	
-	  }, {
-	    key: '_remove',
-	    value: function _remove(name, id) {
-	      var item = _dom2.default.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
-	      var cache = _cache.get(id);
-	
-	      item.parentNode.removeChild(item);
-	
-	      _dom2.default.removeClass(item, this._getStateClass('saved'));
-	
-	      _cache.delete(id);
-	
-	      this._revealAddButton(name);
-	    }
-	
-	    /**
-	     * Show and animate add button
-	     *
-	     * @private
-	     * @param {Param} name
-	     */
-	
-	  }, {
-	    key: '_revealAddButton',
-	    value: function _revealAddButton(name) {
-	      var add = _dom2.default.$(name + '-add');
-	
-	      _dom2.default.removeClass(add, 'pulse');
-	      add.className += ' pulse';
-	      add.style.display = 'block';
+	    key: '_getItemRow',
+	    value: function _getItemRow(elem, id) {
+	      return _dom2.default.$('samle-' + id);
 	    }
 	
 	    /**
@@ -399,7 +152,9 @@ webpackJsonp([0],[
 	
 	  }, {
 	    key: 'editSample',
-	    value: function editSample() {}
+	    value: function editSample() {
+	      this.openSample.call(this, true);
+	    }
 	
 	    /**
 	     * Remove sample from process list
@@ -410,7 +165,7 @@ webpackJsonp([0],[
 	  }, {
 	    key: 'removeSample',
 	    value: function removeSample() {
-	      var item = _dom2.default.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
+	      var item = this.getItem(this.cel);
 	      var id = item.getAttribute('data-uid');
 	      var row = _dom2.default.$('sample-' + id);
 	
@@ -428,65 +183,114 @@ webpackJsonp([0],[
 	
 	  }, {
 	    key: 'openSample',
-	    value: function openSample() {
+	    value: function openSample(edit) {
 	      var elem = this.cel;
-	      var item = document.createElement('div');
-	      item.className += 'sample-item';
+	      var item = edit === true ? this.getItem(elem) : this.createSampleItem(elem);
 	
-	      elem.parentNode.insertBefore(item, elem);
-	      elem.style.display = 'none';
+	      this.showForm(item, 'sample');
 	
-	      this._showForm(item, 'sample');
+	      if (edit === true) {
+	        _dom2.default.$('sample-name').value = item.getAttribute('data-uid');
+	      }
 	    }
 	
 	    /**
-	     * Save sample
+	     * Save sample, if data passed in from first initialize, create new div then render
 	     *
 	     * @public
+	     * @param {Object} data
 	     */
 	
 	  }, {
 	    key: 'save',
-	    value: function save() {
-	      var name = _dom2.default.$('sample-name').value;
-	      var code = this.sampleEditor.getValue();
+	    value: function save(data) {
+	      var item = void 0,
+	          name = void 0,
+	          code = void 0;
 	
-	      if (!name || !code || this._exist(name)) return;
-	      var item = _dom2.default.closest(this.cel, '.' + SAMPLE_ITEM_CLASS);
+	      if (data && data.name) {
+	        item = this.createSampleItem(_dom2.default.$('sample-add'));
+	        name = data.name;
+	        code = data.code;
+	      } else {
+	        item = this.getItem(this.cel);
+	        name = _dom2.default.$('sample-name').value;
+	        code = this.sampleEditor.getValue().trim();
+	      }
+	
+	      var oldId = item.getAttribute('data-uid');
+	      if (!name || !code || !oldId && this._exist(name)) return;
 	
 	      this.suite.add(name, code);
-	      this._revealAddButton('sample');
+	      this.revealAddButton('sample');
 	
-	      this._renderSavedState('sample', item, code, name, {
+	      if (name !== oldId) {
+	        this.removeFromCache(oldId);
+	        this.process.removeBench(oldId);
+	      }
+	
+	      this.renderSavedState('sample', item, code, name, {
+	        handler: 'sample',
 	        name: 'Sample',
 	        id: name,
 	        language: 'javascript',
 	        sample: [{ id: name }]
 	      });
 	
+	      if (data === 'cancel') return;
+	
 	      this.renderRow({
 	        id: name,
 	        name: name
-	      });
+	      }, oldId);
 	    }
+	
+	    /**
+	     * Cancel edit
+	     *
+	     * @public
+	     */
+	
+	  }, {
+	    key: 'cancel',
+	    value: function cancel() {
+	      var elem = this.cel;
+	      var item = this.getItem(elem);
+	      var isEdit = !!item.getAttribute('sample-item--saved');
+	
+	      if (isEdit) {
+	        item.parentNode.removeChild(item);
+	      } else {
+	        this.save('cancel');
+	      }
+	    }
+	
+	    /**
+	     * Run benchmark
+	     *
+	     * @public
+	     */
+	
 	  }, {
 	    key: 'run',
 	    value: function run() {
-	      this.suite.run({
-	        'async': true,
-	        'queued': true
-	      });
+	      this.process.run();
 	    }
 	  }, {
 	    key: 'renderRow',
-	    value: function renderRow(obj) {
+	    value: function renderRow(obj, oldId) {
 	      var row = _dom2.default.toDOM(this.rowTempl.render(obj));
+	
+	      if (oldId) {
+	        var orow = _dom2.default.$('sample-' + oldId);
+	        orow.parentNode.removeChild(orow);
+	      }
 	
 	      this.processList.appendChild(row);
 	    }
 	  }]);
 	  return Sample;
-	}(_handler2.default);
+	}(_Base3.default);
 	
 	exports.default = Sample;
 
@@ -1312,11 +1116,367 @@ webpackJsonp([0],[
 	
 	var _createClass3 = _interopRequireDefault(_createClass2);
 	
-	var _utils = __webpack_require__(47);
+	var _possibleConstructorReturn2 = __webpack_require__(7);
+	
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+	
+	var _inherits2 = __webpack_require__(39);
+	
+	var _inherits3 = _interopRequireDefault(_inherits2);
+	
+	var _handler = __webpack_require__(47);
+	
+	var _handler2 = _interopRequireDefault(_handler);
+	
+	var _utils = __webpack_require__(48);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _dom = __webpack_require__(48);
+	var _dom = __webpack_require__(49);
+	
+	var _dom2 = _interopRequireDefault(_dom);
+	
+	var _codemirror = __webpack_require__(50);
+	
+	var _codemirror2 = _interopRequireDefault(_codemirror);
+	
+	var _prismjs = __webpack_require__(51);
+	
+	var _prismjs2 = _interopRequireDefault(_prismjs);
+	
+	var _hogan = __webpack_require__(52);
+	
+	var _hogan2 = _interopRequireDefault(_hogan);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var MIN_LINE = '\n\n\n\n';
+	var SAMPLE_ITEM_CLASS = 'sample-item';
+	var rstateclass = new RegExp('(' + SAMPLE_ITEM_CLASS + '--)' + '[\\w]+', 'g');
+	var EDITOR_CONFIG = {
+	  lineNumbers: true,
+	  tabSize: 2,
+	  styleActiveLine: true,
+	  autoCloseBrackets: true,
+	  viewportMargin: Infinity,
+	  lineWrapping: true
+	};
+	
+	var _cache = new Map();
+	
+	var Base = function (_Handler) {
+	  (0, _inherits3.default)(Base, _Handler);
+	
+	  function Base(obj) {
+	    (0, _classCallCheck3.default)(this, Base);
+	
+	    var _this = (0, _possibleConstructorReturn3.default)(this, Object.getPrototypeOf(Base).call(this, obj));
+	
+	    _utils2.default.Event.on(window, 'scroll', _this._scroll.bind(_this));
+	
+	    _this.savedTempl = _hogan2.default.compile(_dom2.default.$('saved-templ').innerHTML);
+	    _this.topBarHeight = _dom2.default.$('top-bar').offsetHeight;
+	    _this.processes = _dom2.default.$('processes');
+	    return _this;
+	  }
+	
+	  /**
+	   * Remove sample id from cache
+	   *
+	   * @param {String} id
+	   *
+	   * @return {Boolean}
+	   */
+	
+	
+	  (0, _createClass3.default)(Base, [{
+	    key: 'removeFromCache',
+	    value: function removeFromCache(id) {
+	      return _cache.delete(id);
+	    }
+	
+	    /**
+	     * Remove cache item
+	     *
+	     * @param {String} id
+	     *
+	     * @return {Object}
+	     */
+	
+	  }, {
+	    key: 'getCacheItem',
+	    value: function getCacheItem(id) {
+	      return _cache.get(id);
+	    }
+	
+	    /**
+	     *  Create new cache item
+	     *
+	     * @param {String} id
+	     *
+	     * @return {Object}
+	     */
+	
+	  }, {
+	    key: 'setCacheItem',
+	    value: function setCacheItem(id) {
+	      var obj = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	
+	      _cache.set(id, obj);
+	
+	      return _cache.get(id);
+	    }
+	
+	    /**
+	     * Event handler for scroll
+	     */
+	
+	  }, {
+	    key: '_scroll',
+	    value: function _scroll(e) {
+	      var top = window.pageYOffset;
+	      var processes = this.processes;
+	
+	      if (top > this.topBarHeight) {
+	        if (this.fixing) return;
+	        processes.style.top = '1.5em';
+	        processes.style.width = processes.clientWidth + 'px';
+	        processes.className += ' fixed';
+	
+	        this.fixing = true;
+	      } else if (this.fixing) {
+	        processes.removeAttribute('style');
+	        _dom2.default.removeClass(processes, 'fixed');
+	        delete this.fixing;
+	      }
+	    }
+	  }, {
+	    key: 'showForm',
+	    value: function showForm(elem, name, config, obj) {
+	      var item = _dom2.default.closest(elem, '.' + SAMPLE_ITEM_CLASS);
+	      var id = item.getAttribute('data-uid');
+	
+	      item.innerHTML = this[name + 'FormTempl'].render(obj);
+	      this._setStateClass(item, 'add');
+	
+	      return this._initEditor(name, config, id);
+	    }
+	  }, {
+	    key: '_getStateClass',
+	    value: function _getStateClass(name) {
+	      return SAMPLE_ITEM_CLASS + '--' + name;
+	    }
+	
+	    /**
+	     * Switch between state classes
+	     *
+	     * @private
+	     * @param {String} name
+	     *
+	     * @return {String}
+	     */
+	
+	  }, {
+	    key: '_setStateClass',
+	    value: function _setStateClass(item, name) {
+	      var className = item.className;
+	
+	      if (rstateclass.test(className)) {
+	        className = item.className.replace(rstateclass, '$1' + name);
+	      } else {
+	        className += ' ' + SAMPLE_ITEM_CLASS + '--' + name;
+	      }
+	
+	      return item.className = className;
+	    }
+	
+	    /**
+	     * Init editor and assign it to class's property by name
+	     *
+	     * @private
+	     * @param name
+	     *
+	     * @return {Object} editor
+	     */
+	
+	  }, {
+	    key: '_initEditor',
+	    value: function _initEditor(name, config, id) {
+	      config = _utils2.default.extend({}, EDITOR_CONFIG, config || {});
+	
+	      var cache = _cache.get(id);
+	      var ta = _dom2.default.$(name + '-ta');
+	      ta.value = cache ? cache.code : '';
+	
+	      var editor = this[name + 'Editor'] = _codemirror2.default.fromTextArea(ta, config);
+	      editor.setValue(ta.value + MIN_LINE);
+	
+	      return editor;
+	    }
+	
+	    /**
+	     * Render saved state
+	     * @private
+	     * @param {String} id
+	     */
+	
+	  }, {
+	    key: 'renderSavedState',
+	    value: function renderSavedState(name, item, value, id, data) {
+	      var editor = this[name + 'Editor'];
+	      var cache = this.getCacheItem(id);
+	      this.setCacheItem(id, _utils2.default.extend(cache || {}, { code: value }));
+	
+	      editor && editor.toTextArea();
+	      item.innerHTML = this.savedTempl.render(data);
+	      item.setAttribute('data-uid', id);
+	
+	      // render uneditable state's code editor
+	      this._toStaticCode(id, value, data.language);
+	
+	      this._setStateClass(item, 'saved');
+	
+	      delete this[name + 'Editor'];
+	    }
+	
+	    /**
+	     * Get sample item node
+	     *
+	     * @private
+	     * @param {Node} elem
+	     *
+	     * @return {Node}
+	     */
+	
+	  }, {
+	    key: 'getItem',
+	    value: function getItem(elem) {
+	      return _dom2.default.closest(elem, '.' + SAMPLE_ITEM_CLASS);
+	    }
+	
+	    /**
+	     * Disable edit actions from editor
+	       * @private
+	     * @param {String} id
+	     * @param {String} value
+	     * @param {String} lang
+	     */
+	
+	  }, {
+	    key: '_toStaticCode',
+	    value: function _toStaticCode(id, value, lang) {
+	      var className = 'sample-item__static';
+	
+	      _dom2.default.$('static-' + id).innerHTML = this._highlight(value, lang);
+	    }
+	
+	    /**
+	     * Highlight static code
+	     *
+	     * @private
+	     * @param {String} code
+	     * @param {String} lang
+	     * @return {String}
+	     */
+	
+	  }, {
+	    key: '_highlight',
+	    value: function _highlight(code) {
+	      var lang = arguments.length <= 1 || arguments[1] === undefined ? 'javascript' : arguments[1];
+	
+	      var language = _prismjs2.default.languages[lang];
+	
+	      return _prismjs2.default.highlight(code, language);
+	    }
+	
+	    /**
+	     * remove sample/setup
+	     *
+	     * @private
+	     * @param {String} name
+	     */
+	
+	  }, {
+	    key: '_remove',
+	    value: function _remove(name, id) {
+	      var item = this.getItem(this.cel);
+	      var cache = _cache.get(id);
+	
+	      item.parentNode.removeChild(item);
+	
+	      _dom2.default.removeClass(item, this._getStateClass('saved'));
+	
+	      _cache.delete(id);
+	
+	      this.revealAddButton(name);
+	    }
+	
+	    /**
+	     * Show and animate add button
+	     *
+	     * @private
+	     * @param {Param} name
+	     */
+	
+	  }, {
+	    key: 'revealAddButton',
+	    value: function revealAddButton(name) {
+	      var add = _dom2.default.$(name + '-add');
+	
+	      _dom2.default.removeClass(add, 'pulse');
+	      add.className += ' pulse';
+	      add.style.display = 'block';
+	    }
+	
+	    /**
+	     * Create sample item
+	     *
+	     * @private
+	     * @param {Node} elem - element which is inserted before it
+	     *
+	     * @return {Node} item
+	     */
+	
+	  }, {
+	    key: 'createSampleItem',
+	    value: function createSampleItem(elem) {
+	      var item = document.createElement('div');
+	      item.className += 'sample-item';
+	
+	      elem.parentNode.insertBefore(item, elem);
+	      elem.style.display = 'none';
+	
+	      return item;
+	    }
+	  }]);
+	  return Base;
+	}(_handler2.default);
+	
+	exports.default = Base;
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _classCallCheck2 = __webpack_require__(2);
+	
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+	
+	var _createClass2 = __webpack_require__(3);
+	
+	var _createClass3 = _interopRequireDefault(_createClass2);
+	
+	var _utils = __webpack_require__(48);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _dom = __webpack_require__(49);
 	
 	var _dom2 = _interopRequireDefault(_dom);
 	
@@ -1324,6 +1484,8 @@ webpackJsonp([0],[
 	
 	// matches all handlers in element
 	/**
+	 * Author: An Ha (haan.an@yahoo.com.vn)
+	 *
 	 * Base class for sub classes register all event handlers
 	 * Supported Events:
 	 * - click
@@ -1407,7 +1569,7 @@ webpackJsonp([0],[
 	exports.default = Handler;
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1416,6 +1578,8 @@ webpackJsonp([0],[
 	  value: true
 	});
 	var utils = {};
+	var protoObj = Object.prototype;
+	var toString = protoObj.toString;
 	
 	utils.extend = function (obj) {
 	  var length = arguments.length,
@@ -1451,11 +1615,27 @@ webpackJsonp([0],[
 	};
 	
 	utils.forEach = function (obj, iteratee, context) {
-	  var keys = Object.keys(obj);
+	  var i = 0,
+	      length = void 0;
 	
-	  for (var i = 0, length = keys.length; i < length; i++) {
-	    iteratee.call(context, obj[keys[i]], keys[i], obj);
+	  if (this.isArray(obj)) {
+	    length = obj.length;
+	
+	    for (; i < length; i++) {
+	      iteratee.call(context, obj[i], i, obj);
+	    }
+	  } else {
+	    var keys = Object.keys(obj);
+	    length = keys.length;
+	
+	    for (; i < length; i++) {
+	      iteratee.call(context, obj[keys[i]], keys[i], obj);
+	    }
 	  }
+	};
+	
+	utils.isArray = function (obj) {
+	  return toString.call(obj) === '[object Array]';
 	};
 	
 	var escapeMap = {
@@ -1495,7 +1675,7 @@ webpackJsonp([0],[
 	exports.default = utils;
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -1586,12 +1766,12 @@ webpackJsonp([0],[
 	exports.default = DOM;
 
 /***/ },
-/* 49 */,
 /* 50 */,
 /* 51 */,
 /* 52 */,
 /* 53 */,
-/* 54 */
+/* 54 */,
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1608,13 +1788,318 @@ webpackJsonp([0],[
 	
 	var _createClass3 = _interopRequireDefault(_createClass2);
 	
-	var _utils = __webpack_require__(47);
+	var _possibleConstructorReturn2 = __webpack_require__(7);
+	
+	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+	
+	var _inherits2 = __webpack_require__(39);
+	
+	var _inherits3 = _interopRequireDefault(_inherits2);
+	
+	var _Base2 = __webpack_require__(46);
+	
+	var _Base3 = _interopRequireDefault(_Base2);
+	
+	var _utils = __webpack_require__(48);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _dom = __webpack_require__(48);
+	var _dom = __webpack_require__(49);
 	
 	var _dom2 = _interopRequireDefault(_dom);
+	
+	var _hogan = __webpack_require__(52);
+	
+	var _hogan2 = _interopRequireDefault(_hogan);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Setup = function (_Base) {
+	  (0, _inherits3.default)(Setup, _Base);
+	
+	  function Setup(process) {
+	    (0, _classCallCheck3.default)(this, Setup);
+	
+	    var _this = (0, _possibleConstructorReturn3.default)(this, Object.getPrototypeOf(Setup).call(this, {
+	      mid: 'setup',
+	      events: {
+	        'click': '_click'
+	      }
+	    }));
+	
+	    _this.processList = _dom2.default.$('process');
+	    _this.process = process;
+	    _this.context = process.context;
+	
+	    _this.setupFormTempl = _hogan2.default.compile(_dom2.default.$('setup-form-templ').innerHTML);
+	    _this.setupUrlTempl = _hogan2.default.compile(_dom2.default.$('setup-url-templ').innerHTML);
+	    _this._id = 'setup';
+	    _this.cache = _this.setCacheItem(_this._id);
+	    return _this;
+	  }
+	
+	  /**
+	   * Handle click for sample handler
+	   *
+	   * @private
+	   */
+	
+	
+	  (0, _createClass3.default)(Setup, [{
+	    key: '_click',
+	    value: function _click(e) {
+	      var type = this.cel.getAttribute('data-type');
+	
+	      this[type](e);
+	    }
+	  }, {
+	    key: 'openSetup',
+	    value: function openSetup(edit) {
+	      var elem = this.cel;
+	      var item = edit === true ? elem : this.createSampleItem(elem);
+	
+	      var editor = this.showForm(item, 'setup', {
+	        mode: "xml",
+	        htmlMode: true
+	      }, {
+	        urls: this.cache.urls
+	      });
+	
+	      editor.focus();
+	    }
+	  }, {
+	    key: 'setup',
+	    value: function setup(data) {
+	      var _this2 = this;
+	
+	      var editor = this.setupEditor;
+	      var feeded = data && data.code;
+	      var item = void 0,
+	          code = void 0,
+	          urls = void 0;
+	
+	      if (feeded) {
+	        item = this.createSampleItem(_dom2.default.$('setup-add'));
+	        code = data.code;
+	        urls = data.urls;
+	        _utils2.default.forEach(urls, function (url) {
+	          return _this2._cachedUrl(url);
+	        });
+	      } else {
+	        item = this.getItem(this.cel);
+	        code = editor.getValue().trim();
+	        urls = this.cache.urls;
+	      }
+	
+	      if (!code) {
+	        editor.focus();
+	        return;
+	      }
+	
+	      this.context.document.body.innerHTML = code;
+	      urls && this._embedUrls(urls);
+	
+	      this.renderSavedState('setup', item, code, 'setup', {
+	        handler: 'setup',
+	        name: 'Setup',
+	        id: 'setup',
+	        language: 'markup',
+	        urls: urls
+	      });
+	    }
+	
+	    /**
+	     * Check existing url
+	     *
+	     * @private
+	     * @param {Object} urls
+	     * @param {String} url
+	     *
+	     * @return {Boolean}
+	     */
+	
+	  }, {
+	    key: '_existUrl',
+	    value: function _existUrl(urls, url) {
+	      var i = urls.length;
+	
+	      while (i--) {
+	        if (urls[i] === url) return true;
+	      }
+	
+	      return false;
+	    }
+	
+	    /**
+	     * Add url handler
+	     *
+	     * @public
+	     */
+	
+	  }, {
+	    key: 'addUrl',
+	    value: function addUrl() {
+	      var elem = this.cel;
+	      var form = _dom2.default.closest(elem, '.setup__form');
+	      var field = _dom2.default.$('setup-url-field');
+	      var url = field.value;
+	
+	      if (!url) return;
+	
+	      var id = this._cachedUrl(url);
+	
+	      if (!id) return;
+	
+	      var urlItem = _dom2.default.toDOM(this.setupUrlTempl.render({
+	        id: id - 1,
+	        url: url
+	      }));
+	
+	      form.insertBefore(urlItem, elem.parentNode.nextSibling);
+	      field.value = '';
+	      field.focus();
+	    }
+	
+	    /**
+	     * Cache url
+	     *
+	     * @private
+	     * @param {String} url
+	     *
+	     * @return {Number}
+	     */
+	
+	  }, {
+	    key: '_cachedUrl',
+	    value: function _cachedUrl(url) {
+	      var cache = this.cache;
+	      url = typeof url === 'string' ? { url: url } : url;
+	
+	      if (!cache.urls) cache.urls = [];
+	
+	      if (this._existUrl(cache.urls, url.url)) return;
+	
+	      return cache.urls.push(url);
+	    }
+	
+	    /**
+	     * remove url handler
+	     *
+	     * @public
+	     */
+	
+	  }, {
+	    key: 'removeUrl',
+	    value: function removeUrl() {
+	      var id = this.cel.getAttribute('data-url-id');
+	      var setup = this.cel.parentNode;
+	      var cache = this.getCacheItem(this._id);
+	
+	      cache.urls.splice(id, 1);
+	      setup.parentNode.removeChild(setup);
+	    }
+	
+	    /**
+	     * Embed external libraries to iframe
+	     *
+	     * @private
+	     * @param {Array} urls
+	     */
+	
+	  }, {
+	    key: '_embedUrls',
+	    value: function _embedUrls(urls) {
+	      if (!urls.length) return '';
+	      var script = document.createElement('script');
+	
+	      for (var i = 0, len = urls.length; i < len; i++) {
+	        var temp = script.cloneNode(true);
+	        temp.src = urls[i].url;
+	        this.context.document.body.appendChild(temp);
+	      }
+	    }
+	
+	    /**
+	     * Remove setup
+	     *
+	     * @public
+	     */
+	
+	  }, {
+	    key: 'removeSetup',
+	    value: function removeSetup() {
+	      var id = this.getItem(this.cel);
+	      this._remove('setup', id);
+	
+	      this.context.document.body.innerHTML = '';
+	    }
+	
+	    /**
+	     * Edit setup code
+	     *
+	     * @public
+	     */
+	
+	  }, {
+	    key: 'editSetup',
+	    value: function editSetup() {
+	      this.openSetup.call(this, true);
+	    }
+	
+	    /**
+	     *  cancel edit/add setup
+	     *
+	     * @public
+	     */
+	
+	  }, {
+	    key: 'cancelSetup',
+	    value: function cancelSetup() {
+	      var elem = this.cel;
+	      var item = this.getItem(elem);
+	      var isEdit = !!item.getAttribute('sample-item--saved');
+	
+	      if (isEdit) {
+	        item.parentNode.removeChild(item);
+	      } else {
+	        this.setup();
+	      }
+	    }
+	  }]);
+	  return Setup;
+	}(_Base3.default);
+	
+	exports.default = Setup;
+
+/***/ },
+/* 56 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _classCallCheck2 = __webpack_require__(2);
+	
+	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+	
+	var _createClass2 = __webpack_require__(3);
+	
+	var _createClass3 = _interopRequireDefault(_createClass2);
+	
+	var _utils = __webpack_require__(48);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _dom = __webpack_require__(49);
+	
+	var _dom2 = _interopRequireDefault(_dom);
+	
+	var _lodash = __webpack_require__(57);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1626,6 +2111,7 @@ webpackJsonp([0],[
 	    this.context.document.head.appendChild(_dom2.default.toDOM('<script></script>'));
 	    Benchmark = Benchmark.runInContext(this.context);
 	    this.context.Benchmark = Benchmark;
+	    this.errorTmpl = _dom2.default.$('error-templ').innerHTML;
 	
 	    this.initialize();
 	  }
@@ -1647,31 +2133,33 @@ webpackJsonp([0],[
 	
 	        bench.on('start', _this._start.bind(_this));
 	        bench.on('start cycle', _this._cycle.bind(_this));
-	      }).on('start cycle', function (event) {
-	        console.log(event);
-	      }).on('complete', function () {
-	        var benches = Benchmark.filter(suite.benchmarks, 'successful'),
-	            fastest = Benchmark.filter(benches, 'fastest')[0],
-	            slowest = Benchmark.filter(benches, 'slowest')[0];
+	      }).on('start cycle', function (event) {}).on('complete', this._complete.bind(this));
+	    }
 	
-	        // highlight result cells
-	        _utils2.default.forEach(benches, function (bench) {
-	          var fastestHz = _this._hz(fastest),
-	              hz = _this._hz(bench),
-	              percent = (1 - hz / fastestHz) * 100,
-	              text = 'fastest';
+	    /**
+	     * @private
+	     */
 	
-	          if (fastest.id === bench.id) {
+	  }, {
+	    key: 'run',
+	    value: function run() {
+	      var suite = this.suite;
+	      var stopped = !suite.running;
+	      suite.abort();
+	      suite.length = 0;
 	
-	            // mark fastest
-	          } else {
-	            text = isFinite(hz) ? Benchmark.formatNumber(percent < 1 ? percent.toFixed(2) : Math.round(percent)) + '% slower' : '';
+	      if (!suite.benchmarks.length) return;
 	
-	            // mark slowest
-	            if (slowest.id === bench.id) {}
-	          }
+	      if (stopped) {
+	        suite.push.apply(suite, _lodash2.default.filter(suite.benchmarks, function (bench) {
+	          return !bench.error && bench.reset();
+	        }));
+	
+	        suite.run({
+	          'async': true,
+	          'queued': true
 	        });
-	      });
+	      }
 	    }
 	
 	    /**
@@ -1685,16 +2173,27 @@ webpackJsonp([0],[
 	    key: 'removeBench',
 	    value: function removeBench(name) {
 	      var suite = this.suite;
+	      var benches = suite.benchmarks;
 	
-	      for (var i = 0, len = suite.length; i < len; i++) {
+	      for (var i = 0, len = benches.length; i < len; i++) {
 	        var bench = suite[i];
 	
-	        if (bench.name == name) {
-	          suite.splice(i, 1);
-	          suite.benchmarks.splice(i, 1);
+	        if (name === benches[i].name) {
+	          if (bench && bench.name === name) {
+	            suite.splice(i, 1);
+	          }
+	
+	          benches.splice(i, 1);
+	
+	          return true;
 	        }
 	      }
+	
+	      return false;
 	    }
+	  }, {
+	    key: '_start',
+	    value: function _start() {}
 	
 	    /**
 	     * @private
@@ -1709,14 +2208,6 @@ webpackJsonp([0],[
 	        this._status(bench);
 	      }
 	    }
-	
-	    /**
-	     * @private
-	     */
-	
-	  }, {
-	    key: '_start',
-	    value: function _start() {}
 	  }, {
 	    key: '_status',
 	    value: function _status(bench) {
@@ -1740,9 +2231,152 @@ webpackJsonp([0],[
 	    value: function _hz(bench) {
 	      return 1 / (bench.stats.mean + bench.stats.moe);
 	    }
+	
+	    /**
+	     * Handle complete test
+	     *
+	     * @private
+	     */
+	
 	  }, {
-	    key: 'error',
-	    value: function error(msg) {}
+	    key: '_complete',
+	    value: function _complete() {
+	      var _this2 = this;
+	
+	      var benches = this.suite.benchmarks;
+	      var sorted = this._sort(benches);
+	      var count = 0;
+	
+	      var bound = this._getBoundBenches(sorted);
+	
+	      // highlight result cells
+	      _utils2.default.forEach(sorted, function (bench, index) {
+	        var row = _dom2.default.$('sample-' + bench.name);
+	        var nameCell = row.firstChild;
+	        var rankCell = nameCell.nextSibling;
+	        var rankClass = 'warning';
+	        var error = bench.error;
+	        var slower = void 0;
+	
+	        _this2._render(bench, row, error);
+	
+	        if (!error) {
+	          var fastestHz = _this2._hz(sorted[bound.fastest]),
+	              hz = _this2._hz(bench),
+	              percent = (1 - hz / fastestHz) * 100;
+	
+	          if (index === bound.fastest) {
+	            rankClass = 'success';
+	            count++;
+	          } else {
+	            slower = isFinite(hz) ? Benchmark.formatNumber(percent < 1 ? percent.toFixed(2) : Math.round(percent)) : '';
+	
+	            // mark slowest
+	            if (index === bound.slowest) {
+	              rankClass = 'alert';
+	            }
+	
+	            count++;
+	          }
+	        } else {
+	          rankClass = 'alert';
+	        }
+	
+	        _this2._renderRankCell(rankCell, error ? _this2.errorTmpl : count, rankClass, slower, error);
+	      });
+	    }
+	  }, {
+	    key: '_render',
+	    value: function _render(bench, row, error) {
+	      var parsed,
+	          hz = bench.hz;
+	
+	      var cell = row.lastChild;
+	
+	      // reset title and class
+	      row.title = '';
+	
+	      if (error) {
+	        row.title = bench.error;
+	        cell.innerHTML = '<small class="cell-ops__error">' + error + '</small>';
+	      } else {
+	        if (bench.cycles) {
+	          row.title = 'Ran ' + Benchmark.formatNumber(bench.count) + ' times in ' + bench.times.cycle.toFixed(3) + ' seconds.';
+	
+	          cell.innerHTML = Benchmark.formatNumber(hz.toFixed(hz < 100 ? 2 : 0)) + '<br><small>&plusmn;' + bench.stats.rme.toFixed(2) + '%</small>';
+	        }
+	      }
+	    }
+	
+	    /**
+	     * Return fastest and slowest bench
+	     *
+	     * @private
+	     * @param {Object} benches
+	     *
+	     * @return {Object} obj
+	     */
+	
+	  }, {
+	    key: '_getBoundBenches',
+	    value: function _getBoundBenches(benches) {
+	      var obj = {};
+	      var i = 0;
+	      var bench = void 0;
+	
+	      while (bench = benches[i]) {
+	        if (!bench.error) {
+	          if (typeof obj.fastest !== 'number') obj.fastest = i;
+	
+	          obj.slowest = i;
+	        }
+	
+	        i++;
+	      }
+	
+	      return obj;
+	    }
+	
+	    /**
+	     * Sort benches
+	     * Referenced from filter method in benchmark library
+	     *
+	     * @private
+	     * @param {Object} benches
+	     * @return {Array} sorted
+	     */
+	
+	  }, {
+	    key: '_sort',
+	    value: function _sort(benches) {
+	      var sorted = benches.slice().sort(function (a, b) {
+	        a = a.stats;b = b.stats;
+	        return a.mean + a.moe > b.mean + b.moe ? 1 : -1;
+	      });
+	
+	      return sorted;
+	    }
+	
+	    /**
+	     * Render rank cell
+	     *
+	     * @private
+	     * @param {Node} cell
+	     * @param {Number} rank
+	     * @param {String} className
+	     * @param {String} slower
+	     * @param {Boolean} error
+	     *
+	     */
+	
+	  }, {
+	    key: '_renderRankCell',
+	    value: function _renderRankCell(cell, rank, className, slower, error) {
+	      cell.innerHTML = '<span class="badge animated ' + className + '">' + rank + '</span>' + (!error && slower ? '<br><small>%' + slower + ' slower</small>' : '');
+	
+	      // animate
+	      cell.firstChild.className += ' bounce-in';
+	    }
 	  }]);
 	  return Process;
 	}();

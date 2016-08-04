@@ -1,4 +1,6 @@
 let utils = {};
+let protoObj = Object.prototype;
+let toString = protoObj.toString;
 
 utils.extend = function(obj) {
   let length = arguments.length,
@@ -32,11 +34,26 @@ utils.isFunction = function(obj) {
 };
 
 utils.forEach = function(obj, iteratee, context) {
-  let keys = Object.keys(obj);
+  let i = 0, length;
 
-  for (let i = 0, length = keys.length; i < length; i++) {
-    iteratee.call(context, obj[keys[i]], keys[i], obj);
+  if( this.isArray(obj) ) {
+    length = obj.length;
+
+    for (; i < length; i++) {
+      iteratee.call(context, obj[i], i, obj);
+    }
+  } else {
+    let keys = Object.keys(obj);
+    length = keys.length
+
+    for (; i < length; i++) {
+      iteratee.call(context, obj[keys[i]], keys[i], obj);
+    }
   }
+};
+
+utils.isArray = function(obj) {
+  return toString.call(obj) === '[object Array]';
 };
 
 var escapeMap = {

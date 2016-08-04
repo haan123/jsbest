@@ -1,0 +1,21 @@
+.setup-url {
+  margin-bottom: $global-margin;
+}
+
+.setup-url__remove {
+  color: $dark-gray;
+  text-decoration: underline;
+  font-size: $small-font-size;
+
+  &:hover, &:focus, &:active {
+    color: $black;
+  }
+}
+
+.setup-url__value {
+  @include text-truncate();
+
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 90%;
+}

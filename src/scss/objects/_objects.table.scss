@@ -1,0 +1,33 @@
+.table {
+  table-layout: fixed;
+}
+
+.cell-name {
+  width: 30%;
+  padding-left: $global-padding;
+}
+
+.cell-name__link {
+  color: $black;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: $black;
+    text-decoration: underline;
+  }
+}
+
+.cell-rank {
+  width: 20%;
+  text-align: center;
+}
+
+.cell-ops {
+  text-align: center;
+}
+
+.cell-ops__error {
+  color: map-get($foundation-palette, alert);
+  font-weight: 700;
+}

@@ -1,4 +1,6 @@
 /**
+ * Author: An Ha (haan.an@yahoo.com.vn)
+ *
  * Base class for sub classes register all event handlers
  * Supported Events:
  * - click
