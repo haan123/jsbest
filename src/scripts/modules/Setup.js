@@ -223,7 +223,7 @@ class Setup extends Base {
     if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('setup');
-    } else {console.log(this.cache)
+    } else {
       this._save({
         code: this.cache.code,
         urls: this.cache.urls

@@ -72,6 +72,8 @@ class Base extends Handler {
     let top = window.pageYOffset;
     let processes = this.processes;
 
+    if( document.documentElement.clientWidth < 640 ) return;
+
     if( top > this.topBarHeight ) {
       if( this.fixing ) return;
       processes.style.top = '1.5em';

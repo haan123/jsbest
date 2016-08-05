@@ -100,9 +100,11 @@ class Sample extends Base {
     let elem = this.cel;
     let item = edit ? this.getItem(elem) : this.createSampleItem(elem);
 
-    this.showForm(item, 'sample', {}, null, edit);
+    this.showForm(item, 'sample', {}, {
+      type: edit || 'add'
+    }, edit);
 
-    if( edit === true ) {
+    if( edit ) {
       DOM.$('sample-name').value = item.getAttribute('data-uid');
     }
   }
@@ -113,40 +115,19 @@ class Sample extends Base {
    * @public
    * @param {Object} data
    */
-  save(data) {
-    let item, name, code;
+  _save(data, item) {
+    let name = data.name;
+    let code = data.code;
+    let oldId = data.oldId;
 
-    if( data ) {
-      item = this.createSampleItem(DOM.$('sample-add'));
-
-      // handle data input from outside
-      if( data.name ) {
-        name = data.name;
-        code = data.code;
-
-      // get old data when user click cancel
-      } else {
-        name = item.getAttribute('data-uid');
-
-        let cache =  this.getCacheItem(name);
-        code = cache.code;
-      }
-    } else {
-      item = this.getItem(this.cel);
-      name = DOM.$('sample-name').value;
-      code = this.sampleEditor.getValue().trim();
-    }
-
-    let oldId = item.getAttribute('data-uid');
     if( !name|| !code || (!oldId && this._exist(name)) ) return;
+
+    if( !item ) {
+      item = this.createSampleItem(DOM.$('sample-add'));
+    }
 
     this.suite.add(name, code);
     this.revealAddButton('sample');
-
-    if( name !== oldId ) {
-      this.removeFromCache(oldId);
-      this.process.removeBench(oldId);
-    }
 
     this.renderSavedState('sample', item, code, name, {
       handler: 'sample',
@@ -156,12 +137,43 @@ class Sample extends Base {
       sample: [{ id: name }]
     });
 
-    if( data === 'cancel' ) return;
-
     this.renderRow({
       id: name,
       name: name
     }, oldId);
+  }
+
+  add() {
+    let item = this.getItem(this.cel);
+    let name = DOM.$('sample-name').value;
+    let code = this.sampleEditor.getValue().trim();
+
+    this._save({
+      name: name,
+      code: code
+    }, item);
+  }
+
+  edit() {
+    let item = this.getItem(this.cel);
+    let name = DOM.$('sample-name').value;
+    let code = this.sampleEditor.getValue().trim();
+
+    let oldId = item.getAttribute('data-uid');
+
+    if( !name || !code ) return;
+    if( name !== oldId && this._exist(name) ) {
+      return;
+    }
+
+    this.removeFromCache(oldId);
+    this.process.removeBench(oldId);
+
+    this._save({
+      oldId: oldId,
+      name: name,
+      code: code
+    }, item);
   }
 
   /**
@@ -172,13 +184,21 @@ class Sample extends Base {
   cancel() {
     let elem = this.cel;
     let item = this.getItem(elem);
-    let isEdit = ~item.className.indexOf(this.getStateClass('edit'));
+    let isAdd = ~item.className.indexOf(this.getStateClass('add'));
+    let name = item.getAttribute('data-uid');
+    let cache = this.getCacheItem(name);
 
-    if( !isEdit ) {
+    if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('sample');
     } else {
-      this.save('cancel');
+      this.renderSavedState('sample', item, cache.code, name, {
+        handler: 'sample',
+        name: 'Sample',
+        id: name,
+        language: 'javascript',
+        sample: [{ id: name }]
+      });
     }
 
   }
