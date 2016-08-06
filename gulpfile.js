@@ -1,45 +1,42 @@
-/**
- * Common Tasks
- *
- * gulp watch - watch files and compile/reload/inject when changes are detected
- * gulp watch --styleguide - same as above, but builds styleguide as well
- * gulp - once-off build of all assets
- * gulp --styleguide - once-off build of all assets including styleguide
- * gulp styles - compile styles
- * gulp styles:watch - watch styles for changes and compile
- * gulp critical - generates critical css for pages specified in gulpfile.js
- * gulp scripts - compile JS
- * gulp scripts:watch - watch JS for changes and compile
- * gulp images - optimise images in /src/images and move to /assets/images
- * gulp wiredep - inject Bower dependencies
- * gulp build-styleguide - build the styleguide with KSS Node
- */
+let gulp = require('gulp');
+let gulpif = require('gulp-if');
+let sass = require('gulp-sass');
+let autoprefixer = require('gulp-autoprefixer');
+let gutil = require('gulp-util');
+let browserSync = require('browser-sync').create();
+let run = require('gulp-run');
+let notify = require('gulp-notify');
+let fs = require('fs');
+let path = require('path');
+let imagemin = require('gulp-imagemin');
+let sourcemaps  = require('gulp-sourcemaps');
+let webpackConfig = require('./webpack.multi.config.js');
+let cssmin = require('gulp-cssmin');
+let rename = require('gulp-rename');
+let webpack = require('webpack');
+let gulpSequence = require('gulp-sequence');
+let del = require('del');
+let rev = require('gulp-rev');
+let revReplace = require('gulp-rev-replace');
+let htmlmin = require('gulp-htmlmin');
 
-var gulp = require('gulp'),
-    argv = require('yargs').argv,
-    gulpif = require('gulp-if'),
-    sass = require('gulp-sass'),
-    autoprefixer = require('gulp-autoprefixer'),
-    gutil = require('gulp-util'),
-    browserSync = require('browser-sync').create(),
-    run = require('gulp-run'),
-    notify = require('gulp-notify'),
-    fs = require('fs'),
-    path = require('path'),
-    __basedir = './',
-    imagemin = require('gulp-imagemin'),
-    sourcemaps  = require('gulp-sourcemaps'),
-    webpackConfig = require('./webpack.multi.config.js'),
-    cssmin = require('gulp-cssmin'),
-    rename = require('gulp-rename'),
-    webpack = require('webpack');
+
+let env = process.env.NODE_ENV == 'production';
 
 var webpackWatchTask = function(callback) {
   var initialCompile = false;
 
   webpack(webpackConfig('development')).watch(200, function(err, stats) {
     browserSync.reload();
-    if( err ) console.log(err);
+    var statColor = stats.compilation.warnings.length < 1 ? 'green' : 'yellow';
+
+    if( err ) {
+      stats.compilation.errors.forEach(handleErrors);
+    } else {
+      gutil.log(gutil.colors[statColor](stats));
+      gutil.log('Compiled with', gutil.colors.cyan('webpack'), 'in', gutil.colors.magenta(stats.endTime - stats.startTime));
+    }
+
     // On the initial compile, let gulp know the task is done
     if(!initialCompile) {
       initialCompile = true;
@@ -51,7 +48,7 @@ var webpackWatchTask = function(callback) {
 gulp.task('webpack:watch', webpackWatchTask);
 
 // tasks for when we run `gulp`
-var defaultTaskList = ['styles', 'scripts'];
+var defaultTaskList = ['styles', 'static', 'copy-js', 'html', 'watch'];
 // tasks for when we run `gulp watch`
 var watchTaskList = ['styles:watch', 'webpack:watch', 'html:watch', 'browser-sync'];
 
@@ -66,9 +63,9 @@ gulp.task('default', defaultTaskList);
 gulp.task('browser-sync', function() {
   browserSync.init({
     server: {
-        index: "index.html"
+      index: "./public/index.html"
     },
-    serveStatic: ['./assets']
+    serveStatic: ['./public']
   });
 });
 
@@ -86,6 +83,16 @@ gulp.task('images', function() {
     .pipe(gulp.dest('assets/images'));
 });
 
+gulp.task('static', function() {
+  return gulp.src('src/static/*')
+    .pipe(gulp.dest('./public'));
+});
+
+gulp.task('copy-js', function() {
+  return gulp.src(['./src/lib/benchmark/benchmark.js', './src/lib/platform.js/platform.js'])
+          .pipe(gulp.dest('./public/js'));
+});
+
 /**
  * Watch files for changes, and boot up browser-sync
  * @param  {string} 'watch'          task name
@@ -95,7 +102,7 @@ gulp.task('images', function() {
 gulp.task('watch', watchTaskList, function() {
   // these are our template files
   // when our JS is compiled, reload the browser
-  gulp.watch('./assets/scripts/**/*.js').on('change', browserSync.reload);
+  gulp.watch('./public/js/*.js').on('change', browserSync.reload);
 });
 
 /**
@@ -124,11 +131,10 @@ gulp.task('styles', function() {
     .pipe(autoprefixer({
         browsers: ['last 3 versions']
     }))
-    .pipe(sourcemaps.write())
+    .pipe(gulpif(process.env.NODE_ENV != 'production', sourcemaps.write()))
     .pipe(notify({title: 'Styles Compiled!', message: 'Good hustle', icon: './src/icon.png'}))
-    // .pipe(cssmin())
-    // .pipe(rename({suffix: '.min'}))
-    .pipe(gulp.dest('./assets/css/'))
+    .pipe(gulpif(process.env.NODE_ENV == 'production', cssmin()))
+    .pipe(gulp.dest('./public/css/'))
     .pipe(browserSync.stream());
 });
 
@@ -141,9 +147,68 @@ gulp.task('styles:watch', function() {
   gulp.watch('src/scss/**/*.scss', ['styles']);
 });
 
+
 /**
  * Watch html
  */
 gulp.task('html:watch', function() {
-  gulp.watch('./index.html', browserSync.reload);
+  gulp.watch('./src/html/index.html', ['html']);
+});
+
+
+gulp.task('clean', function (cb) {
+  del(['./public']).then(function (paths) {
+    cb();
+  });
+});
+
+// Production
+//
+gulp.task('production', function(cb) {
+  global.production = true;
+  gulpSequence('clean', 'styles', 'html', 'webpack:production', 'rev-css', 'rev-html', cb);
+});
+
+
+gulp.task('webpack:production', function(callback) {
+  webpack(webpackConfig('production'), function(err, stats) {
+    var statColor = stats.compilation.warnings.length < 1 ? 'green' : 'yellow';
+
+    if( err ) {
+      stats.compilation.errors.forEach(handleErrors);
+    } else {
+      gutil.log(gutil.colors[statColor](stats));
+      gutil.log('Compiled with', gutil.colors.cyan('webpack'), 'in', gutil.colors.magenta(stats.endTime - stats.startTime));
+    }
+
+    callback();
+  });
+});
+
+
+gulp.task('html', () => {
+  return gulp.src('./src/html/**/*.html')
+    .pipe(gulpif(process.env.NODE_ENV == 'production', htmlmin({
+      "collapseWhitespace": true
+    })))
+    .pipe(gulp.dest('./public'))
+    .pipe(browserSync.stream());
+});
+
+gulp.task('rev-css', function(){
+  return gulp.src('./public/**/*.css')
+    .pipe(rev())
+    .pipe(gulp.dest('./public'))
+    // .pipe(revNapkin({verbose: false}))
+    .pipe(rev.manifest('./public/rev-manifest.json', {merge: true}))
+    .pipe(gulp.dest(''));
+});
+
+// Update asset references in HTML
+gulp.task('rev-html', function(){
+  return gulp.src('./public/**/*.html')
+    .pipe(revReplace({
+      manifest: gulp.src('./public/rev-manifest.json')
+    }))
+    .pipe(gulp.dest('./public'));
 });

@@ -1,8 +1,6 @@
 import Handler from '../utils/handler';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
-import CodeMirror from 'codemirror';
-import Prism from 'prismjs';
 import hogan from 'hogan.js';
 
 const MIN_LINE = '\n\n\n\n';
@@ -186,8 +184,6 @@ class Base extends Handler {
    * @param {String} lang
    */
   _toStaticCode(id, value, lang) {
-    let className = 'sample-item__static';
-
     DOM.$('static-' + id).innerHTML = this._highlight(value, lang);
   }
 
@@ -213,7 +209,6 @@ class Base extends Handler {
    */
   remove(name, id) {
     let item = this.getItem(this.cel);
-    let cache = _cache.get(id);
 
     item.parentNode.removeChild(item);
 

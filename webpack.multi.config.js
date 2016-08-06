@@ -1,10 +1,11 @@
 var path            = require('path');
 var webpack         = require('webpack');
+var fs = require('fs');
 
 module.exports = function(env) {
-  var jsSrc = path.resolve('./src', 'scripts');
-  var jsDest = path.resolve('./assets', 'scripts');
-  var publicPath = path.join('scripts', '/');
+  var jsSrc = path.resolve('./src', 'js');
+  var jsDest = path.resolve('./public', 'js');
+  var publicPath = path.join('js', '/');
   var filenamePattern = env === 'production' ? '[name]-[hash].js' : '[name].js';
   var extensions = ['js'].map(function(extension) {
     return '.' + extension;
@@ -42,12 +43,8 @@ module.exports = function(env) {
   if(env !== 'test') {
     webpackConfig.entry = {
       "main": "./main.js",
-      "vendor": ["lodash", "codemirror", "../../node_modules/codemirror/mode/javascript/javascript.js",
-      "../../node_modules/codemirror/mode/xml/xml.js",
-      "../../node_modules/codemirror/addon/edit/closebrackets.js",
-      "prismjs", "hogan.js",
-      "../../node_modules/prismjs/components/prism-javascript.js",
-    ]
+      "vendor": ["lodash", "prismjs", 'hogan.js',
+      "../../node_modules/prismjs/components/prism-javascript.js"]
     };
 
     webpackConfig.output= {
@@ -59,7 +56,8 @@ module.exports = function(env) {
     // Factor out common dependencies into a shared.js
     webpackConfig.plugins.push(
       new webpack.optimize.DedupePlugin(),
-      new webpack.ProvidePlugin({}),
+      new webpack.ProvidePlugin({
+      }),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         minChunks: Infinity
@@ -73,7 +71,30 @@ module.exports = function(env) {
   }
 
   if(env === 'production') {
+    let WebPackManifest = function(publicPath, dest, filename) {
+      return function() {
+        this.plugin("done", function(stats) {
+          stats = stats.toJson();
+          var chunks   = stats.assetsByChunkName;
+          var manifest = {};
+
+          for (var key in chunks) {
+            manifest[path.join('./js', key + '.js')] = path.join('./js', chunks[key]);
+          }
+
+          fs.writeFileSync(path.join(process.cwd(), './public/rev-manifest.json'), JSON.stringify(manifest));
+        });
+      };
+    };
+
+    webpackConfig.plugins.push(new WebPackManifest(publicPath, './public'));
+
     webpackConfig.plugins.push(
+      new webpack.DefinePlugin({
+        'process.env': {
+          'NODE_ENV': JSON.stringify('production')
+        }
+      }),
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin(),
       new webpack.NoErrorsPlugin()

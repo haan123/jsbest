@@ -59,11 +59,11 @@
 @import 'tools/tools.functions';
 @import 'tools/tools.mixins';
 // Though this is a vendor dependency, we need this loaded first in order to use it
-@import '../../assets/lib/foundation-sites/scss/foundation';
+@import '../lib/foundation-sites/scss/foundation';
 @import 'vendor/vendor.foundation-imports';
 @import 'vendor/vendor.codemirror';
 @import 'vendor/vendor.prism';
-@import '../../assets/lib/typi/scss/typi';
+@import '../lib/typi/scss/typi';
 
 // -------------------------------------
 //   3. Generic
@@ -95,12 +95,12 @@
 @import 'objects/objects.pack';
 @import 'objects/objects.iframe-demo';
 @import 'objects/objects.icon';
-@import 'objects/_objects.sample-item';
-@import 'objects/_objects.top-bar';
-@import 'objects/_objects.process';
-@import 'objects/_objects.setup';
-@import 'objects/_objects.table';
-@import 'objects/_objects.badge';
+@import 'objects/objects.sample-item';
+@import 'objects/objects.top-bar';
+@import 'objects/objects.process';
+@import 'objects/objects.setup';
+@import 'objects/objects.table';
+@import 'objects/objects.badge';
 
 // -------------------------------------
 //   6. Components - UI Styles

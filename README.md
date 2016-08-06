@@ -2,20 +2,29 @@
 Client side testing for javascript performance, compare with multiple sample to get the best appoach.
 
 ### Dependencies
-- Code Mirror
-- Hogan.js
-- Lodash
-- Prismjs
-- Benchmark
-- Foundation
+---
+- [Code Mirror](https://github.com/codemirror/CodeMirror)
+- [Hogan.js](https://github.com/twitter/hogan.js/)
+- [Lodash](https://github.com/lodash/lodash)
+- [Prismjs](https://github.com/PrismJS/prism)
+- [Benchmark](https://github.com/bestiejs/benchmark.js)
+- [Foundation](https://github.com/zurb/foundation-sites)
 
 ### Technologies & Methods
-- ES6
-- Sass
-- Webpack
+---
+- [ES6](https://babeljs.io/docs/learn-es2015/)
+- [Sass](http://sass-lang.com/)
 - Handler (DOM event handling)
 
-### Future implementation
+### Tools
+---
+- [Webpack](https://webpack.github.io/)
+- [Gulp](http://gulpjs.com/)
+- [Browsersync](https://www.browsersync.io/)
+- [Babel](https://babeljs.io/)
+
+### Future Releases
+---
 - Get sample code from gist of Github
 - Allow to save url to share samples with others people
 - Chart visualization
@@ -24,18 +33,21 @@ Client side testing for javascript performance, compare with multiple sample to 
 
 ### Dev
 ```
-git clone
+$ git clone
 ```
+
 #### Install
 ```
-npm run setup
+$ npm run setup
 ```
 
 #### Run
 ```
-gulp watch
+$ gulp watch
 ```
 
+#### License
+---
 The MIT License (MIT)
 
 Copyright (c) 2016 haan123

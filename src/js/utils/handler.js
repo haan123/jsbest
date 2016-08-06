@@ -12,8 +12,6 @@ import DOM from './dom';
 
 // matches all handlers in element
 let rjs = /js-([\w]+)/g;
-// store all handler ids
-let _hids = new WeakMap();
 
 let supportedEvents = [{
   name: 'click',

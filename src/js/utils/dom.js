@@ -31,7 +31,6 @@ let matches = docElem.matches ||
 
 DOM.closest = function(el, selector) {
   let cur = el, matched;
-  let docElem = cur.ownerDocument.documentElement;
 
   for ( ; cur && cur.nodeType === 1; cur = cur.parentNode ) {
     // using native matches, this function return true or false

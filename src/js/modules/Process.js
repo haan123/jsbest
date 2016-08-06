@@ -18,9 +18,7 @@ class Process {
     suite.benchmarks = [];
 
     suite.on('add', (event) => {
-      let bench = event.target,
-          index = suite.benchmarks.length,
-          id = index + 1;
+      let bench = event.target;
 
       suite.benchmarks.push(bench);
 
@@ -153,7 +151,7 @@ class Process {
             rankClass = 'alert';
           }
 
-          count++
+          count++;
         }
       } else {
         rankClass = 'alert';
@@ -164,8 +162,7 @@ class Process {
   }
 
   _render(bench, row, error) {
-    var parsed,
-        hz = bench.hz;
+    var hz = bench.hz;
 
     let cell = row.lastChild;
 
