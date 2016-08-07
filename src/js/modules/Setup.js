@@ -4,7 +4,7 @@ import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
 class Setup extends Base {
-  constructor(process) {
+  constructor(_process, _case) {
     super({
       mid: 'setup',
       events: {
@@ -13,8 +13,8 @@ class Setup extends Base {
     });
 
     this.processList = DOM.$('process');
-    this.process = process;
-    this.context = process.context;
+    this.process = _process;
+    this.context = _process.context;
 
     this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
     this.setupUrlTempl = hogan.compile(DOM.$('setup-url-templ').innerHTML);
@@ -45,6 +45,23 @@ class Setup extends Base {
     }, edit);
 
     editor.focus();
+  }
+
+  /**
+   * Init setup from caches
+   * @private
+   */
+  _initSamples() {
+    let storage = this.getStorage();
+
+    if( !storage || !storage.length ) return;
+
+    // get latest test case's setup
+    let setup = storage[storage.length - 1].setup;
+
+    if( !setup || !setup.length ) return;
+
+    this._save(setup);
   }
 
   /**

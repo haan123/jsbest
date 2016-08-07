@@ -4,7 +4,7 @@ import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
 class Sample extends Base {
-  constructor(process) {
+  constructor(_process, _case) {
     super({
       mid: 'sample',
       events: {
@@ -12,13 +12,16 @@ class Sample extends Base {
       }
     });
 
-    this.suite = process.suite;
+    this.suite = _process.suite;
+    this.case = _case;
 
     this.processList = DOM.$('process');
-    this.process = process;
+    this.process = _process;
 
     this.rowTempl = hogan.compile(DOM.$('process-row-templ').innerHTML);
     this.sampleFormTempl = hogan.compile(DOM.$('sample-form-templ').innerHTML);
+
+    this._initSamples();
   }
 
   /**
@@ -89,6 +92,7 @@ class Sample extends Base {
     this.remove('sample', id);
 
     this.process.removeBench(id);
+    this._removeStoredSample(id);
   }
 
   /**
@@ -107,6 +111,56 @@ class Sample extends Base {
     if( edit ) {
       DOM.$('sample-name').value = item.getAttribute('data-uid');
     }
+  }
+
+  /**
+   * Init samples from caches
+   * @private
+   */
+  _initSamples() {
+    let _case = this.case.getWorkingCase();
+
+    if( !_case ) return;
+
+    let samples = _case.samples;
+
+    if( !samples.length ) return;
+
+    this._save(samples);
+  }
+
+  /**
+   * Store sample to current working case
+   * @private
+   *
+   * @param  {Object} data - { name: String, code: String }
+   */
+  _storeSample(name, data) {
+    let _case = this.case.getWorkingCase();
+    let samples = _case.samples;
+    name = data.oldId || name;
+
+    this.removeFromArray(name, samples);
+
+    delete data.oldId;
+    samples.push(data);
+
+    this.case.setCaseItem(_case);
+  }
+
+  /**
+   * Remove sample from current working case
+   * @private
+   *
+   * @param  {Object} data - { name: String, code: String }
+   */
+  _removeStoredSample(name) {
+    let _case = this.case.getWorkingCase();
+    let samples = _case.samples;
+
+    this.removeFromArray(name, samples);
+
+    this.case.setCaseItem(_case);
   }
 
   /**
@@ -136,6 +190,8 @@ class Sample extends Base {
       language: 'javascript',
       sample: [{ id: name }]
     });
+
+    this._storeSample(name, data);
 
     this.renderRow({
       id: name,

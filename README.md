@@ -43,7 +43,7 @@ $ npm run setup
 
 #### Run
 ```
-$ gulp watch
+$ gulp
 ```
 
 #### License

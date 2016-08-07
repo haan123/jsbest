@@ -44,7 +44,7 @@ utils.forEach = function(obj, iteratee, context) {
     }
   } else {
     let keys = Object.keys(obj);
-    length = keys.length
+    length = keys.length;
 
     for (; i < length; i++) {
       iteratee.call(context, obj[keys[i]], keys[i], obj);

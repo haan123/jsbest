@@ -1,3 +1,4 @@
+import Case from './modules/Case';
 import Sample from './modules/Sample';
 import Setup from './modules/Setup';
 import Process from './modules/Process';
@@ -10,5 +11,6 @@ require.ensure([], function() {
 });
 
 let _process = new Process();
-let sample = new Sample(_process);
-let setup = new Setup(_process);
+let _case = new Case();
+let sample = new Sample(_process, _case);
+let setup = new Setup(_process, _case);

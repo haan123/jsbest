@@ -29,6 +29,7 @@
     "gulp-sass": "^2.3.2",
     "gulp-sequence": "^0.4.5",
     "gulp-sourcemaps": "^2.0.0-alpha",
+    "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
     "through2": "^2.0.1",
     "webpack": "1.12.14"

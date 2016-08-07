@@ -19,6 +19,7 @@ let del = require('del');
 let rev = require('gulp-rev');
 let revReplace = require('gulp-rev-replace');
 let htmlmin = require('gulp-htmlmin');
+let uglify = require('gulp-uglify');
 
 
 let env = process.env.NODE_ENV == 'production';
@@ -90,6 +91,7 @@ gulp.task('static', function() {
 
 gulp.task('copy-js', function() {
   return gulp.src(['./src/lib/benchmark/benchmark.js', './src/lib/platform.js/platform.js'])
+          .pipe(gulpif(process.env.NODE_ENV == 'production', uglify()))
           .pipe(gulp.dest('./public/js'));
 });
 
@@ -166,7 +168,7 @@ gulp.task('clean', function (cb) {
 //
 gulp.task('production', function(cb) {
   global.production = true;
-  gulpSequence('clean', 'styles', 'html', 'webpack:production', 'rev-css', 'rev-html', cb);
+  gulpSequence('clean', 'styles', 'html', 'static', 'copy-js', 'webpack:production', 'rev-css', 'rev-html', cb);
 });
 
 

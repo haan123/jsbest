@@ -16,16 +16,35 @@ const EDITOR_CONFIG = {
 };
 
 let _cache = new Map();
+let _processes = DOM.$('processes');
+const TOP_BAR_HEIGHT = DOM.$('top-bar').offsetHeight;
+let docElem = document.documentElement;
+
+let _scroll = function(e) {
+  if( docElem.clientWidth < 640 ) return;
+
+  let top = window.pageYOffset;
+
+  if( top > TOP_BAR_HEIGHT ) {
+    if( this.fixing ) return;
+    _processes.style.cssText = 'top: 1.5em;width:' + _processes.clientWidth + 'px;';
+    _processes.className += ' fixed';
+    this.fixing = true;
+  } else if( this.fixing ) {
+    _processes.removeAttribute('style');
+    DOM.removeClass(_processes, 'fixed');
+    delete this.fixing;
+  }
+};
+
+utils.Event.on(window, 'scroll', _scroll);
 
 class Base extends Handler {
   constructor(obj) {
     super(obj);
 
-    utils.Event.on(window, 'scroll', this._scroll.bind(this));
-
     this.savedTempl = hogan.compile(DOM.$('saved-templ').innerHTML);
-    this.topBarHeight = DOM.$('top-bar').offsetHeight;
-    this.processes = DOM.$('processes');
+    this.processes = _processes;
   }
 
   /**
@@ -37,6 +56,21 @@ class Base extends Handler {
    */
   removeFromCache(id) {
     return _cache.delete(id);
+  }
+
+  /**
+   * Remove item from array when name is matched
+   * @private
+   *
+   * @param  {String} name
+   * @param  {Array} arr
+   */
+  removeFromArray(name, arr) {
+    let i = arr.indexOf(name);
+
+    if( ~i ) arr.splice(i, 1);
+
+    return arr;
   }
 
   /**
@@ -61,29 +95,6 @@ class Base extends Handler {
     _cache.set(id, obj);
 
     return _cache.get(id);
-  }
-
-  /**
-   * Event handler for scroll
-   */
-  _scroll(e) {
-    let top = window.pageYOffset;
-    let processes = this.processes;
-
-    if( document.documentElement.clientWidth < 640 ) return;
-
-    if( top > this.topBarHeight ) {
-      if( this.fixing ) return;
-      processes.style.top = '1.5em';
-      processes.style.width = processes.clientWidth + 'px';
-      processes.className += ' fixed';
-
-      this.fixing = true;
-    } else if( this.fixing ) {
-      processes.removeAttribute('style');
-      DOM.removeClass(processes, 'fixed');
-      delete this.fixing;
-    }
   }
 
   showForm(elem, name, config, obj, type) {
@@ -151,7 +162,7 @@ class Base extends Handler {
     let cache = this.getCacheItem(id);
     this.setCacheItem(id, utils.extend(cache || {}, { code: value }));
 
-    editor && editor.toTextArea();
+    if( editor ) editor.toTextArea();
     item.innerHTML = this.savedTempl.render(data);
     item.setAttribute('data-uid', id);
 
