@@ -15,7 +15,7 @@
 
 <body>
   <nav id="top-bar" class="top-bar">
-    <a class="logo" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a>
+    <a class="logo" href="/jsbest"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a>
   </nav>
   <!--[if lt IE 8]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
@@ -95,11 +95,11 @@
     <div class="sample-item__form">
       <div class="row">
         <div class="medium-6 columns">
-          <input id="sample-name" type="text" placeholder="Name">
+          <input id="sample-{{id}}-name" type="text" placeholder="Name">
         </div>
       </div>
 
-      <textarea id="sample-ta" class="sample-code" style="display:none;"></textarea>
+      <textarea id="sample-{{id}}-ta" class="sample-code" style="display:none;"></textarea>
       <pre class="sample-item__static"><code class="language-html"></code></pre>
 
       <div class="button-group text-right">
@@ -124,11 +124,11 @@
       </div>
       {{/urls}}
 
-      <textarea id="setup-ta" class="setup" style="display:none;"></textarea>
+      <textarea id="setup-{{type}}-ta" class="setup" style="display:none;"></textarea>
 
       <div class="button-group text-right">
-        <button class="js-setup success button" data-type="setup" type="button">Save</button>
-        <button class="js-setup warning button" data-type="cancelSetup" type="button">Cancel</button>
+        <button class="js-setup success button" data-type="{{type}}" type="button">Save</button>
+        <button class="js-setup warning button" data-type="cancel" type="button">Cancel</button>
       </div>
     </div>
   </script>

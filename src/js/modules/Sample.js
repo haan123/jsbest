@@ -103,13 +103,15 @@ class Sample extends Base {
   openSample(edit) {
     let elem = this.cel;
     let item = edit ? this.getItem(elem) : this.createSampleItem(elem);
+    let id = edit ? item.getAttribute('data-uid') : 'add';
 
     this.showForm(item, 'sample', {}, {
-      type: edit || 'add'
+      type: edit || 'add',
+      id: id
     }, edit);
 
     if( edit ) {
-      DOM.$('sample-name').value = item.getAttribute('data-uid');
+      DOM.$('sample-' + id + '-name').value = item.getAttribute('data-uid');
     }
   }
 
@@ -126,14 +128,17 @@ class Sample extends Base {
 
     if( !samples.length ) return;
 
-    this._save(samples);
+    utils.forEach(samples, (sample) => {
+      this._save(sample);
+    });
   }
 
   /**
    * Store sample to current working case
    * @private
    *
-   * @param  {Object} data - { name: String, code: String }
+   * @param {String} name
+   * @param {Object} data - { name: String, code: String }
    */
   _storeSample(name, data) {
     let _case = this.case.getWorkingCase();
@@ -152,7 +157,7 @@ class Sample extends Base {
    * Remove sample from current working case
    * @private
    *
-   * @param  {Object} data - { name: String, code: String }
+   * @param  {String} name
    */
   _removeStoredSample(name) {
     let _case = this.case.getWorkingCase();
@@ -191,7 +196,7 @@ class Sample extends Base {
       sample: [{ id: name }]
     });
 
-    this._storeSample(name, data);
+    if( item) this._storeSample(name, data);
 
     this.renderRow({
       id: name,
@@ -201,8 +206,8 @@ class Sample extends Base {
 
   add() {
     let item = this.getItem(this.cel);
-    let name = DOM.$('sample-name').value;
-    let code = this.sampleEditor.getValue().trim();
+    let name = DOM.$('sample-add-name').value;
+    let code = this.getEditor('sample-add').getValue().trim();
 
     this._save({
       name: name,
@@ -212,10 +217,9 @@ class Sample extends Base {
 
   edit() {
     let item = this.getItem(this.cel);
-    let name = DOM.$('sample-name').value;
-    let code = this.sampleEditor.getValue().trim();
-
     let oldId = item.getAttribute('data-uid');
+    let name = DOM.$('sample-' + oldId + '-name').value;
+    let code = this.getEditor('sample-' +  oldId).getValue().trim();
 
     if( !name || !code ) return;
     if( name !== oldId && this._exist(name) ) {

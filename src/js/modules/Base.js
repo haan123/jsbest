@@ -66,7 +66,8 @@ class Base extends Handler {
    * @param  {Array} arr
    */
   removeFromArray(name, arr) {
-    let i = arr.indexOf(name);
+    let type = typeof arr[0];
+    let i = type === 'string' ? arr.indexOf(name) : utils.indexOf(arr, 'name', name);
 
     if( ~i ) arr.splice(i, 1);
 
@@ -100,11 +101,12 @@ class Base extends Handler {
   showForm(elem, name, config, obj, type) {
     let item = DOM.closest(elem, '.' + SAMPLE_ITEM_CLASS);
     let id = item.getAttribute('data-uid');
+    type = type || 'add';
 
     item.innerHTML = this[name + 'FormTempl'].render(obj);
-    this._setStateClass(item, type || 'add');
+    this._setStateClass(item, type);
 
-    return this._initEditor(name, config, id);
+    return this._initEditor(name + '-' + obj.id, config, id);
   }
 
   getStateClass(name) {
@@ -146,10 +148,22 @@ class Base extends Handler {
     let ta = DOM.$(name + '-ta');
     ta.value = cache ? cache.code : '';
 
-    let editor = this[name + 'Editor'] = CodeMirror.fromTextArea(ta, config);
+    let editor = this[name + '-editor'] = CodeMirror.fromTextArea(ta, config);
     editor.setValue(ta.value + MIN_LINE);
 
     return editor;
+  }
+
+  /**
+   * Return correspond editor type
+   * @public
+   *
+   * @param  {String} name
+   * @param  {String} type
+   * @return {Object}
+   */
+  getEditor(name) {
+    return this[name + '-editor'];
   }
 
   /**

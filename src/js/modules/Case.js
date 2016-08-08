@@ -106,7 +106,6 @@ class Case extends Base {
     name = name || this._working;
     let cases = this.cases;
 
-    this.removeFromArray(name, cases);
     this._removeCaseItem(name);
     cases.push(name);
 

@@ -56,6 +56,17 @@ utils.isArray = function(obj) {
   return toString.call(obj) === '[object Array]';
 };
 
+utils.indexOf = function(arr, key, value) {
+  for( let i = 0, len = arr.length; i < len; i++ ) {
+    let _val = arr[i][key];
+    if( _val && _val === value ) {
+      return i;
+    }
+  }
+
+  return -1;
+};
+
 var escapeMap = {
   '&': '&amp;',
   '<': '&lt;',

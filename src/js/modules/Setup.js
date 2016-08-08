@@ -15,11 +15,14 @@ class Setup extends Base {
     this.processList = DOM.$('process');
     this.process = _process;
     this.context = _process.context;
+    this.case = _case;
 
     this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
     this.setupUrlTempl = hogan.compile(DOM.$('setup-url-templ').innerHTML);
     this._id = 'setup';
-    this.cache = this.setCacheItem(this._id);
+    this.cache = this.setCacheItem('setup', {});
+
+    this._initSetup();
   }
 
   /**
@@ -41,7 +44,9 @@ class Setup extends Base {
       mode: "xml",
       htmlMode: true
     }, {
-      urls: this.cache.urls
+      type: edit || 'add',
+      id: edit || 'add',
+      urls: this.cache.urls || ''
     }, edit);
 
     editor.focus();
@@ -51,17 +56,74 @@ class Setup extends Base {
    * Init setup from caches
    * @private
    */
-  _initSamples() {
-    let storage = this.getStorage();
+  _initSetup() {
+    let _case = this.case.getWorkingCase();
 
-    if( !storage || !storage.length ) return;
+    if( !_case ) return;
 
-    // get latest test case's setup
-    let setup = storage[storage.length - 1].setup;
+    let setup = _case.setup;
 
-    if( !setup || !setup.length ) return;
+    if( !setup.code ) return;
 
     this._save(setup);
+  }
+
+  /**
+   * Store setup to current working case
+   * @private
+   *
+   * @param {Object} data - { name: String, code: String }
+   */
+  _storeSetup(data) {
+    let _case = this.case.getWorkingCase();
+
+    _case.setup = data;
+
+    this.case.setCaseItem(_case);
+  }
+
+  /**
+   * Clear setup from current working case
+   * @private
+   *
+   * @param  {String} name
+   */
+  _removeStoredSetup(name) {
+    let _case = this.case.getWorkingCase();
+
+    _case.setup = {};
+
+    this.case.setCaseItem(_case);
+  }
+
+  /**
+   * Remove url from current working case
+   * @private
+   *
+   * @param  {String} id
+   */
+  _removeStoredUrl(id) {
+    let _case = this.case.getWorkingCase();
+
+    _case.setup.urls.splice(id, 1);
+
+    this.case.setCaseItem(_case);
+  }
+
+  /**
+   * Store url from current working case
+   * @private
+   *
+   * @param  {Object} url
+   */
+  _StoredUrl(url) {
+    let _case = this.case.getWorkingCase();
+    let urls = _case.setup.urls;
+
+    this.removeFromArray(url.id, urls);
+    urls.push(url);
+
+    this.case.setCaseItem(_case);
   }
 
   /**
@@ -72,9 +134,11 @@ class Setup extends Base {
     let code = data.code;
     let urls = data.urls;
 
-    if( !item ) {
+    if( !code ) return;
+
+    if( !item  ) {
       item = this.createSampleItem(DOM.$('setup-add'));
-      utils.forEach(urls, (url) => this._cachedUrl(url));
+      if( urls ) utils.forEach(urls, (url) => this._cachedUrl(url));
     }
 
     this.context.document.body.innerHTML = code;
@@ -88,24 +152,50 @@ class Setup extends Base {
       language: 'markup',
       urls: urls
     });
+
+    if( item ) this._storeSetup(data);
   }
 
-  setup() {
-    let editor = this.setupEditor;
-
+  /**
+   * Add setup data
+   */
+  add(edit) {
+    let editor = this.getEditor('setup-' + (edit || 'add'));
     let item = this.getItem(this.cel);
-    let code = editor.getValue().trim();
-    let urls = this.cache.urls;
-
-    if( !code ) {
-      editor.focus();
-      return;
-    }
 
     this._save({
-      code: code,
-      urls: urls
+      code: editor.getValue().trim(),
+      urls: this.cache.urls
     }, item);
+  }
+
+  /**
+   * Edit setup data
+   */
+  edit() {
+    this.add.call(this, 'edit');
+  }
+
+  /**
+   *  cancel edit/add setup
+   *
+   * @public
+   */
+  cancel() {
+    let elem = this.cel;
+    let item = this.getItem(elem);
+    let isAdd = ~item.className.indexOf(this.getStateClass('add'));
+
+    if( isAdd ) {
+      item.parentNode.removeChild(item);
+      this.revealAddButton('setup');
+      this.cache.urls = [];
+    } else {
+      this._save({
+        code: this.cache.code,
+        urls: this.cache.urls
+      }, item);
+    }
   }
 
   /**
@@ -140,12 +230,12 @@ class Setup extends Base {
 
     if( !url ) return;
 
-    let id = this._cachedUrl(url);
+    let obj = this._cachedUrl(url);
 
-    if( !id ) return;
+    if( !obj ) return;
 
     let urlItem = DOM.toDOM(this.setupUrlTempl.render({
-      id: id - 1,
+      id: obj.id,
       url: url
     }));
 
@@ -169,8 +259,11 @@ class Setup extends Base {
     if( !cache.urls ) cache.urls = [];
 
     if( this._existUrl(cache.urls, url.url) ) return;
+    url.id = cache.urls.length;
 
-    return cache.urls.push(url);
+    cache.urls.push(url);
+
+    return url;
   }
 
   /**
@@ -180,10 +273,11 @@ class Setup extends Base {
    */
   removeUrl() {
     let id = this.cel.getAttribute('data-url-id');
-    let setup = this.cel.parentNode;
-    let cache = this.getCacheItem(this._id);
+    // if( !id ) return;
 
-    cache.urls.splice(id, 1);
+    let setup = this.cel.parentNode;
+
+    this.cache.urls.splice(id, 1);
     setup.parentNode.removeChild(setup);
   }
 
@@ -214,7 +308,9 @@ class Setup extends Base {
     let id = item.getAttribute('data-uid');
     this.remove('setup', id);
 
+    this._removeStoredSetup(id);
     this.context.document.body.innerHTML = '';
+    this.cache = {};
   }
 
   /**
@@ -224,28 +320,6 @@ class Setup extends Base {
    */
   editSetup() {
     this.openSetup.call(this, 'edit');
-  }
-
-
-  /**
-   *  cancel edit/add setup
-   *
-   * @public
-   */
-  cancelSetup() {
-    let elem = this.cel;
-    let item = this.getItem(elem);
-    let isAdd = ~item.className.indexOf(this.getStateClass('add'));
-
-    if( isAdd ) {
-      item.parentNode.removeChild(item);
-      this.revealAddButton('setup');
-    } else {
-      this._save({
-        code: this.cache.code,
-        urls: this.cache.urls
-      }, item);
-    }
   }
 }
 
