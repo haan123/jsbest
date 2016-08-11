@@ -1,0 +1,34 @@
+.footer {
+  text-align: center;
+  font-size: $small-font-size;
+  color: $white;
+  padding: $global-padding;
+
+  .icon {
+    vertical-align: text-top;
+  }
+
+  a {
+    display: inline-block;
+    color: $white;
+    font-weight: 500;
+  }
+}
+
+.social {
+  margin-bottom: $global-margin / 2;
+}
+
+
+.social-button {
+  display: inline-block;
+  vertical-align: text-top;
+}
+
+.social-button__tw {
+  margin-left: rem-calc(10); 
+}
+
+.social-button__fb {
+  width: 95px;
+}

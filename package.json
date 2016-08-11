@@ -5,7 +5,8 @@
   "author": "An Ha",
   "scripts": {
     "setup": "npm install && bower install",
-    "production": "NODE_ENV=production gulp production"
+    "production": "NODE_ENV=production gulp production",
+    "production_pc": "set NODE_ENV=production&&gulp production"
   },
   "devDependencies": {
     "babel-core": "6.7.2",
@@ -35,6 +36,7 @@
     "webpack": "1.12.14"
   },
   "dependencies": {
+    "chart.js": "^2.2.1",
     "codemirror": "^5.17.0",
     "hogan.js": "^3.0.2",
     "lodash": "^4.14.0",

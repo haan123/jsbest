@@ -1,8 +1,7 @@
-## Javascript Benchmark Test (JSBest)
+# Javascript Benchmark Test (JSBest)
 Client side testing for javascript performance, compare with multiple sample to get the best appoach.
 
-### Dependencies
----
+## Dependencies
 - [Code Mirror](https://github.com/codemirror/CodeMirror)
 - [Hogan.js](https://github.com/twitter/hogan.js/)
 - [Lodash](https://github.com/lodash/lodash)
@@ -10,44 +9,40 @@ Client side testing for javascript performance, compare with multiple sample to 
 - [Benchmark](https://github.com/bestiejs/benchmark.js)
 - [Foundation](https://github.com/zurb/foundation-sites)
 
-### Technologies & Methods
----
+## Technologies & Methods
 - [ES6](https://babeljs.io/docs/learn-es2015/)
 - [Sass](http://sass-lang.com/)
 - Handler (DOM event handling)
 
-### Tools
----
+## Tools
 - [Webpack](https://webpack.github.io/)
 - [Gulp](http://gulpjs.com/)
 - [Browsersync](https://www.browsersync.io/)
 - [Babel](https://babeljs.io/)
 
-### Future Releases
----
+## Future Releases
 - Get sample code from gist of Github
 - Allow to save url to share samples with others people
 - Chart visualization
 - Local Storage
 
 
-### Dev
+## Dev
 ```
 $ git clone
 ```
 
-#### Install
+### Install
 ```
 $ npm run setup
 ```
 
-#### Run
+### Run
 ```
 $ gulp
 ```
 
-#### License
----
+## License
 The MIT License (MIT)
 
 Copyright (c) 2016 haan123

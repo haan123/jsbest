@@ -10,7 +10,11 @@ require.ensure([], function() {
   require("../../node_modules/codemirror/addon/edit/closebrackets.js");
 });
 
-let _process = new Process();
+require.ensure([], function() {
+  require("chart.js");
+});
+
+let _process = new Process(); 
 let _case = new Case();
 let sample = new Sample(_process, _case);
 let setup = new Setup(_process, _case);
