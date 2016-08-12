@@ -1,12 +1,7 @@
 .footer {
   text-align: center;
-  font-size: $small-font-size;
   color: $white;
   padding: $global-padding;
-
-  .icon {
-    vertical-align: text-top;
-  }
 
   a {
     display: inline-block;
@@ -26,7 +21,12 @@
 }
 
 .social-button__tw {
-  margin-left: rem-calc(10); 
+  margin-left: rem-calc(12);
+
+  svg {
+    width: rem-calc(18);
+    height: rem-calc(18);
+  }
 }
 
 .social-button__fb {

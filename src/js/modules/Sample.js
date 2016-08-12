@@ -4,7 +4,7 @@ import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
 class Sample extends Base {
-  constructor(_process, _case) {
+  constructor(_process, _bench) {
     super({
       mid: 'sample',
       events: {
@@ -13,7 +13,7 @@ class Sample extends Base {
     });
 
     this.suite = _process.suite;
-    this.case = _case;
+    this.bench = _bench;
 
     this.processList = DOM.$('process');
     this.process = _process;
@@ -30,6 +30,7 @@ class Sample extends Base {
    * @private
    */
   _click(e) {
+    e.preventDefault();
     const type = this.cel.getAttribute('data-type');
 
     this[type]();
@@ -120,11 +121,11 @@ class Sample extends Base {
    * @private
    */
   _initSamples() {
-    let _case = this.case.getWorkingCase();
+    let _bench = this.bench.getWorkingBench();
 
-    if( !_case ) return;
+    if( !_bench ) return;
 
-    let samples = _case.samples;
+    let samples = _bench.samples;
 
     if( !samples.length ) return;
 
@@ -134,15 +135,15 @@ class Sample extends Base {
   }
 
   /**
-   * Store sample to current working case
+   * Store sample to current working bench
    * @private
    *
    * @param {String} name
    * @param {Object} data - { name: String, code: String }
    */
   _storeSample(name, data) {
-    let _case = this.case.getWorkingCase();
-    let samples = _case.samples;
+    let _bench = this.bench.getWorkingBench();
+    let samples = _bench.samples;
     name = data.oldId || name;
 
     this.removeFromArray(name, samples);
@@ -150,22 +151,22 @@ class Sample extends Base {
     delete data.oldId;
     samples.push(data);
 
-    this.case.setCaseItem(_case);
+    this.bench.setBenchItem(_bench);
   }
 
   /**
-   * Remove sample from current working case
+   * Remove sample from current working bench
    * @private
    *
    * @param  {String} name
    */
   _removeStoredSample(name) {
-    let _case = this.case.getWorkingCase();
-    let samples = _case.samples;
+    let _bench = this.bench.getWorkingBench();
+    let samples = _bench.samples;
 
     this.removeFromArray(name, samples);
 
-    this.case.setCaseItem(_case);
+    this.bench.setBenchItem(_bench);
   }
 
   /**
@@ -183,6 +184,8 @@ class Sample extends Base {
 
     if( !item ) {
       item = this.createSampleItem(DOM.$('sample-add'));
+    } else {
+      this._storeSample(name, data)
     }
 
     this.suite.add(name, code);
@@ -195,8 +198,6 @@ class Sample extends Base {
       language: 'javascript',
       sample: [{ id: name }]
     });
-
-    if( item) this._storeSample(name, data);
 
     this.renderRow({
       id: name,

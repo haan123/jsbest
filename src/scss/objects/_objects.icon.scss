@@ -1,7 +1,7 @@
 .icon {
   width: rem-calc(16);
   height: rem-calc(16);
-  vertical-align: middle;
+  vertical-align: text-top;;
   cursor: pointer;
   fill: currentColor;
 }
@@ -9,4 +9,8 @@
 .icon--lg {
   width: rem-calc(22);
   height: rem-calc(22);
+}
+
+.icon--x {
+  transform: rotate(45deg);
 }

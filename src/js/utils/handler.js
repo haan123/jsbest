@@ -24,6 +24,7 @@ let supportedEvents = [{
       if( typeof fn === 'function' ) {
         // set current element
         mod.cel = this;
+        mod.eTarget = e.target;
         fn.call(mod, e);
       }
     }

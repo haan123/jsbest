@@ -1,0 +1,57 @@
+.bench__heading {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.bench__edit {
+  display: inline-block;
+  font-size: rem-calc(12);
+  color: $white;
+  padding: rem-calc(4) rem-calc(8);
+  margin-left: rem-calc(5);
+  vertical-align: text-bottom;
+
+  &:hover, &:focus {
+    background: rgba(0,0,0,.12);
+    border-radius: $global-radius;
+    color: $white;
+  }
+}
+
+.modal-open {
+  overflow: hidden;
+
+  .modal-overlay {
+    display: block;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  display: none;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #000;
+  opacity: 0.5;
+}
+
+.modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.dialog {
+  margin: rem-calc(8);
+}
+
+@include breakpoint('medium') {
+  .dialog {
+    margin: rem-calc(15) auto;
+    width: rem-calc(600);
+  }
+}

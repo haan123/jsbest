@@ -13,7 +13,6 @@
 }
 
 .animated.bounceIn {
-  -webkit-animation-duration: .75s;
   animation-duration: .75s;
 }
 
@@ -32,6 +31,7 @@
 }
 
 .fade-in-down {
+  animation-duration: 0.3s;
   animation-name: fadeInDown;
 }
 

@@ -89,10 +89,7 @@
 //   5. Objects - Design patterns
 // -------------------------------------
 
-@import 'objects/objects.list-inline';
-@import 'objects/objects.list-bare';
 @import 'objects/objects.layout';
-@import 'objects/objects.pack';
 @import 'objects/objects.iframe-demo';
 @import 'objects/objects.icon';
 @import 'objects/objects.sample-item';
@@ -102,6 +99,9 @@
 @import 'objects/objects.table';
 @import 'objects/objects.badge';
 @import 'objects/objects.footer';
+@import 'objects/objects.control';
+@import 'objects/objects.popup';
+@import 'objects/objects.bench';
 
 // -------------------------------------
 //   6. Components - UI Styles

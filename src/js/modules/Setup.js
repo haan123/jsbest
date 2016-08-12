@@ -4,7 +4,7 @@ import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
 class Setup extends Base {
-  constructor(_process, _case) {
+  constructor(_process, _bench) {
     super({
       mid: 'setup',
       events: {
@@ -15,7 +15,7 @@ class Setup extends Base {
     this.processList = DOM.$('process');
     this.process = _process;
     this.context = _process.context;
-    this.case = _case;
+    this.bench = _bench;
 
     this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
     this.setupUrlTempl = hogan.compile(DOM.$('setup-url-templ').innerHTML);
@@ -31,6 +31,7 @@ class Setup extends Base {
    * @private
    */
   _click(e) {
+    e.preventDefault();
     const type = this.cel.getAttribute('data-type');
 
     this[type]();
@@ -57,11 +58,11 @@ class Setup extends Base {
    * @private
    */
   _initSetup() {
-    let _case = this.case.getWorkingCase();
+    let _bench = this.bench.getWorkingBench();
 
-    if( !_case ) return;
+    if( !_bench ) return;
 
-    let setup = _case.setup;
+    let setup = _bench.setup;
 
     if( !setup.code ) return;
 
@@ -69,61 +70,61 @@ class Setup extends Base {
   }
 
   /**
-   * Store setup to current working case
+   * Store setup to current working bench
    * @private
    *
    * @param {Object} data - { name: String, code: String }
    */
   _storeSetup(data) {
-    let _case = this.case.getWorkingCase();
+    let _bench = this.bench.getWorkingBench();
 
-    _case.setup = data;
+    _bench.setup = data;
 
-    this.case.setCaseItem(_case);
+    this.bench.setBenchItem(_bench);
   }
 
   /**
-   * Clear setup from current working case
+   * Clear setup from current working bench
    * @private
    *
    * @param  {String} name
    */
   _removeStoredSetup(name) {
-    let _case = this.case.getWorkingCase();
+    let _bench = this.bench.getWorkingBench();
 
-    _case.setup = {};
+    _bench.setup = {};
 
-    this.case.setCaseItem(_case);
+    this.bench.setBenchItem(_bench);
   }
 
   /**
-   * Remove url from current working case
+   * Remove url from current working bench
    * @private
    *
    * @param  {String} id
    */
   _removeStoredUrl(id) {
-    let _case = this.case.getWorkingCase();
+    let _bench = this.bench.getWorkingBench();
 
-    _case.setup.urls.splice(id, 1);
+    _bench.setup.urls.splice(id, 1);
 
-    this.case.setCaseItem(_case);
+    this.bench.setBenchItem(_bench);
   }
 
   /**
-   * Store url from current working case
+   * Store url from current working bench
    * @private
    *
    * @param  {Object} url
    */
   _StoredUrl(url) {
-    let _case = this.case.getWorkingCase();
-    let urls = _case.setup.urls;
+    let _bench = this.bench.getWorkingBench();
+    let urls = _bench.setup.urls;
 
     this.removeFromArray(url.id, urls);
     urls.push(url);
 
-    this.case.setCaseItem(_case);
+    this.bench.setBenchItem(_bench);
   }
 
   /**
@@ -139,6 +140,8 @@ class Setup extends Base {
     if( !item  ) {
       item = this.createSampleItem(DOM.$('setup-add'));
       if( urls ) utils.forEach(urls, (url) => this._cachedUrl(url));
+    } else {
+      this._storeSetup(data);
     }
 
     this.context.document.body.innerHTML = code;
@@ -152,8 +155,6 @@ class Setup extends Base {
       language: 'markup',
       urls: urls
     });
-
-    if( item ) this._storeSetup(data);
   }
 
   /**
@@ -296,6 +297,9 @@ class Setup extends Base {
       temp.src = urls[i].url;
       this.context.document.body.appendChild(temp);
     }
+
+    // reload iframe
+    this.context.location.reload(true);
   }
 
   /**

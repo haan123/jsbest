@@ -16,9 +16,17 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body>
+<body class="js-bench" data-type="closeDialog">
   <div id="top-bar" class="top-bar">
-    <a class="logo" href="/jsbest"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a>
+    <div class="row top-bar-inner">
+      <div class="small-12 columns">
+        <div class="controls">
+          <button class="js-bench button control-button" data-type="newBenchPopUp" title="Add New Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg> <span class="hide-for-small-only">New Bench</span></button>
+        </div>
+
+        <a class="logo" href="/jsbest"><svg viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a>
+      </div>
+    </div>
   </div>
 
   <!--[if lt IE 8]>
@@ -26,9 +34,14 @@
   <![endif]-->
 
   <!-- Add your site or application content here -->
-  <div class="container">
+  <div class="container main">
     <div class="row">
       <div class="medium-12 medium-centered columns">
+        <div class="row small-12 columns">
+          <h1 id="bench-heading" class="bench__heading">Quick Bench</h1>
+          <a class="js-bench bench__edit" data-type="saveBenchPopUp" href="#">Edit</a>
+        </div>
+
         <div class="row">
           <div class="medium-6 columns">
             <h5>Setup (Optional)</h5>
@@ -82,8 +95,13 @@
     </span>
   </div>
 
+  <div class="modal-wrapper" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div id="modal"></div>
+  </div>
+
   <script type="text/template" id="process-row-templ">
-    <tr id="sample-{{id}}"><td class="cell-name"><a class="js-sample cell-name__link" data-type="scrollTo" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr>
+    <tr id="sample-{{id}}"><td class="cell-name"><a class="cell-name__link" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr>
   </script>
   <script type="text/template" id="setup-url-templ">
     <div class="setup-url">
@@ -93,8 +111,8 @@
   </script>
   <script type="text/template" id="saved-templ">
     <div class="sample-item__controls">
-      <a class="js-{{handler}} sample-item__control" data-type="edit{{name}}" href="#"><svg class="icon icon--lg" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
-      <a class="js-{{handler}} sample-item__control" data-type="remove{{name}}" href="#"><svg class="icon icon--lg" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></a>
+      <a class="js-{{handler}} sample-item__control" data-type="edit{{name}}" href="#"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
+      <a class="js-{{handler}} sample-item__control" data-type="remove{{name}}" href="#"><svg class="icon icon--lg icon--x" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></a>
     </div>
 
     {{#urls}}
@@ -104,7 +122,7 @@
     {{/urls}}
 
     {{#sample}}
-    <h5 id="{{id}}">{{id}} <a class="sample-item__anchor" href="#{{id}}" title="Anchor link for {{id}}" aria-label="Acchor link for {{id}}"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a></h5>
+    <h5 id="{{id}}">{{id}} <a class="sample-item__anchor" href="#{{id}}" title="Anchor link for {{id}}" aria-label="Acchor link for {{id}}"><svg class="icon" viewBox="0 0 16 16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a></h5>
     {{/sample}}
 
     <pre class="sample-item__static language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
@@ -151,8 +169,22 @@
     </div>
   </script>
   <script type="text/template" id="error-templ">
-    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M11 10h3V9h-3V8l3.17-1.03-.34-.94L11 7V6c0-.55-.45-1-1-1V4c0-.48-.36-.88-.83-.97L10.2 2H12V1H9.8l-2 2h-.59L5.2 1H3v1h1.8l1.03 1.03C5.36 3.12 5 3.51 5 4v1c-.55 0-1 .45-1 1v1l-2.83-.97-.34.94L4 8v1H1v1h3v1L.83 12.03l.34.94L4 12v1c0 .55.45 1 1 1h1l1-1V6h1v7l1 1h1c.55 0 1-.45 1-1v-1l2.83.97.34-.94L11 11v-1zM9 5H6V4h3v1z"/></svg>
+    <svg class="icon" viewBox="0 0 16 16"><path d="M11 10h3V9h-3V8l3.17-1.03-.34-.94L11 7V6c0-.55-.45-1-1-1V4c0-.48-.36-.88-.83-.97L10.2 2H12V1H9.8l-2 2h-.59L5.2 1H3v1h1.8l1.03 1.03C5.36 3.12 5 3.51 5 4v1c-.55 0-1 .45-1 1v1l-2.83-.97-.34.94L4 8v1H1v1h3v1L.83 12.03l.34.94L4 12v1c0 .55.45 1 1 1h1l1-1V6h1v7l1 1h1c.55 0 1-.45 1-1v-1l2.83.97.34-.94L11 11v-1zM9 5H6V4h3v1z"/></svg>
   </script>
+  <script type="text/template" id="pop-bench-templ">
+    <div class="dialog animated fade-in-down pop-bench">
+      <div tabindex="0"></div>
+      <div class="pop-bench__head">
+        <h6>{{title}}</h6>
+        <button class="js-bench pop-bench__close" data-type="closeDialog"><svg class="icon icon--x" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></button>
+      </div>
+      <div class="pop-bench__content">
+        <input id="bench-name" class="pop-bench__text" type="text">
+        <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
+      </div>
+    </div>
+  </script>
+
 
   <script src="js/benchmark.js"></script>
   <script src="js/platform.js"></script>

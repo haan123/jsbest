@@ -1,11 +1,16 @@
 .top-bar {
   margin-bottom: 1.5em;
+  padding: rem-calc(4);
   text-align: center;
+}
+
+.top-bar-inner {
+  position: relative;
 }
 
 .logo {
   display: inline-block;
-  
+
   svg {
     width: 30px;
     height: 30px;

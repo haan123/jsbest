@@ -67,7 +67,7 @@ class Base extends Handler {
    */
   removeFromArray(name, arr) {
     let type = typeof arr[0];
-    let i = type === 'string' ? arr.indexOf(name) : utils.indexOf(arr, 'name', name);
+    let i = type.toLowerCase() !== 'object' ? arr.indexOf(name) : utils.indexOf(arr, 'name', name);
 
     if( ~i ) arr.splice(i, 1);
 

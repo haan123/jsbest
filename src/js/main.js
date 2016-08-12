@@ -1,4 +1,4 @@
-import Case from './modules/Case';
+import Bench from './modules/Bench';
 import Sample from './modules/Sample';
 import Setup from './modules/Setup';
 import Process from './modules/Process';
@@ -14,7 +14,7 @@ require.ensure([], function() {
   require("chart.js");
 });
 
-let _process = new Process(); 
-let _case = new Case();
-let sample = new Sample(_process, _case);
-let setup = new Setup(_process, _case);
+let _process = new Process();
+let _bench = new Bench();
+let sample = new Sample(_process, _bench);
+let setup = new Setup(_process, _bench);

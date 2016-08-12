@@ -1,0 +1,30 @@
+.pop-bench {
+  position: relative;
+  background: $white;
+  border: 1px solid $light-gray;
+  border-radius: $global-radius;
+  color: $black;
+  text-align: left;
+  padding: rem-calc(12);
+
+  input {
+    margin-right: 0;
+  }
+}
+
+.pop-bench__close {
+  position: absolute;
+  right: rem-calc(8);
+  top: rem-calc(8);
+}
+
+.pop-bench__head {
+  border-bottom: 1px solid $light-gray;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.pop-bench__content {
+  padding-top: $global-padding / 2;
+  text-align: right;
+}
