@@ -3,7 +3,15 @@
 }
 
 .control-button {
-  line-height: rem-calc(35);
   padding: 0 rem-calc(8);
   font-weight: 700;
+  line-height: rem-calc(35);
+}
+
+.control-button--remove {
+  background: linear-gradient(to bottom,rgba(0, 0, 0, 0.2) 0,rgba(0, 0, 0, 0.3) 100%);
+
+  &:hover, &:focus {
+    background: linear-gradient(to bottom,rgba(50, 50, 50, 0.2) 0,rgba(50, 50, 50, 0.3) 100%);
+  }
 }

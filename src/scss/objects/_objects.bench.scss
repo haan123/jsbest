@@ -5,16 +5,16 @@
 
 .bench__edit {
   display: inline-block;
-  font-size: rem-calc(12);
-  color: $white;
   padding: rem-calc(4) rem-calc(8);
   margin-left: rem-calc(5);
+  font-size: rem-calc(12);
+  color: $white;
   vertical-align: text-bottom;
 
   &:hover, &:focus {
+    color: $white;
     background: rgba(0,0,0,.12);
     border-radius: $global-radius;
-    color: $white;
   }
 }
 
@@ -28,11 +28,11 @@
 
 .modal-overlay {
   position: fixed;
-  display: none;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  display: none;
   background-color: #000;
   opacity: 0.5;
 }
@@ -40,18 +40,65 @@
 .modal-wrapper {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
+  left: 0;
 }
 
 .dialog {
   margin: rem-calc(8);
 }
 
+.benches-content {
+  float: left;
+}
+
+.bench-list {
+  position: absolute;
+  z-index: 1000;
+  width: rem-calc(260);
+  max-height: 450px;
+  padding: rem-calc(8) 0;
+  margin-top: rem-calc(8);
+  overflow: auto;
+  color: $black;
+  text-align: left;
+  list-style: none;
+  background-color: $white;
+  border-radius: $global-radius;
+  box-shadow: 0 3px 6px rgba(0,0,0,.4);
+
+  ul {
+    background-color: transparent;
+  }
+}
+
+.bench__item {
+  @include text-truncate();
+
+  padding: 0 rem-calc(8);
+  font-weight: 500;
+  line-height: rem-calc(32);
+  cursor: pointer;
+
+  &:hover {
+    background: scale-color(#0072ff, $lightness: 90%);
+  }
+
+  time {
+    display: block;
+    margin-top: rem-calc(-3);
+    margin-left: rem-calc(4);
+    padding-bottom: rem-calc(8);
+    font-size: rem-calc(13);
+    line-height: 1;
+    color: $dark-gray;
+  }
+}
+
 @include breakpoint('medium') {
   .dialog {
-    margin: rem-calc(15) auto;
     width: rem-calc(600);
+    margin: rem-calc(15) auto;
   }
 }

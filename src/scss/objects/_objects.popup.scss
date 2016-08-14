@@ -1,11 +1,11 @@
 .pop-bench {
   position: relative;
+  padding: rem-calc(12);
+  color: $black;
+  text-align: left;
   background: $white;
   border: 1px solid $light-gray;
   border-radius: $global-radius;
-  color: $black;
-  text-align: left;
-  padding: rem-calc(12);
 
   input {
     margin-right: 0;
@@ -14,17 +14,39 @@
 
 .pop-bench__close {
   position: absolute;
-  right: rem-calc(8);
   top: rem-calc(8);
+  right: rem-calc(8);
 }
 
 .pop-bench__head {
-  border-bottom: 1px solid $light-gray;
   padding-bottom: 8px;
   margin-bottom: 8px;
+  border-bottom: 1px solid $light-gray;
 }
 
 .pop-bench__content {
   padding-top: $global-padding / 2;
   text-align: right;
+}
+
+.pop-bench__update,
+.pop-bench__remove {
+  display: none;
+}
+
+.pop-bench--remove {
+  p {
+    text-align: left;
+  }
+
+  .pop-bench__remove {
+    display: block;
+  }
+}
+
+.pop-bench--save,
+.pop-bench--add {
+  .pop-bench__update {
+    display: block;
+  }
 }

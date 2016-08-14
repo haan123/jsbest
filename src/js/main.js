@@ -18,3 +18,6 @@ let _process = new Process();
 let _bench = new Bench();
 let sample = new Sample(_process, _bench);
 let setup = new Setup(_process, _bench);
+
+_bench.setup = setup;
+_bench.sample = sample;

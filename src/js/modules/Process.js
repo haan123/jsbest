@@ -4,10 +4,12 @@ import _ from 'lodash';
 
 class Process {
   constructor() {
-    this.context = DOM.$('iframe').contentWindow;
-    this.context.document.head.appendChild(DOM.toDOM('<script></script>'));
-    Benchmark = Benchmark.runInContext(this.context);
-    this.context.Benchmark = Benchmark;
+    this.iframe = DOM.$('iframe');
+    let context = this.context = this.iframe.contentWindow;
+
+    context.document.head.appendChild(DOM.toDOM('<script></script>'));
+    Benchmark = Benchmark.runInContext(context);
+    context.Benchmark = Benchmark;
     this.errorTmpl = DOM.$('error-templ').innerHTML;
 
     this.initialize();

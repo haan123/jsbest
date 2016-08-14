@@ -87,13 +87,25 @@ class Sample extends Base {
   removeSample() {
     let item = this.getItem(this.cel);
     let id = item.getAttribute('data-uid');
+
+    this.removeSampleView(item, id);
+    this._removeStoredSample(id);
+  }
+
+  /**
+   * Remove sample item, sample row in process table from the view
+   * @public
+   *
+   * @param {Node} item
+   * @param {String} id
+   */
+  removeSampleView(item, id) {
     let row = DOM.$('sample-' + id);
 
     row.parentNode.removeChild(row);
-    this.remove('sample', id);
+    this.remove(item, 'sample', id);
 
     this.process.removeBench(id);
-    this._removeStoredSample(id);
   }
 
   /**
@@ -185,7 +197,7 @@ class Sample extends Base {
     if( !item ) {
       item = this.createSampleItem(DOM.$('sample-add'));
     } else {
-      this._storeSample(name, data)
+      this._storeSample(name, data);
     }
 
     this.suite.add(name, code);

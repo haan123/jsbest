@@ -13,8 +13,9 @@ class Setup extends Base {
     });
 
     this.processList = DOM.$('process');
-    this.process = _process;
     this.context = _process.context;
+    this.iframe = _process.iframe;
+
     this.bench = _bench;
 
     this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
@@ -145,7 +146,6 @@ class Setup extends Base {
     }
 
     this.context.document.body.innerHTML = code;
-
     if( urls ) this._embedUrls(urls);
 
     this.renderSavedState('setup', item, code, 'setup', {
@@ -297,22 +297,31 @@ class Setup extends Base {
       temp.src = urls[i].url;
       this.context.document.body.appendChild(temp);
     }
-
-    // reload iframe
-    this.context.location.reload(true);
   }
 
   /**
-   * Remove setup
+   * Remove setup handler
    *
    * @public
    */
   removeSetup() {
     let item = this.getItem(this.cel);
     let id = item.getAttribute('data-uid');
-    this.remove('setup', id);
+
+    this.removeSetupView(item, id);
 
     this._removeStoredSetup(id);
+  }
+
+  /**
+   * Remove set item, setup iframe from the view
+   * @public
+   *
+   * @param {Node} item
+   * @param {String} id
+   */
+  removeSetupView(item, id) {
+    this.remove(item, 'setup', id);
     this.context.document.body.innerHTML = '';
     this.cache = {};
   }

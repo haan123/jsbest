@@ -4,6 +4,13 @@
 //    -> Custom reset rules
 //
 // *************************************
+html {
+  background: #0072ff;
+}
+
+html, body {
+  height: 100%;
+}
 
 body,
 h1, h2, h3, h4, h5, h6,
@@ -13,13 +20,13 @@ form, fieldset, legend,
 figure,
 table, th, td, caption,
 hr {
-    margin:  0;
-    padding: 0;
+  padding: 0;
+  margin:  0;
 }
 
 abbr[title],
 dfn[title] {
-    cursor: help;
+  cursor: help;
 }
 
 body {

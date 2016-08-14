@@ -17,23 +17,22 @@ const EDITOR_CONFIG = {
 
 let _cache = new Map();
 let _processes = DOM.$('processes');
-const TOP_BAR_HEIGHT = DOM.$('top-bar').offsetHeight;
+const PROCESSES_TOP = _processes.offsetTop;
 let docElem = document.documentElement;
+let _fixing;
 
 let _scroll = function(e) {
   if( docElem.clientWidth < 640 ) return;
 
-  let top = window.pageYOffset;
-
-  if( top > TOP_BAR_HEIGHT ) {
-    if( this.fixing ) return;
+  if( window.pageYOffset > PROCESSES_TOP ) {
+    if( _fixing ) return;
     _processes.style.cssText = 'top: 1.5em;width:' + _processes.clientWidth + 'px;';
     _processes.className += ' fixed';
-    this.fixing = true;
-  } else if( this.fixing ) {
+    _fixing = true;
+  } else if( _fixing ) {
     _processes.removeAttribute('style');
     DOM.removeClass(_processes, 'fixed');
-    delete this.fixing;
+    _fixing = null;
   }
 };
 
@@ -56,6 +55,10 @@ class Base extends Handler {
    */
   removeFromCache(id) {
     return _cache.delete(id);
+  }
+
+  clearAllCacheItems() {
+    _cache.clear();
   }
 
   /**
@@ -232,15 +235,12 @@ class Base extends Handler {
    * @private
    * @param {String} name
    */
-  remove(name, id) {
-    let item = this.getItem(this.cel);
-
+  remove(item, name, id) {
     item.parentNode.removeChild(item);
 
     DOM.removeClass(item, this.getStateClass('saved'));
 
     this.removeFromCache(id);
-
     this.revealAddButton(name);
   }
 
@@ -268,7 +268,7 @@ class Base extends Handler {
    */
   createSampleItem(elem) {
     let item = document.createElement('div');
-    item.className += 'sample-item';
+    item.className += SAMPLE_ITEM_CLASS;
 
     elem.parentNode.insertBefore(item, elem);
     elem.style.display = 'none';
