@@ -101,7 +101,7 @@ class Base extends Handler {
     return _cache.get(id);
   }
 
-  showForm(elem, name, config, obj, type) {
+  showForm(elem, name, editors, obj, type) {
     let item = DOM.closest(elem, '.' + SAMPLE_ITEM_CLASS);
     let id = item.getAttribute('data-uid');
     type = type || 'add';
@@ -109,7 +109,9 @@ class Base extends Handler {
     item.innerHTML = this[name + 'FormTempl'].render(obj);
     this._setStateClass(item, type);
 
-    return this._initEditor(name + '-' + obj.id, config, id);
+    utils.forEach(editors, (editor) => {
+      this._initEditor(editor.name + '-' + obj.id, editor.config, id);
+    });
   }
 
   getStateClass(name) {

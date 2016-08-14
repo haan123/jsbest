@@ -1,7 +1,8 @@
 .icon {
+  display: inline-block;
   width: rem-calc(16);
   height: rem-calc(16);
-  vertical-align: text-top;;
+  vertical-align: text-top;
   cursor: pointer;
   fill: currentColor;
 }

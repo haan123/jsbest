@@ -7,7 +7,7 @@ const WORKING_NAME = 'working';
 const BENCHES_NAME = 'benches';
 
 class Bench extends Base {
-  constructor() {
+  constructor(_popup) {
     super({
       mid: 'bench',
       events: {
@@ -15,8 +15,11 @@ class Bench extends Base {
       }
     });
 
+    this.popup = _popup;
     this.popBenchTempl = hogan.compile(DOM.$('pop-bench-templ').innerHTML);
     this.benchesTempl = hogan.compile(DOM.$('benches-templ').innerHTML);
+    this.popSaveTempl = hogan.compile(DOM.$('pop-save-templ').innerHTML);
+    this.popRemoveTempl = hogan.compile(DOM.$('pop-remove-templ').innerHTML);
 
     // get cached benches
     let benches;
@@ -51,42 +54,6 @@ class Bench extends Base {
     this[type]();
   }
 
-  closePopUp() {
-    if( this.popup === 0 ) return this.popup++;
-
-    // handle when popup is element node
-    if( this.popupElem ) {
-      this.popupElem.innerHTML = '';
-      this.popupElem.style.display = 'none';
-
-      delete this.popup;
-      delete this.popupElem;
-
-      return;
-    }
-
-    if( this.popup && (this.eTarget.className === 'modal-overlay' || this.cel.tagName.toLowerCase() === 'button') ) {
-      let modal = DOM.$('modal');
-
-      DOM.removeClass(document.body, 'modal-open');
-      modal.parentNode.style.display = 'none';
-      modal.innerHTML = '';
-
-      delete this.popup;
-    }
-  }
-
-  _showPopUp(elem, data) {
-    if( this.popup ) this.closePopUp();
-
-    let modal = DOM.$('modal');
-    document.body.className += ' modal-open';
-
-    modal.parentNode.style.display = 'block';
-    modal.innerHTML = this.popBenchTempl.render(data);
-    this.popup = 0;
-  }
-
   /**
    * Render bench's name
    * @private
@@ -113,8 +80,6 @@ class Bench extends Base {
     return { setup: {}, samples: []};
   }
 
-
-
   /**
    * Open save bench popup handler
    * @public
@@ -123,10 +88,10 @@ class Bench extends Base {
     let elem = this.cel;
     let bench = this.getWorkingBench();
 
-    this._showPopUp(elem, {
+    this.popup.modal({
       title: 'Save Bench',
       type: 'save'
-    });
+    }, this.popSaveTempl);
 
     let field = DOM.$('bench-name');
     field.focus();
@@ -140,10 +105,10 @@ class Bench extends Base {
   newBenchPopUp() {
     let elem = this.cel;
 
-    this._showPopUp(elem, {
+    this.popup.modal({
       title: 'New Bench',
       type: 'add'
-    });
+    }, this.popSaveTempl);
 
     DOM.$('bench-name').focus();
   }
@@ -160,7 +125,7 @@ class Bench extends Base {
 
     this.setBenchItem(_bench, name);
     this._renderBenchName(name);
-    this.closePopUp();
+    this.popup.close();
   }
 
   /**
@@ -175,7 +140,7 @@ class Bench extends Base {
     let bench = this.setBenchItem(this._createBlankBench(), name);
     this._clearBenchItems();
     this._renderBenchName(bench.name);
-    this.closePopUp();
+    this.popup.close();
   }
 
   /**
@@ -183,11 +148,10 @@ class Bench extends Base {
    * @public
    */
   showBenchList() {
-    if( this.popupElem ) return;
-
+    if( this.popup.hasPopUp() ) return;
+    
     let benches = this.benches;
     let lists = [];
-    let elem = DOM.$('benches');
 
     utils.forEach(benches, (id) => {
       let bench = this.getBenchItem(id);
@@ -202,12 +166,9 @@ class Bench extends Base {
       }
     });
 
-    elem.innerHTML = this.benchesTempl.render({
+    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.benchesTempl.render({
       benches: lists
-    });
-    elem.style.display = 'block';
-    this.popup = 0;
-    this.popupElem = elem;
+    })));
   }
 
   /**
@@ -233,10 +194,10 @@ class Bench extends Base {
   removeBenchPopUp() {
     let elem = this.cel;
 
-    this._showPopUp(elem, {
+    this.popup.modal({
       title: 'Remove Bench',
       type: 'remove'
-    });
+    }, this.popRemoveTempl);
   }
 
   /**
@@ -250,7 +211,7 @@ class Bench extends Base {
     this._renderBenchItems();
 
     this._renderBenchName(this.getWorkingBench().name);
-    this.closePopUp();
+    this.popup.close();
   }
 
   /**

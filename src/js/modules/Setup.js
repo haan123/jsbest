@@ -41,17 +41,23 @@ class Setup extends Base {
   openSetup(edit) {
     let elem = this.cel;
     let item = edit ? elem : this.createSampleItem(elem);
+    let id = edit || 'add';
 
-    let editor = this.showForm(item, 'setup', {
-      mode: "xml",
-      htmlMode: true
+    this.showForm(item, 'setup', [{
+      name: 'setup-html',
+      config: {
+        mode: "xml",
+        htmlMode: true
+      }
     }, {
+      name: 'setup-js'
+    }], {
       type: edit || 'add',
-      id: edit || 'add',
+      id: id,
       urls: this.cache.urls || ''
     }, edit);
 
-    editor.focus();
+    this.getEditor('setup-html-' + id).focus();
   }
 
   /**
@@ -145,7 +151,7 @@ class Setup extends Base {
       this._storeSetup(data);
     }
 
-    this.context.document.body.innerHTML = code;
+    this.context.document.body.innerHTML = code.html;
     if( urls ) this._embedUrls(urls);
 
     this.renderSavedState('setup', item, code, 'setup', {
@@ -161,11 +167,16 @@ class Setup extends Base {
    * Add setup data
    */
   add(edit) {
-    let editor = this.getEditor('setup-' + (edit || 'add'));
+    let type = edit || 'add';
+    let html = this.getEditor('setup-html-' + type);
+    let js = this.getEditor('setup-js-' + type);
     let item = this.getItem(this.cel);
 
     this._save({
-      code: editor.getValue().trim(),
+      code: {
+        html: html.getValue().trim(),
+        js: js.getValue().trim()
+      },
       urls: this.cache.urls
     }, item);
   }

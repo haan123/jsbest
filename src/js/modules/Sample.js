@@ -4,7 +4,7 @@ import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
 class Sample extends Base {
-  constructor(_process, _bench) {
+  constructor(_process, _bench, _popup) {
     super({
       mid: 'sample',
       events: {
@@ -17,9 +17,11 @@ class Sample extends Base {
 
     this.processList = DOM.$('process');
     this.process = _process;
+    this.popup = _popup;
 
     this.rowTempl = hogan.compile(DOM.$('process-row-templ').innerHTML);
     this.sampleFormTempl = hogan.compile(DOM.$('sample-form-templ').innerHTML);
+    this.popShareSampleTempl = hogan.compile(DOM.$('pop-share-sample-templ').innerHTML);
 
     this._initSamples();
   }
@@ -118,7 +120,9 @@ class Sample extends Base {
     let item = edit ? this.getItem(elem) : this.createSampleItem(elem);
     let id = edit ? item.getAttribute('data-uid') : 'add';
 
-    this.showForm(item, 'sample', {}, {
+    this.showForm(item, 'sample', [{
+      name: 'sample'
+    }], {
       type: edit || 'add',
       id: id
     }, edit);
@@ -226,6 +230,26 @@ class Sample extends Base {
       name: name,
       code: code
     }, item);
+  }
+
+  shareSamplePopUp() {
+    let item = this.getItem(this.cel);
+    let name = item.getAttribute('data-uid');
+    let sample = this.getCacheItem(name);
+    let setup = this.getCacheItem('setup');
+    let url = {};
+    url.setup = {
+    };
+
+    location.hash = '/' + url;
+
+    this.popup.modal({
+      title: 'Share Sample',
+      url: url
+    }, this.popShareSampleTempl);
+  }
+
+  copy() {
   }
 
   edit() {

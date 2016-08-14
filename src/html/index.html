@@ -16,13 +16,12 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body class="js-bench" data-type="closePopUp">
+<body class="js-popup" data-type="close">
   <div id="top-bar" class="top-bar">
     <div class="row top-bar-inner">
       <div class="small-12 columns">
         <div class="benches-content">
           <div class="js-bench button control-button" data-type="showBenchList"><svg class="icon" viewbox="0 0 12 16"><path d="M2 13c0 .59 0 1-.59 1H.59C0 14 0 13.59 0 13c0-.59 0-1 .59-1h.81c.59 0 .59.41.59 1H2zm2.59-9h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1H4.59C4 2 4 2.41 4 3c0 .59 0 1 .59 1zM1.41 7H.59C0 7 0 7.41 0 8c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0-5H.59C0 2 0 2.41 0 3c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm10 5H4.59C4 7 4 7.41 4 8c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0 5H4.59C4 12 4 12.41 4 13c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01z"/></svg> Benches</div>
-          <div id="benches" class="benches" style="display:none;"></div>
         </div>
         <div class="controls">
           <button class="js-bench button control-button--remove control-button" data-type="removeBenchPopUp" title="Remove Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/></svg></button>
@@ -116,8 +115,9 @@
   </script>
   <script type="text/template" id="saved-templ">
     <div class="sample-item__controls">
-      <a class="js-{{handler}} sample-item__control" data-type="edit{{name}}" href="#"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
-      <a class="js-{{handler}} sample-item__control" data-type="remove{{name}}" href="#"><svg class="icon icon--lg icon--x" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></a>
+      <a class="js-{{handler}} sample-item__control sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
+      <a class="js-{{handler}} sample-item__control" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
+      <a class="js-{{handler}} sample-item__control" data-type="remove{{name}}" href="#" title="Remove Sample"><svg class="icon icon--lg icon--x" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></a>
     </div>
 
     {{#urls}}
@@ -165,7 +165,11 @@
       </div>
       {{/urls}}
 
-      <textarea id="setup-{{type}}-ta" class="setup" style="display:none;"></textarea>
+      <h6 class="setup__heading">HTML</h6>
+      <textarea id="setup-html-{{type}}-ta" class="setup" style="display:none;"></textarea>
+
+      <h6 class="setup__heading">Scripts</h6>
+      <textarea id="setup-js-{{type}}-ta" class="setup" style="display:none;"></textarea>
 
       <div class="button-group text-right">
         <button class="js-setup success button" data-type="{{type}}" type="button">Save</button>
@@ -181,20 +185,25 @@
       <div tabindex="0"></div>
       <div class="pop-bench__head">
         <h6>{{title}}</h6>
-        <button class="js-bench pop-bench__close" data-type="closePopUp"><svg class="icon icon--x" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></button>
+        <button class="js-popup pop-bench__close" data-type="close"><svg class="icon icon--x" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg></button>
       </div>
       <div class="pop-bench__content">
-        <div class="pop-bench__update">
-          <input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
-          <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
-        </div>
-        <div class="pop-bench__remove">
-          <p>Do you want to remove this bench?</p>
-          <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
-          <button class="js-bench button secondary small" data-type="closePopUp">No</button>
-        </div>
+        {{>content}}
       </div>
     </div>
+  </script>
+  <script type="text/template" id="pop-save-templ">
+    <input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
+    <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
+  </script>
+  <script type="text/template" id="pop-remove-templ">
+    <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
+    <button class="js-popup button secondary small" data-type="close">No</button>
+  </script>
+  <script type="text/template" id="pop-share-sample-templ">
+    <p class="share__note">Please Note: this feature will store data in url, some browser will limit the url's length, we recommends you to use Google Chrome for best support.</p>
+    <input id="share-id" type="text" value="{{url}}">
+    <button class="js-sample button success small" data-type="copy">Copy</button>
   </script>
   <script type="text/template" id="benches-templ">
     <div class="bench-list">

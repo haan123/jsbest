@@ -3,9 +3,9 @@
 }
 
 .setup-url__remove {
+  font-size: $small-font-size;
   color: $dark-gray;
   text-decoration: underline;
-  font-size: $small-font-size;
 
   &:hover, &:focus, &:active {
     color: $black;
@@ -16,6 +16,11 @@
   @include text-truncate();
 
   display: inline-block;
-  vertical-align: middle;
   max-width: 90%;
+  vertical-align: middle;
+}
+
+.setup__heading {
+  margin-top: $global-margin / 2;
+  margin-bottom: $global-margin / 2;
 }
