@@ -21,6 +21,9 @@
 }
 
 .setup__heading {
+  font-weight: 700;
+  font-size: rem-calc(13);
+  line-height: rem-calc(22);
+  color: $dark-gray;
   margin-top: $global-margin / 2;
-  margin-bottom: $global-margin / 2;
 }

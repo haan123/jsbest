@@ -9,6 +9,7 @@ class Process {
 
     context.document.head.appendChild(DOM.toDOM('<script></script>'));
     Benchmark = Benchmark.runInContext(context);
+
     context.Benchmark = Benchmark;
     this.errorTmpl = DOM.$('error-templ').innerHTML;
 
@@ -30,6 +31,10 @@ class Process {
     .on('start cycle', (event) => {
     })
     .on('complete', this._complete.bind(this));
+  }
+
+  bmSetup(code) {
+    Benchmark.prototype.setup = code;
   }
 
   /**

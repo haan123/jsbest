@@ -130,7 +130,9 @@
     <h5 id="{{id}}">{{id}} <a class="sample-item__anchor" href="#{{id}}" title="Anchor link for {{id}}" aria-label="Acchor link for {{id}}"><svg class="icon" viewBox="0 0 16 16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a></h5>
     {{/sample}}
 
-    <pre class="sample-item__static language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
+    {{#prism}}
+    <pre class="sample-item__static language-{{language}}"><code id="static-{{pid}}" class="language-{{language}}"></code></pre>
+    {{/prism}}
   </script>
   <script type="text/template" id="sample-form-templ">
     <div class="sample-item__form">
@@ -168,7 +170,7 @@
       <h6 class="setup__heading">HTML</h6>
       <textarea id="setup-html-{{type}}-ta" class="setup" style="display:none;"></textarea>
 
-      <h6 class="setup__heading">Scripts</h6>
+      <h6 class="setup__heading">JS</h6>
       <textarea id="setup-js-{{type}}-ta" class="setup" style="display:none;"></textarea>
 
       <div class="button-group text-right">
@@ -197,13 +199,14 @@
     <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
   </script>
   <script type="text/template" id="pop-remove-templ">
+    <p>Are your sure you want to remove <strong>{{name}}</strong>?</p>
     <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
     <button class="js-popup button secondary small" data-type="close">No</button>
   </script>
   <script type="text/template" id="pop-share-sample-templ">
-    <p class="share__note">Please Note: this feature will store data in url, some browser will limit the url's length, we recommends you to use Google Chrome for best support.</p>
-    <input id="share-id" type="text" value="{{url}}">
-    <button class="js-sample button success small" data-type="copy">Copy</button>
+    <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
+    <input id="share-sample-{{name}}" type="text" value="{{url}}">
+    <button class="js-sample button success small" data-type="copyUrlSample" data-uid="{{name}}">Copy</button>
   </script>
   <script type="text/template" id="benches-templ">
     <div class="bench-list">

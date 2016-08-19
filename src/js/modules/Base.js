@@ -110,7 +110,7 @@ class Base extends Handler {
     this._setStateClass(item, type);
 
     utils.forEach(editors, (editor) => {
-      this._initEditor(editor.name + '-' + obj.id, editor.config, id);
+      this._initEditor(editor.name + '-' + obj.id, editor.config, id, editor);
     });
   }
 
@@ -146,12 +146,18 @@ class Base extends Handler {
    *
    * @return {Object} editor
    */
-  _initEditor(name, config, id) {
+  _initEditor(name, config, id, options) {
     config = utils.extend({}, EDITOR_CONFIG, config || {});
 
     let cache = _cache.get(id);
     let ta = DOM.$(name + '-ta');
-    ta.value = cache ? cache.code : '';
+    let code = cache ? cache.code : '';
+
+    if( typeof code !== 'string' ) {
+      code = code[options.lang] || '';
+    }
+
+    ta.value = code;
 
     let editor = this[name + '-editor'] = CodeMirror.fromTextArea(ta, config);
     editor.setValue(ta.value + MIN_LINE);
@@ -176,17 +182,19 @@ class Base extends Handler {
    * @private
    * @param {String} id
    */
-  renderSavedState(name, item, value, id, data) {
+  renderSavedState(name, item, code, id, data) {
     let editor = this[name + 'Editor'];
     let cache = this.getCacheItem(id);
-    this.setCacheItem(id, utils.extend(cache || {}, { code: value }));
+    this.setCacheItem(id, utils.extend(cache || {}, { code: code }));
 
     if( editor ) editor.toTextArea();
     item.innerHTML = this.savedTempl.render(data);
     item.setAttribute('data-uid', id);
 
     // render uneditable state's code editor
-    this._toStaticCode(id, value, data.language);
+    utils.forEach(data.prism, (config) => {
+      this._toStaticCode(config.pid, config.code, config.language);
+    });
 
     this._setStateClass(item, 'saved');
 
@@ -213,8 +221,13 @@ class Base extends Handler {
    * @param {String} value
    * @param {String} lang
    */
-  _toStaticCode(id, value, lang) {
-    DOM.$('static-' + id).innerHTML = this._highlight(value, lang);
+  _toStaticCode(id, code, lang) {
+    let elem = DOM.$('static-' + id);
+
+    if( !code ) {
+      let pre = elem.parentNode;
+      pre.parentNode.removeChild(pre);
+    } else elem.innerHTML = this._highlight(code, lang);
   }
 
   /**
@@ -276,6 +289,16 @@ class Base extends Handler {
     elem.style.display = 'none';
 
     return item;
+  }
+
+  copy() {
+    let succeed = false;
+
+    try {
+  	  succeed = document.execCommand("copy");
+    } catch(e) {}
+
+    return succeed;
   }
 }
 

@@ -211,8 +211,12 @@ class Sample extends Base {
       handler: 'sample',
       name: 'Sample',
       id: name,
-      language: 'javascript',
-      sample: [{ id: name }]
+      sample: [{ id: name }],
+      prism: [{
+        pid: name,
+        language: 'javascript',
+        code: code
+      }]
     });
 
     this.renderRow({
@@ -232,24 +236,41 @@ class Sample extends Base {
     }, item);
   }
 
+  _setSelectionRange(name) {
+    let urlField = DOM.$('share-sample-' + name);
+    urlField.setSelectionRange(0, urlField.value.length);
+  }
+
   shareSamplePopUp() {
+    let bench = this.bench.getWorkingBench();
     let item = this.getItem(this.cel);
     let name = item.getAttribute('data-uid');
     let sample = this.getCacheItem(name);
     let setup = this.getCacheItem('setup');
-    let url = {};
-    url.setup = {
-    };
+    let url = { name: bench.name };
 
-    location.hash = '/' + url;
+    if( setup ) url.setup = setup;
+    if( !sample ) return;
+
+    url.samples = [{
+      name: name,
+      code: sample.code
+    }];
+
+    location.hash = '/' + encodeURIComponent(JSON.stringify(url));
 
     this.popup.modal({
+      name: name,
       title: 'Share Sample',
-      url: url
+      url: location.href
     }, this.popShareSampleTempl);
+
+    this._setSelectionRange(name);
   }
 
-  copy() {
+  copyUrlSample() {
+    this._setSelectionRange(this.cel.getAttribute('data-uid'));
+    this.copy();
   }
 
   edit() {
@@ -293,8 +314,12 @@ class Sample extends Base {
         handler: 'sample',
         name: 'Sample',
         id: name,
-        language: 'javascript',
-        sample: [{ id: name }]
+        sample: [{ id: name }],
+        prism: [{
+          pid: name,
+          language: 'javascript',
+          code: cache.code
+        }]
       });
     }
 

@@ -51,6 +51,16 @@ class PopUp extends Handler {
     this._dropdown = dropdown;
   }
 
+  closeModal() {
+    let modal = DOM.$('modal');
+
+    DOM.removeClass(document.body, 'modal-open');
+    modal.parentNode.style.display = 'none';
+    modal.innerHTML = '';
+
+    delete this._modal;
+  }
+
   /**
    * Close all popup
    * @public
@@ -65,13 +75,7 @@ class PopUp extends Handler {
       delete this._dropdown;
       delete this._modal;
     } else if( e.target.className === 'modal-overlay' || this.cel.tagName.toLowerCase() === 'button' ) {
-      let modal = DOM.$('modal');
-
-      DOM.removeClass(document.body, 'modal-open');
-      modal.parentNode.style.display = 'none';
-      modal.innerHTML = '';
-
-      delete this._modal;
+      this.closeModal();
     }
   }
 

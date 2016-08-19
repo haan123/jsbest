@@ -140,7 +140,7 @@ class Bench extends Base {
     let bench = this.setBenchItem(this._createBlankBench(), name);
     this._clearBenchItems();
     this._renderBenchName(bench.name);
-    this.popup.close();
+    this.popup.closeModal();
   }
 
   /**
@@ -149,7 +149,7 @@ class Bench extends Base {
    */
   showBenchList() {
     if( this.popup.hasPopUp() ) return;
-    
+
     let benches = this.benches;
     let lists = [];
 
@@ -193,9 +193,11 @@ class Bench extends Base {
    */
   removeBenchPopUp() {
     let elem = this.cel;
+    let bench = this.getWorkingBench();
 
     this.popup.modal({
       title: 'Remove Bench',
+      name: bench.name,
       type: 'remove'
     }, this.popRemoveTempl);
   }
@@ -211,7 +213,7 @@ class Bench extends Base {
     this._renderBenchItems();
 
     this._renderBenchName(this.getWorkingBench().name);
-    this.popup.close();
+    this.popup.closeModal();
   }
 
   /**

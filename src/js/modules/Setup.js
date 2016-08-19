@@ -14,7 +14,7 @@ class Setup extends Base {
 
     this.processList = DOM.$('process');
     this.context = _process.context;
-    this.iframe = _process.iframe;
+    this.process = _process;
 
     this.bench = _bench;
 
@@ -45,12 +45,14 @@ class Setup extends Base {
 
     this.showForm(item, 'setup', [{
       name: 'setup-html',
+      lang: 'html',
       config: {
         mode: "xml",
         htmlMode: true
       }
     }, {
-      name: 'setup-js'
+      name: 'setup-js',
+      lang: 'js'
     }], {
       type: edit || 'add',
       id: id,
@@ -152,14 +154,23 @@ class Setup extends Base {
     }
 
     this.context.document.body.innerHTML = code.html;
+    if( code.js ) this.process.bmSetup(code.js);
     if( urls ) this._embedUrls(urls);
 
     this.renderSavedState('setup', item, code, 'setup', {
       handler: 'setup',
       name: 'Setup',
       id: 'setup',
-      language: 'markup',
-      urls: urls
+      urls: urls,
+      prism: [{
+        pid: 'setup-html',
+        language: 'markup',
+        code: code.html
+      }, {
+        pid: 'setup-js',
+        language: 'javascript',
+        code: code.js
+      }]
     });
   }
 
@@ -197,16 +208,28 @@ class Setup extends Base {
     let elem = this.cel;
     let item = this.getItem(elem);
     let isAdd = ~item.className.indexOf(this.getStateClass('add'));
+    let code = this.cache.code;
 
     if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('setup');
       this.cache.urls = [];
     } else {
-      this._save({
-        code: this.cache.code,
-        urls: this.cache.urls
-      }, item);
+      this.renderSavedState('setup', item, code, 'setup', {
+        handler: 'setup',
+        name: 'Setup',
+        id: 'setup',
+        urls: this.cache.urls,
+        prism: [{
+          pid: 'setup-html',
+          language: 'markup',
+          code: code.html
+        }, {
+          pid: 'setup-js',
+          language: 'javascript',
+          code: code.js
+        }]
+      });
     }
   }
 
