@@ -12,9 +12,11 @@ import DOM from './dom';
 
 // matches all handlers in element
 let rjs = /js-([\w]+)/g;
+const SUPPORT_TOUCH = 'ontouchstart' in window;
 
 let supportedEvents = [{
-  name: 'click',
+  type: 'click',
+  touchType: 'touchend',
   fn: function(e, mod) {
     let events = mod.events;
 
@@ -30,7 +32,8 @@ let supportedEvents = [{
 
   }
 }, {
-  name: 'mouseover',
+  type: 'mouseover',
+  touchType: 'mouseover',
   fn: function() {}
 }];
 
@@ -70,8 +73,9 @@ class Handler {
   static setup(context) {
     // _hids.set(this, settings.hid);
     utils.forEach(supportedEvents, (obj) => {
-      utils.Event.on(context || document, obj.name, handler);
-      handlers[obj.name] = obj.fn;
+      let type = !SUPPORT_TOUCH ? obj.type : obj.touchType;
+      utils.Event.on(context || document, type, handler);
+      handlers[type] = obj.fn;
     });
   }
 }

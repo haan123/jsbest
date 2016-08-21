@@ -12,7 +12,6 @@ class Sample extends Base {
       }
     });
 
-    this.suite = _process.suite;
     this.bench = _bench;
 
     this.processList = DOM.$('process');
@@ -22,6 +21,7 @@ class Sample extends Base {
     this.rowTempl = hogan.compile(DOM.$('process-row-templ').innerHTML);
     this.sampleFormTempl = hogan.compile(DOM.$('sample-form-templ').innerHTML);
     this.popShareSampleTempl = hogan.compile(DOM.$('pop-share-sample-templ').innerHTML);
+    this.popShareSamplesTempl = hogan.compile(DOM.$('pop-share-samples-templ').innerHTML);
 
     this._initSamples();
   }
@@ -32,10 +32,8 @@ class Sample extends Base {
    * @private
    */
   _click(e) {
-    e.preventDefault();
     const type = this.cel.getAttribute('data-type');
-
-    this[type]();
+    if( !this[type]() ) e.preventDefault();
   }
 
   /**
@@ -47,17 +45,7 @@ class Sample extends Base {
    * @return {Boolean}
    */
   _exist(name) {
-    const benches = this.suite.benchmarks;
-
-    if( !benches.length ) return;
-
-    let i = benches.length - 1;
-
-    do {
-      if( benches[i].name === name ) return true;
-    } while( i-- );
-
-    return false;
+    return this.getCacheItem(name);
   }
 
   /**
@@ -107,7 +95,7 @@ class Sample extends Base {
     row.parentNode.removeChild(row);
     this.remove(item, 'sample', id);
 
-    this.process.removeBench(id);
+    this.process.removeSuite(id);
   }
 
   /**
@@ -204,7 +192,7 @@ class Sample extends Base {
       this._storeSample(name, data);
     }
 
-    this.suite.add(name, code);
+    this.process.addSuite(name, code);
     this.revealAddButton('sample');
 
     this.renderSavedState('sample', item, code, name, {
@@ -236,40 +224,64 @@ class Sample extends Base {
     }, item);
   }
 
-  _setSelectionRange(name) {
-    let urlField = DOM.$('share-sample-' + name);
+  _setSelectionRange(target) {
+    let urlField = DOM.$(target);
+    urlField.focus();
     urlField.setSelectionRange(0, urlField.value.length);
   }
 
   shareSamplePopUp() {
-    let bench = this.bench.getWorkingBench();
     let item = this.getItem(this.cel);
     let name = item.getAttribute('data-uid');
-    let sample = this.getCacheItem(name);
-    let setup = this.getCacheItem('setup');
-    let url = { name: bench.name };
-
-    if( setup ) url.setup = setup;
-    if( !sample ) return;
-
-    url.samples = [{
-      name: name,
-      code: sample.code
-    }];
-
-    location.hash = '/' + encodeURIComponent(JSON.stringify(url));
+    let url = this.bench.toUrl(name);
 
     this.popup.modal({
       name: name,
       title: 'Share Sample',
-      url: location.href
+      url: url
     }, this.popShareSampleTempl);
 
-    this._setSelectionRange(name);
+    this._setSelectionRange('share-sample');
+  }
+
+  shareSamplesPopUp() {
+    let bench = this.bench.getWorkingBench();
+
+    this.popup.modal({
+      title: 'Share Samples',
+      samples: bench.samples
+    }, this.popShareSamplesTempl);
+  }
+
+  chooseShareSample() {
+    let elem = this.cel;
+    let target = elem.getAttribute('data-target');
+    let urlField = DOM.$(target);
+    let names = JSON.parse(urlField.getAttribute('data-names'));
+
+    if( elem.checked ) {
+      names.push(elem.value);
+    } else {
+      this.removeFromArray(elem.value, names);
+    }
+
+    let url = '';
+    if( !names.length ) {
+      urlField.value = '';
+    } else {
+      url = this.bench.toUrl(names);
+    }
+
+    urlField.setAttribute('data-names', JSON.stringify(names));
+    urlField.value = url;
+    this._setSelectionRange(target);
+
+    // stop preventDefault
+    return true;
   }
 
   copyUrlSample() {
-    this._setSelectionRange(this.cel.getAttribute('data-uid'));
+    this._setSelectionRange(this.cel.getAttribute('data-target'));
     this.copy();
   }
 
@@ -285,7 +297,7 @@ class Sample extends Base {
     }
 
     this.removeFromCache(oldId);
-    this.process.removeBench(oldId);
+    this.process.removeSuite(oldId);
 
     this._save({
       oldId: oldId,

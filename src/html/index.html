@@ -25,6 +25,7 @@
         </div>
         <div class="controls">
           <button class="js-bench button control-button--remove control-button" data-type="removeBenchPopUp" title="Remove Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/></svg></button>
+          <button class="js-sample button control-button" data-type="shareSamplesPopUp" title="Share Benches"><svg class="icon" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></button>
           <button class="js-bench button control-button" data-type="newBenchPopUp" title="Add New Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg> <span class="hide-for-small-only">New Bench</span></button>
         </div>
 
@@ -43,7 +44,7 @@
       <div class="medium-12 medium-centered columns">
         <div class="row small-12 columns">
           <h1 id="bench-heading" class="bench__heading"></h1>
-          <a class="js-bench bench__edit" data-type="saveBenchPopUp" href="#">Edit</a>
+          <a class="js-bench bench__edit" data-type="saveBenchPopUp" href="#">Save</a>
         </div>
 
         <div class="row">
@@ -196,17 +197,36 @@
   </script>
   <script type="text/template" id="pop-save-templ">
     <input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
-    <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
+    <div class="pop-bench__footer">
+      <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
+    </div>
   </script>
   <script type="text/template" id="pop-remove-templ">
     <p>Are your sure you want to remove <strong>{{name}}</strong>?</p>
-    <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
-    <button class="js-popup button secondary small" data-type="close">No</button>
+    <div class="pop-bench__footer">
+      <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
+      <button class="js-popup button secondary small" data-type="close">No</button>
+    </div>
   </script>
   <script type="text/template" id="pop-share-sample-templ">
     <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
-    <input id="share-sample-{{name}}" type="text" value="{{url}}">
-    <button class="js-sample button success small" data-type="copyUrlSample" data-uid="{{name}}">Copy</button>
+    <input id="share-sample" type="text" value="{{url}}">
+    <div class="pop-bench__footer">
+      <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-sample">Copy</button>
+    </div>
+  </script>
+  <script type="text/template" id="pop-share-samples-templ">
+    <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
+    <h6 class="share__heading">Chooses Samples you want to Share</h6>
+    <div class="share__content">
+      {{#samples}}
+      <label class="share__label"><input class="js-sample" data-type="chooseShareSample" data-target="share-samples" type="checkbox" value="{{name}}"> {{name}}</label>
+      {{/samples}}
+    </div>
+    <input id="share-samples" data-names="[]" type="text" value="{{url}}">
+    <div class="pop-bench__footer">
+      <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-samples">Copy</button>
+    </div>
   </script>
   <script type="text/template" id="benches-templ">
     <div class="bench-list">

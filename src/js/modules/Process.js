@@ -2,39 +2,32 @@ import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import _ from 'lodash';
 
+const DUMP_SCRIPT = document.createElement("script");
+
 class Process {
   constructor() {
     this.iframe = DOM.$('iframe');
     let context = this.context = this.iframe.contentWindow;
 
-    context.document.head.appendChild(DOM.toDOM('<script></script>'));
-    Benchmark = Benchmark.runInContext(context);
-
-    context.Benchmark = Benchmark;
     this.errorTmpl = DOM.$('error-templ').innerHTML;
-
-    this.initialize();
-  }
-
-  initialize() {
-    let suite = this.suite = new Benchmark.Suite();
-    suite.benchmarks = [];
-
-    suite.on('add', (event) => {
-      let bench = event.target;
-
-      suite.benchmarks.push(bench);
-
-      bench.on('start', this._start.bind(this));
-      bench.on('start cycle', this._cycle.bind(this));
-    })
-    .on('start cycle', (event) => {
-    })
-    .on('complete', this._complete.bind(this));
+    this.reloadIframe(this._queueForIframe(this._initSuite.bind(this)));
   }
 
   bmSetup(code) {
-    Benchmark.prototype.setup = code;
+    if( !this._iframeIsReady ) {
+      this._queueForIframe(() => {
+        Benchmark.prototype.setup = code;
+      });
+    } else {
+      Benchmark.prototype.setup = code;
+    }
+  }
+
+  reloadIframe() {
+    this._iframeIsReady = false;
+    this.context.location.reload(true);
+
+    this.iframe.onload = this._iframeLoaded.bind(this);
   }
 
   /**
@@ -50,7 +43,7 @@ class Process {
 
     if (stopped) {
       suite.push.apply(suite, _.filter(suite.benchmarks, function(bench) {
-        return !bench.error && bench.reset();
+        return bench.reset();
       }));
 
       suite.run({
@@ -66,7 +59,7 @@ class Process {
    * @public
    * @param {String} name
    */
-  removeBench(name) {
+  removeSuite(name) {
     let suite = this.suite;
     let benches = suite.benchmarks;
 
@@ -87,15 +80,102 @@ class Process {
     return false;
   }
 
+  /**
+   * Add suite, queued if iframe not ready yet
+   *
+   * @param {String} name
+   * @param {String} code
+   */
+  addSuite(name, code) {
+    if( !this._iframeIsReady ) {
+      this._queueForIframe(() => {
+        this.suite.add(name, code);
+      });
+    } else {
+      this.suite.add(name, code);
+    }
+  }
+
+  /**
+   * Refresh context for suites
+   */
+  refreshSuite() {
+    let benches = this.suite ? this.suite.benchmarks : [];
+    delete this.suite;
+
+    let newSuite = this._initSuite();
+
+    utils.forEach(benches, (bench) => {
+      newSuite.add(bench.name, bench.fn);
+    });
+  }
+
+  _initSuite() {
+    let suite = this.suite = new Benchmark.Suite(new Date().getTime());
+    suite.benchmarks = [];
+
+    suite.on('add', (event) => {
+      let bench = event.target;
+
+      suite.benchmarks.push(bench);
+
+      bench.on('start', this._start.bind(this));
+      bench.on('start cycle', this._cycle.bind(this));
+    })
+    .on('start cycle', (event) => {
+      let bench = event.target;
+      let error = bench.error;
+
+      if( error ) {
+        let row = DOM.$('sample-' + bench.name);
+        let rankCell = row.firstChild.nextSibling;
+
+        this._render(bench, row, error);
+        this._renderRankCell(rankCell, this.errorTmpl, 'alert', null, error);
+      }
+    })
+    .on('complete', this._complete.bind(this));
+
+    return suite;
+  }
+
+  _queueForIframe(fn) {
+    let queue = this._iframeQueue || [];
+
+    queue.push(fn);
+    this._iframeQueue = queue;
+  }
+
+  _iframeLoaded() {
+    let context = this.context;
+    Benchmark = Benchmark.runInContext(context);
+    context.Benchmark = Benchmark;
+
+    context.document.head.appendChild(DUMP_SCRIPT);
+
+    utils.forEach(this._iframeQueue, (fn) => {
+      fn();
+    });
+
+    delete this._iframeQueue;
+    this.refreshSuite();
+
+    this._iframeIsReady = true;
+  }
+
+  /**
+   * @private
+   */
   _start() {}
 
   /**
    * @private
    */
   _cycle(event) {
-    var bench = event.target;
+    let bench = event.target;
+    let error = bench.error;
 
-    if (!bench.aborted) {
+    if ( !bench.aborted ) {
       this._status(bench);
     }
   }
@@ -137,12 +217,11 @@ class Process {
       let nameCell = row.firstChild;
       let rankCell = nameCell.nextSibling;
       let rankClass = 'warning';
-      let error = bench.error;
       let slower;
 
-      this._render(bench, row, error);
+      this._render(bench, row, null);
 
-      if( !error ) {
+      if( !bench.error ) {
         let fastestHz = this._hz(sorted[bound.fastest]),
             hz = this._hz(bench),
             percent = (1 - (hz / fastestHz)) * 100;
@@ -160,11 +239,9 @@ class Process {
 
           count++;
         }
-      } else {
-        rankClass = 'alert';
-      }
 
-      this._renderRankCell(rankCell, error ? this.errorTmpl : count, rankClass, slower, error);
+        this._renderRankCell(rankCell, count, rankClass, slower, null);
+      }
     });
   }
 

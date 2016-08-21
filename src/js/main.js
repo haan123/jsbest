@@ -18,8 +18,8 @@ require.ensure([], function() {
 let _popup = new PopUp();
 let _process = new Process();
 let _bench = new Bench(_popup);
-let sample = new Sample(_process, _bench, _popup);
 let setup = new Setup(_process, _bench, _popup);
+let sample = new Sample(_process, _bench, _popup);
 
 _bench.setup = setup;
 _bench.sample = sample;

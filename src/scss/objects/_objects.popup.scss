@@ -2,7 +2,6 @@
   position: relative;
   padding: rem-calc(12);
   color: $black;
-  text-align: left;
   background: $white;
   border: 1px solid $light-gray;
   border-radius: $global-radius;
@@ -24,9 +23,12 @@
   border-bottom: 1px solid $light-gray;
 }
 
+.pop-bench__footer {
+  text-align: right;
+}
+
 .pop-bench__content {
   padding-top: $global-padding / 2;
-  text-align: right;
 }
 
 .pop-bench__update,
@@ -35,19 +37,32 @@
 }
 
 .pop-bench--remove {
-  p {
-    text-align: left;
-  }
-
   .pop-bench__remove {
     display: block;
   }
 }
 
+.share__heading {
+  padding-bottom: $global-margin;
+}
+
 .share__note {
-  text-align: left;
   font-size: rem-calc(13);
   color: $dark-gray;
+}
+
+.share__content {
+  max-height: rem-calc(280);
+  margin-bottom: $global-margin;
+  overflow-y: auto;
+}
+
+.share__label {
+  padding-top: $global-padding / 2;
+  padding-left: rem-calc(4);
+  font-size: rem-calc(16);
+  cursor: pointer;
+  border-top: 1px solid $light-gray;
 }
 
 .pop-bench--save,

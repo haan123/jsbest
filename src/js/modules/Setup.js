@@ -3,6 +3,8 @@ import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
+const MODULE_NAME = '__SETUP__';
+
 class Setup extends Base {
   constructor(_process, _bench) {
     super({
@@ -20,8 +22,7 @@ class Setup extends Base {
 
     this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
     this.setupUrlTempl = hogan.compile(DOM.$('setup-url-templ').innerHTML);
-    this._id = 'setup';
-    this.cache = this.setCacheItem('setup', {});
+    this.cache = this.setCacheItem(MODULE_NAME, {});
 
     this._initSetup();
   }
@@ -36,6 +37,10 @@ class Setup extends Base {
     const type = this.cel.getAttribute('data-type');
 
     this[type]();
+  }
+
+  getModuleName() {
+    return MODULE_NAME;
   }
 
   openSetup(edit) {
@@ -76,6 +81,7 @@ class Setup extends Base {
     if( !setup.code ) return;
 
     this._save(setup);
+    this.cache = this.getCacheItem(MODULE_NAME);
   }
 
   /**
@@ -153,11 +159,16 @@ class Setup extends Base {
       this._storeSetup(data);
     }
 
-    this.context.document.body.innerHTML = code.html;
-    if( code.js ) this.process.bmSetup(code.js);
-    if( urls ) this._embedUrls(urls);
+    this.process._queueForIframe(() => {
+      this.context.document.body.innerHTML = code.html;
+      if( urls ) this._embedUrls(urls);
+    });
 
-    this.renderSavedState('setup', item, code, 'setup', {
+    this.process.reloadIframe();
+
+    this.process.bmSetup(code.js);
+
+    this.renderSavedState('setup', item, code, MODULE_NAME, {
       handler: 'setup',
       name: 'Setup',
       id: 'setup',
@@ -215,7 +226,7 @@ class Setup extends Base {
       this.revealAddButton('setup');
       this.cache.urls = [];
     } else {
-      this.renderSavedState('setup', item, code, 'setup', {
+      this.renderSavedState('setup', item, code, MODULE_NAME, {
         handler: 'setup',
         name: 'Setup',
         id: 'setup',

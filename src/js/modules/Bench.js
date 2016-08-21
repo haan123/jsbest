@@ -5,6 +5,7 @@ import hogan from 'hogan.js';
 
 const WORKING_NAME = 'working';
 const BENCHES_NAME = 'benches';
+const ROOT_URL = ~location.href.indexOf('haan123') ? 'https://haan123.github.io/jsbest/' : 'http://localhost:3000/';
 
 class Bench extends Base {
   constructor(_popup) {
@@ -33,22 +34,12 @@ class Bench extends Base {
   }
 
   /**
-   * Preference to Setup._initSetup
-   * @private
-   */
-  _initSetup() {}
-  /**
-   * Preference to Sample._initSamples
-   * @private
-   */
-  _initSamples() {}
-
-  /**
    * Handle click for sample handler
    *
    * @private
    */
   _click(e) {
+    e.preventDefault();
     const type = this.cel.getAttribute('data-type');
 
     this[type]();
@@ -114,6 +105,21 @@ class Bench extends Base {
   }
 
   /**
+   * Open share benches popup handler
+   * @public
+   */
+  shareBenchesPopUp() {
+    let elem = this.cel;
+
+    this.popup.modal({
+      title: 'Share Benches',
+      type: 'share'
+    }, this.popSaveTempl);
+
+    DOM.$('bench-name').focus();
+  }
+
+  /**
    * Save bench event handler
    * @public
    */
@@ -123,9 +129,11 @@ class Bench extends Base {
 
     if( !name ) return;
 
+    this._clearUrlBench();
+
     this.setBenchItem(_bench, name);
     this._renderBenchName(name);
-    this.popup.close();
+    this.popup.closeModal();
   }
 
   /**
@@ -136,6 +144,7 @@ class Bench extends Base {
     let name = DOM.$('bench-name').value.trim();
 
     this._working = null;
+    this._clearUrlBench();
 
     let bench = this.setBenchItem(this._createBlankBench(), name);
     this._clearBenchItems();
@@ -171,11 +180,17 @@ class Bench extends Base {
     })));
   }
 
+  _clearUrlBench() {
+    delete this._urlBench;
+    location.hash = '';
+  }
+
   /**
    * Open bench handler
    * @public
    */
   openBench() {
+    this._clearUrlBench();
     let id = this.cel.getAttribute('data-id');
     let bench = this.getBenchItem(id);
 
@@ -214,6 +229,8 @@ class Bench extends Base {
 
     this._renderBenchName(this.getWorkingBench().name);
     this.popup.closeModal();
+
+    this._clearUrlBench();
   }
 
   /**
@@ -237,7 +254,7 @@ class Bench extends Base {
       let id = item.getAttribute('data-uid');
       if( !id ) return;
 
-      if( id === 'setup' ) {
+      if( id === this.setup.getModuleName() ) {
         this.setup.removeSetupView(item, id);
       } else {
         this.sample.removeSampleView(item, id);
@@ -270,8 +287,15 @@ class Bench extends Base {
    * @return {Object}
    */
   getWorkingBench() {
-    let id = this._working || (this._working = this.benches[this.benches.length - 1]);
-    let working = this.getBenchItem(id);
+    let working = this._urlBench || this._getBenchFromUrl();
+
+    if( working ) {
+      this._working = this._createBenchId();
+      this._urlBench = working;
+    } else {
+      let id = this._working || (this._working = this.benches[this.benches.length - 1]);
+      working = this.getBenchItem(id);
+    }
 
     if( !working ) {
       working = this.setBenchItem(this._createBlankBench());
@@ -293,15 +317,17 @@ class Bench extends Base {
     let working = this._working;
     let benches = this.benches;
 
-    this.removeFromArray(working, benches);
-    this._removeBenchItem(working);
-    benches.push(id);
-
-    this._working = id;
     bench.name = name || bench.name || 'Quick Bench';
 
-    localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
-    localStorage.setItem(id, JSON.stringify(bench));
+    if( !this._urlBench ) {
+      this.removeFromArray(working, benches);
+      this._removeBenchItem(working);
+      benches.push(id);
+      localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
+      localStorage.setItem(id, JSON.stringify(bench));
+    }
+
+    this._working = id;
 
     return bench;
   }
@@ -320,6 +346,46 @@ class Bench extends Base {
 
     localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
     return localStorage.removeItem(name);
+  }
+
+  /**
+   * Build share url from names
+   *
+   * @param {String/Array} names
+   *
+   * @return {String}
+   */
+  toUrl(names) {
+    let bench = this.getWorkingBench();
+    names = typeof names === 'string' ? [names] : names;
+    let arr = [];
+
+    utils.forEach(bench.samples, (sample) => {
+      if( ~names.indexOf(sample.name) ) {
+        arr.push(sample);
+      }
+    });
+
+    bench.samples = arr;
+
+    return ROOT_URL + '#/' + encodeURIComponent(JSON.stringify(bench));
+  }
+
+  /**
+   * Parse hash to json
+   * @private
+   *
+   * @return {Object}
+   */
+  _getBenchFromUrl() {
+    let bench;
+    let hash = location.hash.substring(2);
+
+    try {
+      bench = JSON.parse(decodeURIComponent(hash));
+    } catch(e) {}
+
+    return bench;
   }
 }
 
