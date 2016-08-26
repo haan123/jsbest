@@ -36,11 +36,11 @@ let _scroll = function(e) {
   }
 };
 
-utils.Event.on(window, 'scroll', _scroll);
-
 class Base extends Handler {
   constructor(obj) {
     super(obj);
+
+    this.on(window, 'scroll', _scroll);
 
     this.savedTempl = hogan.compile(DOM.$('saved-templ').innerHTML);
     this.processes = _processes;

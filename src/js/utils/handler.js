@@ -8,15 +8,18 @@
  *
  */
 import utils from './utils';
+import Events from './Events';
 import DOM from './dom';
 
 // matches all handlers in element
 let rjs = /js-([\w]+)/g;
 const SUPPORT_TOUCH = 'ontouchstart' in window;
+const TOUCH_START = SUPPORT_TOUCH ? "touchstart" : "mousedown";
+const TOUCH_END = SUPPORT_TOUCH ? "touchend" : "mouseup";
 
 let supportedEvents = [{
   type: 'click',
-  touchType: 'touchend',
+  touchType: 'tap',
   fn: function(e, mod) {
     let events = mod.events;
 
@@ -29,7 +32,6 @@ let supportedEvents = [{
         fn.call(mod, e);
       }
     }
-
   }
 }, {
   type: 'mouseover',
@@ -59,8 +61,10 @@ function handler(e) {
 // See - https://jsperf.com/es6-map-vs-object-properties/2
 let modules = new Map();
 
-class Handler {
+class Handler extends Events {
   constructor(settings) {
+    super();
+
     let mid = settings.mid;
 
     if( modules.get(mid) ) return this;
@@ -71,10 +75,12 @@ class Handler {
   }
 
   static setup(context) {
+    let event = new Events();
     // _hids.set(this, settings.hid);
     utils.forEach(supportedEvents, (obj) => {
-      let type = !SUPPORT_TOUCH ? obj.type : obj.touchType;
-      utils.Event.on(context || document, type, handler);
+      let type = SUPPORT_TOUCH ? obj.touchType : obj.type;
+
+      event.on(context || document, type, handler);
       handlers[type] = obj.fn;
     });
   }
