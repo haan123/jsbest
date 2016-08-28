@@ -2,6 +2,7 @@ import Handler from '../utils/handler';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import hogan from 'hogan.js';
+import Events from '../utils/Events';
 
 const MIN_LINE = '\n\n\n\n';
 const SAMPLE_ITEM_CLASS = 'sample-item';
@@ -36,11 +37,11 @@ let _scroll = function(e) {
   }
 };
 
+Events.bind(window, 'scroll', _scroll);
+
 class Base extends Handler {
   constructor(obj) {
     super(obj);
-
-    this.on(window, 'scroll', _scroll);
 
     this.savedTempl = hogan.compile(DOM.$('saved-templ').innerHTML);
     this.processes = _processes;
