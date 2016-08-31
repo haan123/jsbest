@@ -21,10 +21,10 @@ Client side testing for javascript performance, compare with multiple sample to 
 - [Babel](https://babeljs.io/)
 
 ## Future Releases
-- Get sample code from gist of Github
-- Allow to save url to share samples with others people
-- Chart visualization
-- Local Storage
+- [x] Local Storage
+- [x] Allow to save url to share samples with others people
+- [] Get sample code from gist of Github
+- [] Chart visualization
 
 
 ## Dev
