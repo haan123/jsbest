@@ -31,7 +31,7 @@ class Sample extends Base {
    *
    * @private
    */
-  _click(e) {console.log(e)
+  _click(e) {
     const type = this.cel.getAttribute('data-type');
     if( !this[type]() ) e.preventDefault();
   }

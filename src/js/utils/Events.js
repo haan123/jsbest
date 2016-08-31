@@ -44,15 +44,49 @@ class _Event {
   }
 }
 
+let bindEvent = function(elem, type, fn, data) {
+  let events = Events.getEventData(elem);
+
+  if( !events ) {
+    events = Events.setEventData(elem);
+  }
+
+  let custom = _custom.get(type);
+  let handlers = events[type];
+  fn.fid = _fid++;
+
+  let handler = {
+    el: elem,
+    fn: fn
+  };
+
+  if( data ) handler.data = data;
+
+  let eventHandler = function(event) {
+    return Events.dispatch.apply(elem, arguments);
+  };
+
+  if( !handlers ) {
+    handlers = events[type] = [];
+
+    if( !custom || custom.setup(elem) === false ) {
+      handler.eventHandler = eventHandler;
+      elem.addEventListener(type, eventHandler, false);
+    }
+  }
+
+  handlers.push(handler);
+};
+
 class Events {
   constructor() {}
 
-  on(elem, type, callback) {
-    Events.bind(elem, type, callback);
+  on(elem, type, data, fn) {
+    Events.bind.apply(this, arguments);
   }
 
-  off(elem, type, callback) {
-    Events.unbind(elem, type, callback);
+  off(elem, type, fn) {
+    Events.unbind(elem, type, fn);
   }
 
   trigger(elem, type, data) {
@@ -91,60 +125,41 @@ class Events {
   }
 
   /**
-   * Binding events
+   *  Binding events
    *
+   *  General:
+   *  Events.bind(document, 'click', (e) => {});
    *
+   *  Data passed:
+   *  Events.bind(document, 'click', { name: value }, (e) => {
+   *    let data = e.data;
+   *  });
+   *
+   *  Chained call
+   *  Events.bind(document, 'click', (e) => {}).bind('mouseover', (e) => {});
+   *
+   *  @param {Node} elem
+   *  @param {String} type
+   *  @param {Object?} data
+   *  @param {Function} fn
+   *
+   * @return {Object} - chain object
    */
-  static bind(elem, type, data, fn) {
-    let isChain = this.isChain;
+  static bind(...args) {
+    let elem = this, type, fn, data;
+    let nextContext = this;
 
-    if( isChain ) {
-      if( !fn ) {
-        [elem, type, fn, data] = [this.elem, elem, type, null];
-      } else {
-        [elem, type, data, fn] = [this.elem, elem, type, data];
-      }
-    } else if( !fn ) [fn, data] = [data, null];
-
-    if( !fn ) return {
-      bind: nativeBind.call(Events.bind, { isChain: true, elem: elem })
-    };
-
-    let events = Events.getEventData(elem);
-
-    if( !events ) {
-      events = this.setEventData(elem);
+    switch(args.length) {
+      case 2: [type, fn] = args; break;
+      case 3: elem.nodeType ? ([type, data, fn] = args) : ([elem, type, fn] = args); break;
+      default: [elem, type, data, fn] = args;
     }
 
-    let custom = _custom.get(type);
-    let handlers = events[type];
-    fn.fid = _fid++;
-
-    let handler = {
-      el: elem,
-      fn: fn
-    };
-
-    if( data ) handler.data = data;
-
-    let eventHandler = function(event) {
-      return Events.dispatch.apply(elem, arguments);
-    };
-
-    if( !handlers ) {
-      handlers = events[type] = [];
-
-      if( !custom || custom.setup(elem) === false ) {
-        handler.eventHandler = eventHandler;
-        elem.addEventListener(type, eventHandler, false);
-      }
+    if( (elem.nodeType || elem === elem.window) && fn ) {
+      bindEvent(elem, type, fn, data);
     }
 
-    handlers.push(handler);
-
-    return {
-      bind: nativeBind.call(Events.bind, { isChain: true, elem: elem })
-    };
+    return { bind: nativeBind.call(Events.bind, elem) };
   }
 
   static unbind(elem, type, fn) {
@@ -172,7 +187,7 @@ class Events {
 
     if( !handlers.length ) delete events[type];
 
-    return this;
+    return { bind: nativeBind.call(Events.bind, elem) };
   }
 
   static dispatch(event) {
