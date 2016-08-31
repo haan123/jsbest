@@ -23,8 +23,8 @@ Client side testing for javascript performance, compare with multiple sample to 
 ## Future Releases
 - [x] Local Storage
 - [x] Allow to save url to share samples with others people
-- [] Get sample code from gist of Github
-- [] Chart visualization
+- [ ] Get sample code from gist of Github
+- [ ] Chart visualization
 
 
 ## Dev
