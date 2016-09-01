@@ -1,6 +1,42 @@
+import Promise from 'bluebird';
+
 let utils = {};
 let protoObj = Object.prototype;
 let toString = protoObj.toString;
+
+let _options = {
+  type: 'GET',
+  async: true
+};
+let risget = /^(?:GET|HEAD)$/;
+
+utils.ajax = function(url, options) {
+  return new Promise(function(resolve, reject) {
+    options = utils.extend({}, _options, options);
+    options.type = options.type.toUpperCase();
+
+    var xhr = new XMLHttpRequest();
+    xhr.open(options.type, url);
+
+    xhr.onload = function() {
+      let status = this.status;
+
+      if ( status >= 200 && status < 300 || status === 304 ) {
+        try {
+          resolve(JSON.parse(this.responseText));
+        } catch(e) {}
+      }
+    };
+
+    xhr.onerror = function() {};
+    xhr.onabort = function() {};
+
+    let isSend = !risget.test(options.type);
+    try{
+      xhr.send(isSend && options.data || null);
+    } catch(e) {}
+  });
+};
 
 utils.extend = function(obj) {
   let length = arguments.length,

@@ -138,8 +138,9 @@
   <script type="text/template" id="sample-form-templ">
     <div class="sample-item__form">
       <div class="row">
-        <div class="medium-6 columns">
-          <input id="sample-{{id}}-name" type="text" placeholder="Name">
+        <div class="medium-6 columns sample__top">
+          <input id="sample-{{id}}-name" class="sample__name" type="text" placeholder="Name">
+          <button id="gist" class="js-sample gist" data-type="gistPopup" type="button" title="Load Sample From Gist"><svg class="icon icon--lg" viewBox="0 0 12 16"><path d="M7.5 5L10 7.5 7.5 10l-.75-.75L8.5 7.5 6.75 5.75 7.5 5zm-3 0L2 7.5 4.5 10l.75-.75L3.5 7.5l1.75-1.75L4.5 5zM0 13V2c0-.55.45-1 1-1h10c.55 0 1 .45 1 1v11c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1zm1 0h10V2H1v11z"/></svg></button>
         </div>
       </div>
 
@@ -236,6 +237,15 @@
         {{/benches}}
       </ul>
     </div>
+  </script>
+  <script type="text/template" id="pop-gist-choose-templ">
+    <div class="gist-choose">
+      <div class="gist-choose__item"><a class="js-sample gist-choose__link" data-type="openGistFromId" href="#">From Gist ID <small>Load a single public gist from its id</small></a></div>
+      <div class="gist-choose__item"><a class="js-sample gist-choose__link" data-type="openGistFromUser" href="#">From User ID <small>Load one or more public gist from a user</small></a></div>
+    </div>
+  </script>
+  <script type="text/template" id="gist-id-form-templ">
+
   </script>
 
 

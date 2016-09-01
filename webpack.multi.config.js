@@ -44,7 +44,7 @@ module.exports = function(env) {
     webpackConfig.entry = {
       "main": "./main.js",
       "vendor": ["lodash", "prismjs", 'hogan.js',
-      "../../node_modules/prismjs/components/prism-javascript.js"]
+      "../../node_modules/prismjs/components/prism-javascript.js", "bluebird"]
     };
 
     webpackConfig.output= {

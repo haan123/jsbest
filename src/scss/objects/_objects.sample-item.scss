@@ -61,10 +61,50 @@
   }
 }
 
+.sample__top {
+  position: relative;
+}
+
+.sample__name {
+  padding-right: rem-calc(33);
+}
+
+.gist {
+  position: absolute;
+  right: $global-margin;
+  top: rem-calc(8);
+  color: $medium-gray;
+
+  &:hover, &:focus {
+    color: inherit;
+  }
+}
+
 .sample-share--setup {
   display: none;
 }
 
+
 .button-group {
   margin: $global-margin 0 0;
+}
+
+// Gist
+.gist-choose__item {
+  font-weight: 700;
+}
+
+.gist-choose__link {
+  display: block;
+  color: $black !important;
+  padding: $global-padding / 2;
+
+  &:hover {
+    background: scale-color(#0072ff, $lightness: 90%);
+  }
+
+  small {
+    display: block;
+    font-weight: 400;
+  }
 }

@@ -3,6 +3,8 @@ import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
+const GITHUB_API_URL = 'https://api.github.com';
+
 class Sample extends Base {
   constructor(_process, _bench, _popup) {
     super({
@@ -20,8 +22,10 @@ class Sample extends Base {
 
     this.rowTempl = hogan.compile(DOM.$('process-row-templ').innerHTML);
     this.sampleFormTempl = hogan.compile(DOM.$('sample-form-templ').innerHTML);
+    this.gistIdFormTempl = hogan.compile(DOM.$('gist-id-form-templ').innerHTML);
     this.popShareSampleTempl = hogan.compile(DOM.$('pop-share-sample-templ').innerHTML);
     this.popShareSamplesTempl = hogan.compile(DOM.$('pop-share-samples-templ').innerHTML);
+    this.popGistChooseTempl = hogan.compile(DOM.$('pop-gist-choose-templ').innerHTML);
 
     this._initSamples();
   }
@@ -118,6 +122,31 @@ class Sample extends Base {
     if( edit ) {
       DOM.$('sample-' + id + '-name').value = item.getAttribute('data-uid');
     }
+  }
+
+  getUserGists(userName) {
+    let url = GITHUB_API_URL + '/users/' + userName + '/gists'
+
+    return utils.ajax(url);
+  }
+
+  /**
+   * Show gist popup
+   *
+   */
+  gistPopup() {
+    this.popup.modal({
+      title: 'Load Sample',
+      type: 'gist'
+    }, this.popGistChooseTempl);
+  }
+
+  openGistFromId() {
+
+  }
+
+  loadGistFromId() {
+
   }
 
   /**
