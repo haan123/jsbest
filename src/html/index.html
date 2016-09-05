@@ -27,6 +27,7 @@
           <button class="js-bench button control-button--remove control-button" data-type="removeBenchPopUp" title="Remove Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/></svg></button>
           <button class="js-sample button control-button" data-type="shareSamplesPopUp" title="Share Benches"><svg class="icon" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></button>
           <button class="js-bench button control-button" data-type="newBenchPopUp" title="Add New Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg> <span class="hide-for-small-only">New Bench</span></button>
+          <button id="userMenu" class="js-github button control-user" data-type="userMenu" style="display:none;"><svg class="icon" viewbox="0 0 12 16"><path d="M0 5l6 6 6-6z"/></svg></button>
         </div>
 
         <a class="logo" href="/jsbest"><svg viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a>
@@ -105,6 +106,12 @@
     <div id="modal"></div>
   </div>
 
+  <script type="text/template" id="checkmark-templ">
+    <svg id="checkmark" class="status__icon checkmark" viewbox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+  </script>
+  <script type="text/template" id="cross-templ">
+    <svg id="cross" class="status__icon cross" viewbox="0 0 68 68"><circle class="cross__circle" cx="34" cy="34" r="33" fill="none"/><path d="m35,35l-9.3,-9.3"></path><path d="m35,35l9.3,9.3"></path><path d="m35,35l-9.3,9.3"></path><path d="m35,35l9.3,-9.3"></path></svg>
+  </script>
   <script type="text/template" id="process-row-templ">
     <tr id="sample-{{id}}"><td class="cell-name"><a class="cell-name__link" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr>
   </script>
@@ -140,7 +147,7 @@
       <div class="row">
         <div class="medium-6 columns sample__top">
           <input id="sample-{{id}}-name" class="sample__name" type="text" placeholder="Name">
-          <button id="gist" class="js-sample gist" data-type="gistPopup" type="button" title="Load Sample From Gist"><svg class="icon icon--lg" viewBox="0 0 12 16"><path d="M7.5 5L10 7.5 7.5 10l-.75-.75L8.5 7.5 6.75 5.75 7.5 5zm-3 0L2 7.5 4.5 10l.75-.75L3.5 7.5l1.75-1.75L4.5 5zM0 13V2c0-.55.45-1 1-1h10c.55 0 1 .45 1 1v11c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1zm1 0h10V2H1v11z"/></svg></button>
+          <button id="gist" class="js-github gist" data-type="gistPopup" type="button" title="Load Sample From Gist"><svg class="icon icon--lg" viewBox="0 0 12 16"><path d="M7.5 5L10 7.5 7.5 10l-.75-.75L8.5 7.5 6.75 5.75 7.5 5zm-3 0L2 7.5 4.5 10l.75-.75L3.5 7.5l1.75-1.75L4.5 5zM0 13V2c0-.55.45-1 1-1h10c.55 0 1 .45 1 1v11c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1zm1 0h10V2H1v11z"/></svg></button>
         </div>
       </div>
 
@@ -188,12 +195,19 @@
     <div class="dialog animated fade-in-down pop-bench pop-bench--{{type}}">
       <div tabindex="0"></div>
       <div class="pop-bench__head">
+        <button class="js-popup pop-bench__back" data-type="prevView"><svg class="icon icon--lg" viewBox="0 0 8 16"><path d="M5.5 3L7 4.5 3.25 8 7 11.5 5.5 13l-5-5z"/></svg></button>
         <h6>{{title}}</h6>
         <button class="js-popup pop-bench__close" data-type="close"><svg class="icon icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></button>
       </div>
       <div class="pop-bench__content">
         {{>content}}
       </div>
+    </div>
+  </script>
+  <script type="text/template" id="user-menu-templ">
+    <div class="dropdown user-menu">
+      <div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
+      <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div>
     </div>
   </script>
   <script type="text/template" id="pop-save-templ">
@@ -230,24 +244,36 @@
     </div>
   </script>
   <script type="text/template" id="benches-templ">
-    <div class="bench-list">
+    <div class="bench-list dropdown">
       <ul>
         {{#benches}}
-        <li class="js-bench bench__item" data-type="openBench" data-id="{{id}}">{{name}}<time>{{time}}</time></li>
+        <li class="js-bench bench__item dropdown__item" data-type="openBench" data-id="{{id}}">{{name}}<time>{{time}}</time></li>
         {{/benches}}
       </ul>
     </div>
   </script>
+  <script type="text/template" id="login-form-templ">
+    <p class="share__note">This feature requires an authentication from <strong>Github</strong> to read public gists, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how, <strong>Please Note: </strong> you don't have to provide any <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">scope</a>, we just need to read your public infomations for this feature to work.</p>
+    <input id="ace" type="text" placeholder="Personal Access Token">
+    <p id="message" class="message error">Your Personal Access Token is not valid, please try again with difference token.</p>
+    <div class="pop-bench__footer">
+      <button class="js-github button success small" data-type="signIn">Sign In</button>
+      <button class="js-popup button secondary small" data-type="close">Later</button>
+    </div>
+  </script>
   <script type="text/template" id="pop-gist-choose-templ">
     <div class="gist-choose">
-      <div class="gist-choose__item"><a class="js-sample gist-choose__link" data-type="openGistFromId" href="#">From Gist ID <small>Load a single public gist from its id</small></a></div>
-      <div class="gist-choose__item"><a class="js-sample gist-choose__link" data-type="openGistFromUser" href="#">From User ID <small>Load one or more public gist from a user</small></a></div>
+      <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="openGistFromId" href="#">From Gist ID <small>Load a single public gist from its id</small></a></div>
+      <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="openGistFromUser" href="#">From User ID <small>Load one or more public gist from a user</small></a></div>
     </div>
   </script>
   <script type="text/template" id="gist-id-form-templ">
-
+    <input id="gist-id" type="text" placeholder="Enter Gist ID">
+    <div id="status" class="status"></div>
+    <div class="pop-bench__footer">
+      <button class="js-github button success small" data-type="" data-target="share-samples">OK</button>
+    </div>
   </script>
-
 
   <script src="js/benchmark.js"></script>
   <script src="js/platform.js"></script>

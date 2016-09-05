@@ -97,6 +97,79 @@
 }
 
 .bounce-in {
-  -webkit-animation-name: bounceIn;
   animation-name: bounceIn;
+}
+
+$curve: cubic-bezier(0.650, 0, 0.450, 1);
+
+.checkmark__circle,
+.cross__circle {
+  animation: stroke .6s $curve forwards;
+  stroke-dashoffset: 166;
+  stroke-dasharray: 166;
+  stroke-width: 4;
+  stroke-miterlimit: 10;
+  fill: none;
+}
+
+.checkmark__circle {
+  stroke: map-get($foundation-palette, success);
+}
+
+.cross__circle {
+  stroke: map-get($foundation-palette, alert);
+}
+
+.checkmark, .cross {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  stroke: #fff;
+  stroke-miterlimit: 10;
+  stroke-width: 4;
+}
+
+.checkmark {
+  box-shadow: inset 0 0 0 map-get($foundation-palette, success);
+  animation: fill-checkmark .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.cross {
+  box-shadow: inset 0 0 0 map-get($foundation-palette, alert);
+  animation: fill-cross .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.checkmark__check,
+.cross > path {
+  transform-origin: 50% 50%;
+  animation: stroke .3s $curve .8s forwards;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill-checkmark {
+  100% {
+    box-shadow: inset 0 0 0 30px map-get($foundation-palette, success);
+  }
+}
+
+@keyframes fill-cross {
+  100% {
+    box-shadow: inset 0 0 0 30px map-get($foundation-palette, alert);
+  }
 }

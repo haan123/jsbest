@@ -15,8 +15,21 @@ utils.ajax = function(url, options) {
     options = utils.extend({}, _options, options);
     options.type = options.type.toUpperCase();
 
+    let data = options.data, params = [];
+    if( data ) {
+      for( let key in data ) {
+        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key] || ''));
+      }
+
+      params = params.join('&');
+    }
+
+    if( params ) {
+      url += url.indexOf('?') < 0 ? '?' + params : params;
+    }
+
     var xhr = new XMLHttpRequest();
-    xhr.open(options.type, url);
+    xhr.open(options.type, url, options.async);
 
     xhr.onload = function() {
       let status = this.status;
@@ -25,16 +38,20 @@ utils.ajax = function(url, options) {
         try {
           resolve(JSON.parse(this.responseText));
         } catch(e) {}
+      } else {
+        reject(new Error(this.statusText));
       }
     };
 
-    xhr.onerror = function() {};
-    xhr.onabort = function() {};
+    xhr.onerror = reject;
+    xhr.onabort = reject;
 
     let isSend = !risget.test(options.type);
     try{
       xhr.send(isSend && options.data || null);
-    } catch(e) {}
+    } catch(e) {
+      reject(e);
+    }
   });
 };
 

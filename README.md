@@ -8,6 +8,7 @@ Client side testing for javascript performance, compare with multiple sample to 
 - [Prismjs](https://github.com/PrismJS/prism)
 - [Benchmark](https://github.com/bestiejs/benchmark.js)
 - [Foundation](https://github.com/zurb/foundation-sites)
+- [Octicon](https://octicons.github.com/)
 
 ## Technologies & Methods
 - [ES6](https://babeljs.io/docs/learn-es2015/)

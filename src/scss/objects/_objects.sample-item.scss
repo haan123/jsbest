@@ -71,8 +71,8 @@
 
 .gist {
   position: absolute;
-  right: $global-margin;
   top: rem-calc(8);
+  right: $global-margin;
   color: $medium-gray;
 
   &:hover, &:focus {
@@ -96,8 +96,8 @@
 
 .gist-choose__link {
   display: block;
-  color: $black !important;
   padding: $global-padding / 2;
+  color: $black !important;
 
   &:hover {
     background: scale-color(#0072ff, $lightness: 90%);
@@ -107,4 +107,10 @@
     display: block;
     font-weight: 400;
   }
+}
+
+.status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }

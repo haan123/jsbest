@@ -7,7 +7,7 @@ let _guid = 0;
 let _fid = 0;
 
 let nativeBind = Function.prototype.bind;
-
+let rnotwhite = (/\S+/g);
 class _Event {
   constructor(event, config) {
     if( event && event.type ) {
@@ -81,10 +81,25 @@ let bindEvent = function(elem, type, fn, data) {
 class Events {
   constructor() {}
 
-  on(elem, type, data, fn) {
+  /**
+   * Bind event
+   *
+   * @param {Node} elem
+   * @param {String} types
+   * @param {Object} data - optional
+   * @param {Function} fn
+   */
+  on(elem, types, data, fn) {
     Events.bind.apply(this, arguments);
   }
 
+  /**
+   * Unbind event
+   *
+   * @param {Node} elem
+   * @param {String} types
+   * @param {Function} fn
+   */
   off(elem, type, fn) {
     Events.unbind(elem, type, fn);
   }
@@ -146,17 +161,23 @@ class Events {
    * @return {Object} - chain object
    */
   static bind(...args) {
-    let elem = this, type, fn, data;
+    let elem = this, types, fn, data;
     let nextContext = this;
 
     switch(args.length) {
-      case 2: [type, fn] = args; break;
-      case 3: elem.nodeType ? ([type, data, fn] = args) : ([elem, type, fn] = args); break;
-      default: [elem, type, data, fn] = args;
+      case 2: [types, fn] = args; break;
+      case 3:
+        if(elem.nodeType) [types, data, fn] = args;
+        else [elem, types, fn] = args;
+        break;
+      default: [elem, types, data, fn] = args;
     }
 
     if( (elem.nodeType || elem === elem.window) && fn ) {
-      bindEvent(elem, type, fn, data);
+      types = types.trim().match(rnotwhite) || [''];
+      let i = types.length;
+
+      while( i-- ) bindEvent(elem, types[i], fn, data);
     }
 
     return { bind: nativeBind.call(Events.bind, elem) };
@@ -166,26 +187,31 @@ class Events {
     let events = Events.getEventData(elem);
 
     if( !events ) return;
+    types = types.trim().match(rnotwhite) || [''];
+    let t = types.length;
 
-    let fid = fn && fn.fid;
-    let custom = _custom.get(type);
-    let handlers = events[type] || [];
+    while( t-- ) {
+      let type = types[t];
+      let fid = fn && fn.fid;
+      let custom = _custom.get(type);
+      let handlers = events[type] || [];
 
-    let i = handlers.length;
+      let i = handlers.length;
 
-    while( i-- ) {
-      let handler = handlers[i];
+      while( i-- ) {
+        let handler = handlers[i];
 
-      if( !fid || handler.fn.fid === fid ) {
-        if( !custom || custom.teardown(elem) === false ) {
-          elem.removeEventListener(type, handler.eventHandler, false);
+        if( !fid || handler.fn.fid === fid ) {
+          if( !custom || custom.teardown(elem) === false ) {
+            elem.removeEventListener(type, handler.eventHandler, false);
+          }
+
+          handlers.splice(i, 1);
         }
-
-        handlers.splice(i, 1);
       }
-    }
 
-    if( !handlers.length ) delete events[type];
+      if( !handlers.length ) delete events[type];
+    }
 
     return { bind: nativeBind.call(Events.bind, elem) };
   }

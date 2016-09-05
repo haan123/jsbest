@@ -2,6 +2,7 @@ import PopUp from './modules/PopUp';
 import Bench from './modules/Bench';
 import Sample from './modules/Sample';
 import Setup from './modules/Setup';
+import Github from './modules/Github';
 import Process from './modules/Process';
 
 require.ensure([], function() {
@@ -18,6 +19,8 @@ require.ensure([], function() {
 let _popup = new PopUp();
 let _process = new Process();
 let _bench = new Bench(_popup);
+
+let github = new Github(_popup);
 let setup = new Setup(_process, _bench, _popup);
 let sample = new Sample(_process, _bench, _popup);
 

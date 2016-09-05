@@ -13,6 +13,8 @@ class PopUp extends Handler {
     });
 
     this.popBenchTempl = hogan.compile(DOM.$('pop-bench-templ').innerHTML);
+
+    this._views = [];
   }
 
   /**
@@ -27,11 +29,16 @@ class PopUp extends Handler {
   }
 
   /**
-   * Show modal dialog
-   * @public
+   *  Show modal dialog
+   *
+   * @param {Object} data
+   * @param {Object} partial
+   * @param {Boolean} isStack - if true, render stack layout, can be navigated to next view or previous view
    */
-  modal(data, partial) {
+  modal(data, partial, isStack) {
     if( this._modal ) this.close();
+
+    if( isStack ) data.type = 'stack';
 
     let modal = DOM.$('modal');
     document.body.className += ' modal-open';
@@ -39,6 +46,8 @@ class PopUp extends Handler {
     modal.parentNode.style.display = 'block';
     modal.innerHTML = this.popBenchTempl.render(data, { content: partial});
     this._modal = 0;
+
+    this.setCurrentView(data, partial);
   }
 
   /**
@@ -59,6 +68,42 @@ class PopUp extends Handler {
     modal.innerHTML = '';
 
     delete this._modal;
+  }
+
+  setCurrentView(data, partial) {
+    this._currentView = { data: data, partial: partial };
+  }
+
+  renderView(elem, data, partial) {
+    let container = DOM.closest(elem, '.pop-bench--stack');
+    let content = DOM.children(container, '.pop-bench__content');
+
+    content.innerHTML = partial.render(data);
+    DOM.removeClass(container, 'sub-view');
+    
+    if( this._views.length ) container.className += ' sub-view';
+
+    this.setCurrentView(data, partial);
+  }
+
+  /**
+   *  Navigate to next modal view
+   */
+  nextView(elem, data, partial) {
+    this._views.push(this._currentView);
+
+    this.renderView(elem, data, partial);
+    this.setCurrentView(data, partial);
+  }
+
+  prevView(elem) {
+    let view = this._views.shift();
+    if( !view || view.length <= 1 ) return;
+    let data = view.data, partial = view.partial;
+    elem = elem.target || elem;
+
+    this.renderView(elem, data, partial);
+    this.setCurrentView(data, partial);
   }
 
   /**

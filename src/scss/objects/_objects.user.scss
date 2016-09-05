@@ -1,0 +1,14 @@
+.user-menu {
+  right: 0;
+  min-width: rem-calc(200);
+}
+
+.user-menu__img {
+  display: inline-block;
+  width: rem-calc(32);
+  height: rem-calc(32);
+}
+
+.user-menu__name {
+  margin-left: rem-calc(8);
+}

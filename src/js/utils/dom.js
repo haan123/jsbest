@@ -29,20 +29,25 @@ let matches = docElem.matches ||
                 docElem.oMatchesSelector ||
                 docElem.msMatchesSelector;
 
-DOM.closest = function(el, selector) {
-  let cur = el, matched;
+function traverse(el, selector, method) {
+  let cur = el;
 
-  for ( ; cur && cur.nodeType === 1; cur = cur.parentNode ) {
+  for ( ; cur; cur = cur[method] ) {
     // using native matches, this function return true or false
     // when selector matched
     // supporting IE9+
-    if ( matches.call( cur, selector ) ) {
-      matched = cur;
-      break;
+    if ( cur.nodeType === 1 && matches.call( cur, selector ) ) {
+      return cur;
     }
   }
+}
 
-  return matched;
+DOM.closest = function(el, selector) {
+  return traverse(el, selector, 'parentNode');
+};
+
+DOM.children = function(el, selector) {
+  return traverse(el.firstChild, selector, 'nextSibling');
 };
 
 /**
