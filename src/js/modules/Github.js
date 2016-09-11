@@ -1,33 +1,65 @@
 import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
-import hogan from 'hogan.js';
 
 const config = {
   client_id: '11218ed60d09b213b537',
   api: 'https://api.github.com'
 };
 
-function encode(sand) {
-  if( !this.id ) return;
+function makeSand(secret) {
+  return (1 * new Date()).toString().slice(-3) + secret;
+}
 
-  let accessToken = this._accessToken;
-  let id = (1 * new Date()) + '';
-  id = id.slice(-3) +  this.id;
-  let length = id.length;
+function makeId(sand, seq, pos) {
+  sand = sand.split('');
+  sand.splice(pos, 0, (seq.length + 1) + seq);
 
-  let i = 0, len = sand.length;
+  return sand.join('');
+}
 
-  for( ; i < len; i++ ) {
-    let c = +sand.charAt(i);
-    let pos = id[c];
-    let value = id[c + 1];
+function parseId(id, pos) {
+  id = id.split('');
+  let seq = id.splice(pos, +id[pos]).join('');
 
-    accessToken = accessToken.substring(0, pos) + value + accessToken.substring(pos + 1, accessToken.length);
+  return [id.join(''), seq.slice(1)];
+}
+
+function encode(secret, token, sand) {
+  let newToken = token.split('');
+  let arr = secret.split('');
+  let seq = '.';
+
+  utils.forEach(arr, (n) => {
+    let p = parseInt(n) + parseInt(sand[n]);
+    let s = Math.floor(Math.random() * (token.length - p));
+
+    newToken.splice(s + p, 0, p);
+    seq += ('0' + s).slice(-2);
+  });
+
+  newToken.push(seq);
+  return newToken.join('');
+}
+
+function decode(secret, token, sand, seq) {
+  let ret = token.split('');
+
+  let arr = secret.split('');
+  let i = arr.length;
+
+  while( i-- ) {
+    let n = +secret[i];
+    let s = +seq.slice(2*i, 2*i + 2);
+    let p = n + parseInt(sand[n]);
+
+    ret.splice(s + p, p.toString().length);
   }
 
-  return accessToken;
+  return ret.join('');
 }
+
+const rqualifier = /[@#]([\w-]+)/;
 
 class Github extends Base {
   constructor(_popup) {
@@ -40,14 +72,15 @@ class Github extends Base {
 
     this.popup = _popup;
 
-    this.popGistChooseTempl = hogan.compile(DOM.$('pop-gist-choose-templ').innerHTML);
-    this.gistIdFormTempl = hogan.compile(DOM.$('gist-id-form-templ').innerHTML);
-    this.loginFormTempl = hogan.compile(DOM.$('login-form-templ').innerHTML);
-    this.userMenuTempl = hogan.compile(DOM.$('user-menu-templ').innerHTML);
+    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item']);
 
     this._user = this._getUser();
 
+    this.isSearch = location.href.indexOf('/search') !== -1;
+    if( this.isSearch ) this._authenticate();
+
     if( this._user ) this.renderUser();
+    if( this.isSearch ) this.initSearch();
   }
 
   /**
@@ -58,6 +91,55 @@ class Github extends Base {
   _click(e) {
     const type = this.cel.getAttribute('data-type');
     if( !this[type]() ) e.preventDefault();
+  }
+
+  initSearch() {
+    let field = this.searchField = DOM.$('search');
+    field.focus();
+
+    this.on(field, 'keyup', (e) => {
+      let keyCode = e.get('keyCode');
+
+      if( keyCode === 13 ) {
+        this.search(field.value.trim());
+      }
+    });
+  }
+
+  search(value) {
+    let qualifier = value[0];
+    let m = value.match(rqualifier);
+
+    if( m ) {
+      let path = '/gists';
+
+      if( qualifier === '@' ) path = '/users/' + m[1] + path;
+      this._api(path).then((gists) => {
+        let results = DOM.$('search-results');
+        let templ = this.template('search-item');
+
+        utils.forEach(gists, (gist) => {
+          let fileName;
+          for( let name in gist.files ) {
+            fileName = name;
+            break;
+          }
+
+          let item = templ.render({
+            id: gist.id,
+            owner: {
+              avatar_url: gist.owner.avatar_url,
+              login: gist.owner.login,
+              html_url: gist.owner.html_url
+            },
+            html_url: gist.html_url,
+            fileName: fileName
+          });
+
+          results.appendChild(DOM.toDOM(item));
+        });
+      });
+    }
   }
 
   /**
@@ -86,7 +168,7 @@ class Github extends Base {
   userMenu() {
     if( this.popup.hasPopUp() ) return;
 
-    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.userMenuTempl.render(this._user)));
+    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.template('user-menu').render(this._user)));
   }
 
   renderUser() {
@@ -94,8 +176,6 @@ class Github extends Base {
   }
 
   signOut() {
-    localStorage.removeItem('user');
-
     DOM.$('userMenu').style.display = 'none';
 
     delete this._user;
@@ -119,57 +199,75 @@ class Github extends Base {
 
       localStorage.setItem('user', JSON.stringify(this._user));
 
+      this.popup.nextView(this.cel, {
+        ptype: 'set',
+        pbutton: 'Secure My Token'
+      }, this.template('passcode-form'));
+
       this.renderUser();
-      this.popup.closeModal();
     }).catch((err) => {
       DOM.$('message').style.display = 'block';
     });
   }
 
-  getUserGists(userName) {
-    let url = config.api + '/users/' + userName + '/gists';
+  setPasscode() {
+    let secret = DOM.$('passcode').value;
+    let n = Math.abs(+secret);
+    let user = this._user;
 
-    return utils.ajax(url);
+    if( n !== n || secret.length > 5 || !user ) return;
+
+    let sand = makeSand(secret);
+    let encoded = encode(secret.slice(1), this._accessToken, sand).split('.');
+
+    user.access_token = encoded[0];
+    user.id = makeId(sand, encoded[1], +secret[0]);
+    user.hasPasscode = true;
+
+    localStorage.setItem('user', JSON.stringify(user));
+
+    this._accessToken = encoded[0];
+
+    this.popup.closeModal();
   }
 
-  getGist(id) {
-    let url = config.api + '/gists/' + id;
+  enterPasscode() {
+    let secret = DOM.$('passcode').value;
+    let n = Math.abs(+secret);
+    let user = this._user;
 
-    return utils.ajax(url);
-  }
+    if( n !== n || (secret.length / 5) !== 1 || !user ) return;
 
-  /**
-   * Show gist popup
-   *
-   */
-  gistPopup() {
-    if( !this._user ) {
-      this.popup.modal({
-        title: 'Sign In'
-      }, this.loginFormTempl);
-    } else {
-      this.popup.modal({
-        title: 'Load Sample'
-      }, this.popGistChooseTempl, true);
-    }
-  }
+    let arr = parseId(user.id, +secret[0]);
+    let token = decode(secret.slice(1), user.access_token, arr[0], arr[1]);
 
-  openGistFromId() {
-    this.popup.nextView(this.cel, {},this.gistIdFormTempl);
+    this._accessToken = token;
 
-    let field = DOM.$('gist-id');
-
-    this.on(field, 'keyup', (e) => {
-      this.getGist(field.value).then((gist) => {
-        this.status('success');
-      }).catch((error) => {
-        this.status('error');
-      });
+    this._api('/user').then(() => {
+      this.popup.closeModal();
+    }).catch(() => {
+      delete this._accessToken;
+      DOM.$('message').style.display = 'block';
     });
   }
 
-  loadGistFromId() {
+  _authenticate() {
+    this._accessToken = 'f7c8a4c66fbd3e0384baf80ff398e452cb4f79e0';
+    return true;
 
+    let user = this._user;
+    let needPasscode = user && user.hasPasscode;
+
+    if( this._accessToken ) return true;
+    let templ = needPasscode ? this.template('passcode-form') : this.template('login-form');
+
+    this.popup.modal({
+      title: 'Authentication',
+      ptype: 'enter',
+      pbutton: 'Done'
+    }, templ, !needPasscode);
+
+    return false;
   }
 
   /**

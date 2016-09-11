@@ -18,33 +18,50 @@ const EDITOR_CONFIG = {
 
 let _cache = new Map();
 let _processes = DOM.$('processes');
-const PROCESSES_TOP = _processes.offsetTop;
 let docElem = document.documentElement;
 let _fixing;
 
-let _scroll = function(e) {
-  if( docElem.clientWidth < 640 ) return;
+if( _processes ) {
+  const PROCESSES_TOP = _processes.offsetTop;
+  let _scroll = function(e) {
+    if( docElem.clientWidth < 640 ) return;
 
-  if( window.pageYOffset > PROCESSES_TOP ) {
-    if( _fixing ) return;
-    _processes.style.cssText = 'top: 1.5em;width:' + _processes.clientWidth + 'px;';
-    _processes.className += ' fixed';
-    _fixing = true;
-  } else if( _fixing ) {
-    _processes.removeAttribute('style');
-    DOM.removeClass(_processes, 'fixed');
-    _fixing = null;
-  }
-};
+    if( window.pageYOffset > PROCESSES_TOP ) {
+      if( _fixing ) return;
+      _processes.style.cssText = 'top: 1.5em;width:' + _processes.clientWidth + 'px;';
+      _processes.className += ' fixed';
+      _fixing = true;
+    } else if( _fixing ) {
+      _processes.removeAttribute('style');
+      DOM.removeClass(_processes, 'fixed');
+      _fixing = null;
+    }
+  };
 
-Events.bind(window, 'scroll', _scroll);
+  Events.bind(window, 'scroll', _scroll);
+}
+
+let e = DOM.$('saved-templ');
+let savedTempl = e && hogan.compile(e.innerHTML);
 
 class Base extends Handler {
   constructor(obj) {
     super(obj);
+    this._templates = {};
+  }
 
-    this.savedTempl = hogan.compile(DOM.$('saved-templ').innerHTML);
-    this.processes = _processes;
+  setTemplate(names=[]) {
+    utils.forEach(names, (name) => {
+      let templ = DOM.$(name + '-templ');
+
+      if( !templ ) return;
+
+      this._templates[name] = hogan.compile(templ.innerHTML);
+    });
+  }
+
+  template(name) {
+    return this._templates[name];
   }
 
   /**
@@ -107,7 +124,7 @@ class Base extends Handler {
     let id = item.getAttribute('data-uid');
     type = type || 'add';
 
-    item.innerHTML = this[name + 'FormTempl'].render(obj);
+    item.innerHTML = this.template(name + '-form').render(obj);
     this._setStateClass(item, type);
 
     utils.forEach(editors, (editor) => {
@@ -189,7 +206,7 @@ class Base extends Handler {
     this.setCacheItem(id, utils.extend(cache || {}, { code: code }));
 
     if( editor ) editor.toTextArea();
-    item.innerHTML = this.savedTempl.render(data);
+    item.innerHTML = savedTempl.render(data);
     item.setAttribute('data-uid', id);
 
     // render uneditable state's code editor

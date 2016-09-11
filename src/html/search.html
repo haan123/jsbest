@@ -22,12 +22,8 @@
       <div class="small-12 columns">
         <div class="benches-content">
           <div class="js-bench button control-button" data-type="showBenchList"><svg class="icon" viewbox="0 0 12 16"><path d="M2 13c0 .59 0 1-.59 1H.59C0 14 0 13.59 0 13c0-.59 0-1 .59-1h.81c.59 0 .59.41.59 1H2zm2.59-9h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1H4.59C4 2 4 2.41 4 3c0 .59 0 1 .59 1zM1.41 7H.59C0 7 0 7.41 0 8c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0-5H.59C0 2 0 2.41 0 3c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm10 5H4.59C4 7 4 7.41 4 8c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0 5H4.59C4 12 4 12.41 4 13c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01z"/></svg> Benches</div>
-          <a class="button control-button control-button--dark" href="/search"><svg class="icon" viewbox="0 0 16 16"><path d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg></a>
         </div>
         <div class="controls">
-          <button class="js-bench button control-button control-button--dark" data-type="removeBenchPopUp" title="Remove Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/></svg></button>
-          <button class="js-sample button control-button" data-type="shareSamplesPopUp" title="Share Benches"><svg class="icon" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></button>
-          <button class="js-bench button control-button" data-type="newBenchPopUp" title="Add New Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg> <span class="hide-for-small-only">New Bench</span></button>
           <button id="userMenu" class="js-github button control-user" data-type="userMenu" style="display:none;"><svg class="icon" viewbox="0 0 12 16"><path d="M0 5l6 6 6-6z"/></svg></button>
         </div>
 
@@ -43,47 +39,11 @@
   <!-- Add your site or application content here -->
   <div class="container main">
     <div class="row">
-      <div class="medium-12 medium-centered columns">
-        <div class="row small-12 columns">
-          <h1 id="bench-heading" class="bench__heading"></h1>
-          <a class="js-bench bench__edit" data-type="saveBenchPopUp" href="#">Save</a>
-        </div>
+      <div class="medium-7 medium-centered columns">
+        <input id="search" class="search" type="text" autocomplete="off" autocorrect="off" spellcheck="false">
+        <p class="search__intro">You can search by user's name, e.g. <strong>@haan123</strong> or gist'd id, e.g. <strong>#11218ed60d09b213b537</strong></p>
 
-        <div class="row">
-          <div class="medium-6 columns">
-            <h5>Setup (Optional)</h5>
-            <div id="setup-add" class="js-setup sample-box sample-item--idle animated setup" data-type="openSetup">Add Setup Code…</div>
-
-            <h5>Samples</h5>
-
-            <div id="sample-add" class="js-sample sample-box sample-item--idle animated" data-type="openSample">Add Sample…</div>
-          </div>
-          <div class="medium-6 columns">
-            <div id="processes" class="sample-box process">
-              <iframe id="iframe" class="o-iframe"><p>Your browser does not support iframes.</p></iframe>
-
-              <div class="process__content">
-                <h5>Process</h5>
-                <div class="process__list">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th class="cell-name">Name</th>
-                        <th class="cell-rank">Rank</th>
-                        <th class="cell-ops">Ops/Sec</th>
-                      </tr>
-                    </thead>
-                    <tbody id="process"></tbody>
-                  </table>
-                </div>
-
-                <div class="button-group text-right">
-                  <button class="js-sample button" data-type="run" type="button">Run</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id="search-results"></div>
       </div>
     </div>
   </div>
@@ -107,90 +67,6 @@
     <div id="modal"></div>
   </div>
 
-  <script type="text/template" id="checkmark-templ">
-    <svg id="checkmark" class="status__icon checkmark" viewbox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
-  </script>
-  <script type="text/template" id="cross-templ">
-    <svg id="cross" class="status__icon cross" viewbox="0 0 68 68"><circle class="cross__circle" cx="34" cy="34" r="33" fill="none"/><path d="m35,35l-9.3,-9.3"></path><path d="m35,35l9.3,9.3"></path><path d="m35,35l-9.3,9.3"></path><path d="m35,35l9.3,-9.3"></path></svg>
-  </script>
-  <script type="text/template" id="process-row-templ">
-    <tr id="sample-{{id}}"><td class="cell-name"><a class="cell-name__link" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr>
-  </script>
-  <script type="text/template" id="setup-url-templ">
-    <div class="setup-url">
-      <span class="setup-url__value">{{url}}</span>
-      <a class="js-setup setup-url__remove" data-type="removeUrl" data-url-id="{{id}}" href="#">Remove</a>
-    </div>
-  </script>
-  <script type="text/template" id="saved-templ">
-    <div class="sample-item__controls">
-      <a class="js-{{handler}} sample-item__control sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
-      <a class="js-{{handler}} sample-item__control" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
-      <a class="js-{{handler}} sample-item__control" data-type="remove{{name}}" href="#" title="Remove Sample"><svg class="icon icon--lg icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></a>
-    </div>
-
-    {{#urls}}
-    <div class="setup-url">
-      <span class="setup-url__value">{{url}}</span>
-    </div>
-    {{/urls}}
-
-    {{#sample}}
-    <h5 id="{{id}}">{{id}} <a class="sample-item__anchor" href="#{{id}}" title="Anchor link for {{id}}" aria-label="Acchor link for {{id}}"><svg class="icon" viewBox="0 0 16 16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a></h5>
-    {{/sample}}
-
-    {{#prism}}
-    <pre class="sample-item__static language-{{language}}"><code id="static-{{pid}}" class="language-{{language}}"></code></pre>
-    {{/prism}}
-  </script>
-  <script type="text/template" id="sample-form-templ">
-    <div class="sample-item__form">
-      <div class="row">
-        <div class="medium-6 columns sample__top">
-          <input id="sample-{{id}}-name" class="sample__name" type="text" placeholder="Name">
-        </div>
-      </div>
-
-      <textarea id="sample-{{id}}-ta" class="sample-code" style="display:none;"></textarea>
-      <pre class="sample-item__static"><code class="language-html"></code></pre>
-
-      <div class="button-group text-right">
-        <button class="js-sample success button" data-type="{{type}}" type="button">Save</button>
-        <button class="js-sample warning button" data-type="cancel" type="button">Cancel</button>
-      </div>
-    </div>
-  </script>
-  <script type="text/template" id="setup-form-templ">
-    <div class="setup__form">
-      <div class="row">
-        <div class="small-9 columns">
-          <input id="setup-url-field" type="text" placeholder="http(s)://">
-        </div>
-        <a id="setup-url-add" class="js-setup setup-url__button button" data-type="addUrl" href="#" title="Add external library">Add</a>
-      </div>
-
-      {{#urls}}
-      <div class="setup-url">
-        <span class="setup-url__value">{{url}}</span>
-        <a class="js-setup setup-url__remove" data-type="removeUrl" data-url-id="{{id}}" href="#">Remove</a>
-      </div>
-      {{/urls}}
-
-      <h6 class="setup__heading">HTML</h6>
-      <textarea id="setup-html-{{type}}-ta" class="setup" style="display:none;"></textarea>
-
-      <h6 class="setup__heading">JS</h6>
-      <textarea id="setup-js-{{type}}-ta" class="setup" style="display:none;"></textarea>
-
-      <div class="button-group text-right">
-        <button class="js-setup success button" data-type="{{type}}" type="button">Save</button>
-        <button class="js-setup warning button" data-type="cancel" type="button">Cancel</button>
-      </div>
-    </div>
-  </script>
-  <script type="text/template" id="error-templ">
-    <svg class="icon" viewBox="0 0 16 16"><path d="M11 10h3V9h-3V8l3.17-1.03-.34-.94L11 7V6c0-.55-.45-1-1-1V4c0-.48-.36-.88-.83-.97L10.2 2H12V1H9.8l-2 2h-.59L5.2 1H3v1h1.8l1.03 1.03C5.36 3.12 5 3.51 5 4v1c-.55 0-1 .45-1 1v1l-2.83-.97-.34.94L4 8v1H1v1h3v1L.83 12.03l.34.94L4 12v1c0 .55.45 1 1 1h1l1-1V6h1v7l1 1h1c.55 0 1-.45 1-1v-1l2.83.97.34-.94L11 11v-1zM9 5H6V4h3v1z"/></svg>
-  </script>
   <script type="text/template" id="pop-bench-templ">
     <div class="dialog animated fade-in-down pop-bench pop-bench--{{type}}">
       <div tabindex="0"></div>
@@ -208,39 +84,6 @@
     <div class="dropdown user-menu">
       <div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
       <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div>
-    </div>
-  </script>
-  <script type="text/template" id="pop-save-templ">
-    <input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
-    <div class="pop-bench__footer">
-      <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
-    </div>
-  </script>
-  <script type="text/template" id="pop-remove-templ">
-    <p>Are your sure you want to remove <strong>{{name}}</strong>?</p>
-    <div class="pop-bench__footer">
-      <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
-      <button class="js-popup button secondary small" data-type="close">No</button>
-    </div>
-  </script>
-  <script type="text/template" id="pop-share-sample-templ">
-    <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
-    <input id="share-sample" type="text" value="{{url}}">
-    <div class="pop-bench__footer">
-      <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-sample">Copy</button>
-    </div>
-  </script>
-  <script type="text/template" id="pop-share-samples-templ">
-    <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
-    <h6 class="share__heading">Chooses Samples you want to Share</h6>
-    <div class="share__content">
-      {{#samples}}
-      <label class="share__label"><input class="js-sample" data-type="chooseShareSample" data-target="share-samples" type="checkbox" value="{{name}}"> {{name}}</label>
-      {{/samples}}
-    </div>
-    <input id="share-samples" data-names="[]" type="text" value="{{url}}">
-    <div class="pop-bench__footer">
-      <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-samples">Copy</button>
     </div>
   </script>
   <script type="text/template" id="benches-templ">
@@ -272,11 +115,19 @@
       <button class="js-popup button secondary small" data-type="close" data-target="share-samples">Maybe Later</button>
     </div>
   </script>
+  <script type="text/template" id="search-item-templ">
+    <div class="sample-item">
+      <div class="si__head">
+        <img class="si__img" src="{{owner.avatar_url}}" alt="@{{owner.login}}">
+        <span class="si__path"><a href="{{owner.html_url}}"><strong>{{owner.login}}</strong></a> / <a href="{{html_url}}">{{fileName}}</a></span>
+      </div>
 
-  <script src="js/benchmark.js"></script>
-  <script src="js/platform.js"></script>
+      <pre class="si__code sample-item__static language-js"><code id="si-{{id}}" class="language-js">View Code</code></pre>
+    </div>
+  </script>
+
   <script src="js/vendor.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/search.js"></script>
 
   <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
   <script>

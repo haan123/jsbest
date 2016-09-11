@@ -1,7 +1,6 @@
 import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
-import hogan from 'hogan.js';
 
 const MODULE_NAME = '__SETUP__';
 
@@ -20,8 +19,8 @@ class Setup extends Base {
 
     this.bench = _bench;
 
-    this.setupFormTempl = hogan.compile(DOM.$('setup-form-templ').innerHTML);
-    this.setupUrlTempl = hogan.compile(DOM.$('setup-url-templ').innerHTML);
+    this.setTemplate(['setup-form', 'setup-url']);
+
     this.cache = this.setCacheItem(MODULE_NAME, {});
 
     this._initSetup();
@@ -280,7 +279,7 @@ class Setup extends Base {
 
     if( !obj ) return;
 
-    let urlItem = DOM.toDOM(this.setupUrlTempl.render({
+    let urlItem = DOM.toDOM(this.template('setup-url').render({
       id: obj.id,
       url: url
     }));

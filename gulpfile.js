@@ -64,7 +64,11 @@ gulp.task('default', defaultTaskList);
 gulp.task('browser-sync', function() {
   browserSync.init({
     server: {
-      index: "./public/index.html"
+      baseDir: "./public",
+      index: "./index.html",
+      serveStaticOptions: {
+        extensions: ['html']
+      }
     },
     serveStatic: ['./public']
   });
@@ -154,7 +158,7 @@ gulp.task('styles:watch', function() {
  * Watch html
  */
 gulp.task('html:watch', function() {
-  gulp.watch('./src/html/index.html', ['html']);
+  gulp.watch('./src/html/*.html', ['html']);
 });
 
 

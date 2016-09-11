@@ -1,7 +1,6 @@
 import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
-import hogan from 'hogan.js';
 
 class Sample extends Base {
   constructor(_process, _bench, _popup) {
@@ -18,12 +17,7 @@ class Sample extends Base {
     this.process = _process;
     this.popup = _popup;
 
-    this.rowTempl = hogan.compile(DOM.$('process-row-templ').innerHTML);
-    this.sampleFormTempl = hogan.compile(DOM.$('sample-form-templ').innerHTML);
-    this.popShareSampleTempl = hogan.compile(DOM.$('pop-share-sample-templ').innerHTML);
-    this.popShareSamplesTempl = hogan.compile(DOM.$('pop-share-samples-templ').innerHTML);
-    this.checkmarkTempl = hogan.compile(DOM.$('checkmark-templ').innerHTML);
-    this.crossTempl = hogan.compile(DOM.$('cross-templ').innerHTML);
+    this.setTemplate(['process-row', 'sample-form', 'pop-share-sample', 'pop-share-samples', 'checkmark', 'cross']);
 
     this._initSamples();
   }
@@ -120,13 +114,6 @@ class Sample extends Base {
     if( edit ) {
       DOM.$('sample-' + id + '-name').value = item.getAttribute('data-uid');
     }
-  }
-
-  status(type) {
-    let elem = DOM.$('status');
-    let templ = type === 'success' ? this.checkmarkTempl : this.crossTempl;
-
-    elem.innerHTML = templ.render();
   }
 
   /**
@@ -248,7 +235,7 @@ class Sample extends Base {
       name: name,
       title: 'Share Sample',
       url: url
-    }, this.popShareSampleTempl);
+    }, this.template('pop-share-sample'));
 
     this._setSelectionRange('share-sample');
   }
@@ -259,7 +246,7 @@ class Sample extends Base {
     this.popup.modal({
       title: 'Share Samples',
       samples: bench.samples
-    }, this.popShareSamplesTempl);
+    }, this.template('pop-share-samples'));
   }
 
   chooseShareSample() {
@@ -356,7 +343,7 @@ class Sample extends Base {
   }
 
   renderRow(obj, oldId) {
-    let row = DOM.toDOM(this.rowTempl.render(obj));
+    let row = DOM.toDOM(this.template('process-row').render(obj));
 
     if( oldId ) {
       let orow = DOM.$('sample-' + oldId);

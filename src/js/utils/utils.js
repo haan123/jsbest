@@ -17,14 +17,18 @@ utils.ajax = function(url, options) {
 
     let data = options.data, params = [];
     if( data ) {
-      for( let key in data ) {
-        params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key] || ''));
+      if( typeof data === 'string' ) {
+        params.push(data.trim());
+      } else {
+        for( let key in data ) {
+          params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key] || ''));
+        }
       }
 
       params = params.join('&');
     }
 
-    if( params ) {
+    if( params.length ) {
       url += url.indexOf('?') < 0 ? '?' + params : params;
     }
 

@@ -17,10 +17,8 @@ class Bench extends Base {
     });
 
     this.popup = _popup;
-    this.popBenchTempl = hogan.compile(DOM.$('pop-bench-templ').innerHTML);
-    this.benchesTempl = hogan.compile(DOM.$('benches-templ').innerHTML);
-    this.popSaveTempl = hogan.compile(DOM.$('pop-save-templ').innerHTML);
-    this.popRemoveTempl = hogan.compile(DOM.$('pop-remove-templ').innerHTML);
+
+    this.setTemplate(['benches', 'pop-save', 'pop-remove']);
 
     // get cached benches
     let benches;
@@ -29,6 +27,8 @@ class Bench extends Base {
     } catch(e) {}
 
     if( !benches ) this.benches = [];
+
+    this.isSearch = location.href.indexOf('/search') !== -1;
 
     this._renderBenchName(this.getWorkingBench().name);
   }
@@ -52,6 +52,8 @@ class Bench extends Base {
    * @param {String} name
    */
   _renderBenchName(name) {
+    if( this.isSearch ) return;
+    
     DOM.$('bench-heading').innerHTML = name;
   }
 
@@ -82,7 +84,7 @@ class Bench extends Base {
     this.popup.modal({
       title: 'Save Bench',
       type: 'save'
-    }, this.popSaveTempl);
+    }, this.template('pop-save'));
 
     let field = DOM.$('bench-name');
     field.focus();
@@ -99,7 +101,7 @@ class Bench extends Base {
     this.popup.modal({
       title: 'New Bench',
       type: 'add'
-    }, this.popSaveTempl);
+    }, this.template('pop-save'));
 
     DOM.$('bench-name').focus();
   }
@@ -114,7 +116,7 @@ class Bench extends Base {
     this.popup.modal({
       title: 'Share Benches',
       type: 'share'
-    }, this.popSaveTempl);
+    }, this.template('pop-save'));
 
     DOM.$('bench-name').focus();
   }
@@ -175,7 +177,7 @@ class Bench extends Base {
       }
     });
 
-    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.benchesTempl.render({
+    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.template('benches').render({
       benches: lists
     })));
   }
@@ -214,7 +216,7 @@ class Bench extends Base {
       title: 'Remove Bench',
       name: bench.name,
       type: 'remove'
-    }, this.popRemoveTempl);
+    }, this.template('pop-remove'));
   }
 
   /**

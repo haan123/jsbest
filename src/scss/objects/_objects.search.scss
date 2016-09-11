@@ -1,0 +1,45 @@
+.search {
+  height: rem-calc(50);
+  padding: 8px 50px 8px 1pc;
+  margin-bottom: rem-calc(4);
+  font-size: rem-calc(18);
+  color: $white;
+  background: linear-gradient(to bottom,rgba(0, 0, 0, 0.2) 0,rgba(0, 0, 0, 0.2) 100%);
+  border: 1px solid transparent;
+
+  &:focus {
+    background: linear-gradient(to bottom,rgba(50, 50, 50, 0.2) 0,rgba(50, 50, 50, 0.2) 100%);
+    border: 1px solid transparent;
+  }
+}
+
+.search__intro {
+  margin-bottom: 2pc;
+  font-size: rem-calc(13);
+  color: $white;
+}
+
+.si__head {
+  margin-bottom: rem-calc(16);
+}
+
+.si__img {
+  display: inline-block;
+  width: rem-calc(30);
+  height: rem-calc(30);
+  padding: rem-calc(1);
+  vertical-align: text-top;
+}
+
+.si__path {
+  display: inline-block;
+  vertical-align: text-top;
+
+  a {
+    color: $black;
+  }
+}
+
+.si__code {
+  cursor: pointer;
+}
