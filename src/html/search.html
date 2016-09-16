@@ -116,14 +116,23 @@
     </div>
   </script>
   <script type="text/template" id="search-item-templ">
-    <div class="sample-item">
-      <div class="si__head">
-        <img class="si__img" src="{{owner.avatar_url}}" alt="@{{owner.login}}">
-        <span class="si__path"><a href="{{owner.html_url}}"><strong>{{owner.login}}</strong></a> / <a href="{{html_url}}">{{fileName}}</a></span>
+    <div class="sample-item si">
+      <div class="sample-item__controls">
+        <a class="js-github sample-item__control" data-type="" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
+        <a class="js-github sample-item__control" data-type="star" href="#" title="Star"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></a>
       </div>
 
-      <pre class="si__code sample-item__static language-js"><code id="si-{{id}}" class="language-js">View Code</code></pre>
+      <div class="si__head">
+        <img class="si__img" src="{{owner.avatar_url}}" alt="@{{owner.login}}">
+        <span class="si__path"><a href="{{owner.html_url}}"><strong>{{owner.login}}</strong></a> / <a href="{{html_url}}">{{file.filename}}</a></span>
+        <p class="si__description">{{description}}</p>
+      </div>
+
+      <div class="js-github si__code" data-type="viewCode" data-file="{{file_html}}" data-id="{{id}}">View Code</div>
     </div>
+  </script>
+  <script type="text/template" id="code-templ">
+    <pre class="language-{{language}} line-numbers"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
   </script>
 
   <script src="js/vendor.js"></script>

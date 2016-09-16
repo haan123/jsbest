@@ -211,7 +211,7 @@ class Base extends Handler {
 
     // render uneditable state's code editor
     utils.forEach(data.prism, (config) => {
-      this._toStaticCode(config.pid, config.code, config.language);
+      this.toStaticCode(config.pid, config.code, config.language);
     });
 
     this._setStateClass(item, 'saved');
@@ -233,13 +233,12 @@ class Base extends Handler {
 
   /**
    * Disable edit actions from editor
-
-   * @private
+   *
    * @param {String} id
    * @param {String} value
    * @param {String} lang
    */
-  _toStaticCode(id, code, lang) {
+  toStaticCode(id, code, lang) {
     let elem = DOM.$('static-' + id);
 
     if( !code ) {
@@ -257,7 +256,7 @@ class Base extends Handler {
    * @return {String}
    */
   _highlight(code, lang='javascript') {
-    const language = Prism.languages[lang];
+    const language = Prism.languages[lang.toLowerCase()] || Prism.languages['javascript'];
 
     return Prism.highlight(code, language);
   }

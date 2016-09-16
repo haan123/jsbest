@@ -72,7 +72,7 @@ class Github extends Base {
 
     this.popup = _popup;
 
-    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item']);
+    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code']);
 
     this._user = this._getUser();
 
@@ -107,39 +107,47 @@ class Github extends Base {
   }
 
   search(value) {
+    let results = DOM.$('search-results');
     let qualifier = value[0];
     let m = value.match(rqualifier);
+
+    results.innerHTML = '';
 
     if( m ) {
       let path = '/gists';
 
       if( qualifier === '@' ) path = '/users/' + m[1] + path;
       this._api(path).then((gists) => {
-        let results = DOM.$('search-results');
         let templ = this.template('search-item');
 
         utils.forEach(gists, (gist) => {
-          let fileName;
           for( let name in gist.files ) {
-            fileName = name;
+            gist.file = gist.files[name];
+            gist.file_html = JSON.stringify(gist.file);
             break;
           }
 
-          let item = templ.render({
-            id: gist.id,
-            owner: {
-              avatar_url: gist.owner.avatar_url,
-              login: gist.owner.login,
-              html_url: gist.owner.html_url
-            },
-            html_url: gist.html_url,
-            fileName: fileName
-          });
-
+          let item = templ.render(gist);
           results.appendChild(DOM.toDOM(item));
         });
       });
     }
+  }
+
+  viewCode() {
+    let elem = this.cel;
+    let file = JSON.parse(elem.getAttribute('data-file'));
+
+    utils.ajax(file.raw_url).then((code) => {
+      file.id = this.cel.getAttribute('data-id');
+
+      let html = DOM.toDOM(this.template('code').render(file));
+
+      elem.parentNode.insertBefore(html, elem);
+      elem.parentNode.removeChild(elem);
+
+      this.toStaticCode(file.id, code, file.language)
+    });
   }
 
   /**

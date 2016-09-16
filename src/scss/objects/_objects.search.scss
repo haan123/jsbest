@@ -14,21 +14,32 @@
 }
 
 .search__intro {
-  margin-bottom: 2pc;
+  padding-bottom: 2pc;
   font-size: rem-calc(13);
   color: $white;
 }
 
+.si {
+  font-size: rem-calc(12);
+}
+
 .si__head {
   margin-bottom: rem-calc(16);
+  overflow: hidden;
 }
 
 .si__img {
-  display: inline-block;
+  float: left;
+  margin-right: rem-calc(6);
   width: rem-calc(30);
   height: rem-calc(30);
   padding: rem-calc(1);
   vertical-align: text-top;
+  border-radius: $global-radius;
+}
+
+.si__description {
+  color: $dark-gray;
 }
 
 .si__path {
@@ -36,10 +47,22 @@
   vertical-align: text-top;
 
   a {
-    color: $black;
+    &:hover, &:focus {
+      text-decoration: underline;
+    }
   }
 }
 
 .si__code {
+  padding: rem-calc(4);
+  text-align: center;
+  font-weight: 700;
   cursor: pointer;
+  background: $white;
+  border: 1px solid transparent;
+  border-radius: $global-radius;
+
+  &:hover {
+    border: 1px solid $blue-light;
+  }
 }

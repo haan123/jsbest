@@ -41,7 +41,9 @@ utils.ajax = function(url, options) {
       if ( status >= 200 && status < 300 || status === 304 ) {
         try {
           resolve(JSON.parse(this.responseText));
-        } catch(e) {}
+        } catch(e) {
+          resolve(this.responseText);
+        }
       } else {
         reject(new Error(this.statusText));
       }
