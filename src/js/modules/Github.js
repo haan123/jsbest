@@ -81,6 +81,8 @@ class Github extends Base {
 
     if( this._user ) this.renderUser();
     if( this.isSearch ) this.initSearch();
+
+    this.search('@haan123');
   }
 
   /**
@@ -121,11 +123,12 @@ class Github extends Base {
         let templ = this.template('search-item');
 
         utils.forEach(gists, (gist) => {
-          for( let name in gist.files ) {
-            gist.file = gist.files[name];
-            gist.file_html = JSON.stringify(gist.file);
-            break;
-          }
+          let arr = [];
+          utils.forEach(gist.files, (file) => {
+            arr.push(file);
+          });
+
+          gist.files = arr;
 
           let item = templ.render(gist);
           results.appendChild(DOM.toDOM(item));
@@ -136,17 +139,21 @@ class Github extends Base {
 
   viewCode() {
     let elem = this.cel;
-    let file = JSON.parse(elem.getAttribute('data-file'));
+    let url = elem.getAttribute('data-raw');
 
-    utils.ajax(file.raw_url).then((code) => {
-      file.id = this.cel.getAttribute('data-id');
+    utils.ajax(url).then((code) => {
+      let id = 1*(new Date());
+      let lang = elem.getAttribute('data-language');
 
-      let html = DOM.toDOM(this.template('code').render(file));
+      let html = DOM.toDOM(this.template('code').render({
+        language: lang,
+        id: id
+      }));
 
       elem.parentNode.insertBefore(html, elem);
       elem.parentNode.removeChild(elem);
 
-      this.toStaticCode(file.id, code, file.language)
+      this.toStaticCode(id, code, lang);
     });
   }
 

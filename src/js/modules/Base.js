@@ -256,7 +256,7 @@ class Base extends Handler {
    * @return {String}
    */
   _highlight(code, lang='javascript') {
-    const language = Prism.languages[lang.toLowerCase()] || Prism.languages['javascript'];
+    const language = Prism.languages[lang.toLowerCase()] || Prism.languages.javascript;
 
     return Prism.highlight(code, language);
   }

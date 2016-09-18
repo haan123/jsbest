@@ -24,21 +24,21 @@
 }
 
 .si__head {
-  margin-bottom: rem-calc(16);
   overflow: hidden;
 }
 
 .si__img {
   float: left;
-  margin-right: rem-calc(6);
-  width: rem-calc(30);
-  height: rem-calc(30);
+  width: rem-calc(36);
+  height: rem-calc(36);
   padding: rem-calc(1);
+  margin-right: rem-calc(6);
   vertical-align: text-top;
   border-radius: $global-radius;
 }
 
 .si__description {
+  margin: 0;
   color: $dark-gray;
 }
 
@@ -53,16 +53,39 @@
   }
 }
 
-.si__code {
-  padding: rem-calc(4);
-  text-align: center;
+.file {
+  position: relative;
   font-weight: 700;
+}
+
+.file__name {
+  display: inline-block;
+  padding: rem-calc(2) rem-calc(6);
+  margin-top: $global-margin;
+  margin-bottom: -1px;
+  color: $white;
+  background: $blue-light;
+  border-top-left-radius: $global-radius;
+  border-top-right-radius: $global-radius;
+}
+
+pre.file__code {
+  padding: rem-calc(4);
+  margin: 0;
+  text-align: center;
   cursor: pointer;
   background: $white;
-  border: 1px solid transparent;
+  border-color: $blue-light;
   border-radius: $global-radius;
+  box-shadow: none;
+}
 
-  &:hover {
-    border: 1px solid $blue-light;
+.unstar {
+  display: none;
+}
+
+.starred {
+  .star {
+    display: inline-block;
   }
 }

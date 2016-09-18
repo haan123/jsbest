@@ -95,6 +95,15 @@
       </ul>
     </div>
   </script>
+  <script type="text/template" id="files-templ">
+    <div class="files-list dropdown">
+      <ul>
+        {{#files}}
+        <li class="js-github dropdown__item" data-type="viewCode" data-file="{{file_html}}" data-id="{{id}}">{{name}}</li>
+        {{/files}}
+      </ul>
+    </div>
+  </script>
   <script type="text/template" id="login-form-templ">
     <p class="share__note">This feature require an authentication from <strong>Github</strong> to read public gists, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how, <strong>Please Note: </strong> you don't have to provide any <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">scope</a>, we just need to read your public infomations for this feature to work.</p>
     <input id="ace" type="text" placeholder="Personal Access Token">
@@ -117,9 +126,8 @@
   </script>
   <script type="text/template" id="search-item-templ">
     <div class="sample-item si">
-      <div class="sample-item__controls">
-        <a class="js-github sample-item__control" data-type="" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
-        <a class="js-github sample-item__control" data-type="star" href="#" title="Star"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></a>
+      <div class="controls">
+        <a class="js-github control-item" data-type="star" href="#" title="Star"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg><span class="control-item__label star">Star</span><span class="control-item__label unstar">Unstar</span></a>
       </div>
 
       <div class="si__head">
@@ -128,11 +136,16 @@
         <p class="si__description">{{description}}</p>
       </div>
 
-      <div class="js-github si__code" data-type="viewCode" data-file="{{file_html}}" data-id="{{id}}">View Code</div>
+      {{#files}}
+      <div class="file">
+        <span class="file__name">{{filename}}</span>
+        <pre class="js-github file__code language-text" data-type="viewCode" data-raw="{{raw_url}}" data-language="{{language}}">View Code</pre>
+      </div>
+      {{/files}}
     </div>
   </script>
   <script type="text/template" id="code-templ">
-    <pre class="language-{{language}} line-numbers"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
+    <pre class="file__code language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
   </script>
 
   <script src="js/vendor.js"></script>

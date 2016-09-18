@@ -39,7 +39,7 @@
   padding: $global-padding;
 }
 
-.sample-item__controls {
+.controls {
   position: absolute;
   top: -32px;
   right: 0;
@@ -47,7 +47,7 @@
   text-align: right;
 }
 
-.sample-item__control {
+.control-item {
   display: inline-block;
   padding: rem-calc(2 4);
   margin-right: rem-calc(4);
@@ -59,6 +59,14 @@
     background: rgba(0, 0, 0, 0.12);
     border-radius: 3px;
   }
+}
+
+.control-item__label {
+  float: right;
+  padding-top: rem-calc(3);
+  margin-left: rem-calc(4);
+  font-size: rem-calc(12);
+  font-weight: 700;
 }
 
 .sample__top {
