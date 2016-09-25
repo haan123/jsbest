@@ -119,6 +119,13 @@ class Base extends Handler {
     return _cache.get(id);
   }
 
+  storeCache(id, code) {
+    let cache = this.getCacheItem(id);
+    this.setCacheItem(id, utils.extend(cache || {}, { code: code }));
+
+    return cache;
+  }
+
   showForm(elem, name, editors, obj, type) {
     let item = DOM.closest(elem, '.' + SAMPLE_ITEM_CLASS);
     let id = item.getAttribute('data-uid');
@@ -202,8 +209,7 @@ class Base extends Handler {
    */
   renderSavedState(name, item, code, id, data) {
     let editor = this[name + 'Editor'];
-    let cache = this.getCacheItem(id);
-    this.setCacheItem(id, utils.extend(cache || {}, { code: code }));
+    this.storeCache(id);
 
     if( editor ) editor.toTextArea();
     item.innerHTML = savedTempl.render(data);
@@ -299,6 +305,8 @@ class Base extends Handler {
    * @return {Node} item
    */
   createSampleItem(elem) {
+    if( !elem ) return;
+
     let item = document.createElement('div');
     item.className += SAMPLE_ITEM_CLASS;
 
@@ -316,6 +324,10 @@ class Base extends Handler {
     } catch(e) {}
 
     return succeed;
+  }
+
+  isSearchPage() {
+    return location.href.indexOf('/search') !== -1;
   }
 }
 

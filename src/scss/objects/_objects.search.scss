@@ -47,6 +47,8 @@
   vertical-align: text-top;
 
   a {
+    font-weight: 700;
+
     &:hover, &:focus {
       text-decoration: underline;
     }
@@ -58,26 +60,33 @@
   font-weight: 700;
 }
 
+.file__info {
+  @include clearfix();
+
+  margin-top: $global-margin;
+}
+
 .file__name {
   display: inline-block;
+  float: left;
+}
+
+.file__control {
+  float: right;
   padding: rem-calc(2) rem-calc(6);
-  margin-top: $global-margin;
-  margin-bottom: -1px;
-  color: $white;
-  background: $blue-light;
-  border-top-left-radius: $global-radius;
-  border-top-right-radius: $global-radius;
+  margin-bottom: rem-calc(2);
+  font-size: inherit;
+}
+
+.js-github.file__code {
+  cursor: pointer;
 }
 
 pre.file__code {
   padding: rem-calc(4);
   margin: 0;
+  font-family: $body-font-family;
   text-align: center;
-  cursor: pointer;
-  background: $white;
-  border-color: $blue-light;
-  border-radius: $global-radius;
-  box-shadow: none;
 }
 
 .unstar {

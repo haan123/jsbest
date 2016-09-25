@@ -12,7 +12,13 @@ let risget = /^(?:GET|HEAD)$/;
 
 utils.ajax = function(url, options) {
   return new Promise(function(resolve, reject) {
-    options = utils.extend({}, _options, options);
+    if( typeof url === 'string' ) {
+      options = utils.extend({}, _options, options);
+    } else {
+      options = utils.extend({}, _options, url);
+      url = options.url;
+    }
+
     options.type = options.type.toUpperCase();
 
     let data = options.data, params = [];

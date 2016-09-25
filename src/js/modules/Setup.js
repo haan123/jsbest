@@ -80,7 +80,7 @@ class Setup extends Base {
     if( !setup.code ) return;
 
     this._save(setup);
-    this.cache = this.getCacheItem(MODULE_NAME);
+    this.cache = this.storeCache(setup.name, setup.code);;
   }
 
   /**
@@ -95,6 +95,7 @@ class Setup extends Base {
     _bench.setup = data;
 
     this.bench.setBenchItem(_bench);
+    this.storeCache(MODULE_NAME);
   }
 
   /**
@@ -109,6 +110,7 @@ class Setup extends Base {
     _bench.setup = {};
 
     this.bench.setBenchItem(_bench);
+    this.removeFromCache(name);
   }
 
   /**

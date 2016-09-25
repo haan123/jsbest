@@ -121,6 +121,8 @@ class Sample extends Base {
    * @private
    */
   _initSamples() {
+    let isSearchPage = this.isSearchPage();
+
     let _bench = this.bench.getWorkingBench();
 
     if( !_bench ) return;
@@ -130,7 +132,8 @@ class Sample extends Base {
     if( !samples.length ) return;
 
     utils.forEach(samples, (sample) => {
-      this._save(sample);
+      if( !isSearchPage ) this._save(sample);
+      this.storeCache(sample.name, sample.code);
     });
   }
 
@@ -152,6 +155,7 @@ class Sample extends Base {
     samples.push(data);
 
     this.bench.setBenchItem(_bench);
+    this.storeCache(name);
   }
 
   /**
@@ -167,6 +171,7 @@ class Sample extends Base {
     this.removeFromArray(name, samples);
 
     this.bench.setBenchItem(_bench);
+    this.removeFromCache(name);
   }
 
   /**
@@ -207,6 +212,57 @@ class Sample extends Base {
       id: name,
       name: name
     }, oldId);
+  }
+
+
+  /**
+   * Handler: add/remove sample from github's gist
+   */
+  SampleGist() {
+    let elem = this.cel;
+    let data = JSON.parse(elem.getAttribute('data-sample-item'));
+    let button = () => {
+      let state = this._exist(data.name) ? 'Remove' : 'Add';
+
+      let text = state + ' Sample';
+      DOM.removeClass(elem, 'alert');
+
+      elem.innerHTML = text;
+
+      if( state === 'Remove' ) {
+        elem.className += ' alert';
+      }
+    };
+
+    // handle remove sample
+    if( this._exist(data.name) ) {
+      this._removeStoredSample(data.name);
+
+    // handle add sample
+    } else {
+      this._storeSample(data.name, data);
+    }
+
+    button();
+  }
+
+  prepareSampleButtonForGist(file) {
+    let data = {
+      name: file.filename,
+      code: file.raw_url
+    };
+
+    let sample = {
+      data: JSON.stringify(data),
+      buttonText: 'Add'
+    };
+
+    if( this._exist(data.name) ) {
+      sample.buttonClass = 'alert';
+      sample.buttonText = 'Remove';
+    }
+
+    file.sample = sample;
   }
 
   add() {

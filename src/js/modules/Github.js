@@ -76,13 +76,13 @@ class Github extends Base {
 
     this._user = this._getUser();
 
-    this.isSearch = location.href.indexOf('/search') !== -1;
-    if( this.isSearch ) this._authenticate();
+    let isSearch = this.isSearchPage();
+    if( isSearch ) this._authenticate();
 
     if( this._user ) this.renderUser();
-    if( this.isSearch ) this.initSearch();
+    if( isSearch ) this.initSearch();
 
-    this.search('@haan123');
+    if( isSearch) this.search('@haan123');
   }
 
   /**
@@ -125,16 +125,33 @@ class Github extends Base {
         utils.forEach(gists, (gist) => {
           let arr = [];
           utils.forEach(gist.files, (file) => {
+            // create new sample object to add to sample list
+            this.sample.prepareSampleButtonForGist(file);
+
             arr.push(file);
           });
 
           gist.files = arr;
+          gist.name = arr[0].filename;
 
           let item = templ.render(gist);
           results.appendChild(DOM.toDOM(item));
         });
       });
     }
+  }
+
+  /**
+   * Handler: star gist
+   */
+  star() {
+    let url = this.cel.getAttribute('href');
+
+    this._api('put', url).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 
   viewCode() {
@@ -164,9 +181,17 @@ class Github extends Base {
    *
    * @return {Promise}
    */
-  _api(path, params) {
+  _api(type, path, params) {
     if( !this._accessToken ) return;
-    let url = config.api + path + '?access_token=' + this._accessToken;
+    let options = {};
+    if( type[0] === '/' ) {
+      path = type;
+      params = path;
+    } else {
+      options.type = type;
+    }
+
+    options.url = config.api + path + '?access_token=' + this._accessToken;
 
     let arr = [];
     for( let name in params ) {
@@ -174,10 +199,10 @@ class Github extends Base {
     }
 
     if( arr.length ) {
-      url += '&' + arr.join('&');
+      options.url += '&' + arr.join('&');
     }
 
-    return utils.ajax(url);
+    return utils.ajax(options);
   }
 
   userMenu() {
@@ -274,15 +299,30 @@ class Github extends Base {
     let needPasscode = user && user.hasPasscode;
 
     if( this._accessToken ) return true;
-    let templ = needPasscode ? this.template('passcode-form') : this.template('login-form');
 
-    this.popup.modal({
-      title: 'Authentication',
-      ptype: 'enter',
-      pbutton: 'Done'
-    }, templ, !needPasscode);
+    if( needPasscode ) {
+      this.enterPasscodeModal();
+    } else {
+      this.enterAccessTokenModal(true);
+    }
 
     return false;
+  }
+
+  enterPasscodeModal() {
+    this.popup.modal({
+      title: 'Enter Passcode',
+      ptype: 'enter',
+      pbutton: 'Done'
+    }, this.template('passcode-form'));
+  }
+
+  enterAccessTokenModal(isStack) {
+    this.popup.modal({
+      title: 'Enter Personal Access Token',
+      ptype: 'enter',
+      pbutton: 'Done'
+    }, this.template('login-form'), isStack);
   }
 
   /**

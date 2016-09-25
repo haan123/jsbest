@@ -1,15 +1,36 @@
 .controls {
-  float: right;
+  @include clearfix();
+
+  position: absolute;
 }
 
-.control-button,
-.control-user {
+.control-item {
+  display: inline-block;
+  float: left;
+  padding: rem-calc(2 4);
+  margin-right: rem-calc(4);
+  color: $white;
+  border-radius: $global-radius;
+
+  &:hover, &:focus {
+    color: $white;
+    background: rgba(0, 0, 0, 0.12);
+  }
+}
+
+.control--sample {
+  position: absolute;
+  top: -32px;
+  right: 0;
+}
+
+.controls--top .control-item {
   padding: 0 rem-calc(8);
   font-weight: 700;
   line-height: rem-calc(35);
 }
 
-.control-button--dark {
+.control-item--dark {
   background: linear-gradient(to bottom,rgba(0, 0, 0, 0.2) 0,rgba(0, 0, 0, 0.3) 100%);
 
   &:hover, &:focus {
@@ -17,6 +38,11 @@
   }
 }
 
-.control-user {
+.control-item--user {
   background-color: transparent;
+}
+
+.controls--top {
+  position: relative;
+  float: right;
 }
