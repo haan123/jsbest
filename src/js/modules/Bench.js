@@ -53,7 +53,7 @@ class Bench extends Base {
    */
   _renderBenchName(name) {
     if( this.isSearch ) return;
-    
+
     DOM.$('bench-heading').innerHTML = name;
   }
 
@@ -159,8 +159,6 @@ class Bench extends Base {
    * @public
    */
   showBenchList() {
-    if( this.popup.hasPopUp() ) return;
-
     let benches = this.benches;
     let lists = [];
 

@@ -2,7 +2,7 @@
   display: inline-block;
   width: rem-calc(16);
   height: rem-calc(16);
-  vertical-align: text-top;
+  vertical-align: middle;
   cursor: pointer;
   fill: currentColor;
 }
@@ -10,4 +10,15 @@
 .icon--lg {
   width: rem-calc(22);
   height: rem-calc(22);
+}
+
+.icon--dots {
+  text-align: center;
+
+  &::before {
+    display: inline-block;
+    letter-spacing: rem-calc(2);
+    vertical-align: text-top;
+    content: '\2022\2022\2022';
+  }
 }

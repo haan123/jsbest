@@ -72,7 +72,7 @@ class Github extends Base {
 
     this.popup = _popup;
 
-    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code']);
+    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'si-menu']);
 
     this._user = this._getUser();
 
@@ -154,6 +154,31 @@ class Github extends Base {
     });
   }
 
+  /**
+   * Handler: show search menu
+   */
+  menu() {
+    let id = this.cel.getAttribute('data-id');
+
+    this.popup.dropdown((render) => {
+      let data = {
+        star: 'Star',
+        className: 'si__menu'
+      };
+
+      this._api('/gists/' + id + '/star').then(() => {
+        data.starred = 'starred';
+        data.star = 'Unstar';
+
+        render(data);
+      }).catch(() => {
+        render(data);
+      });
+    }, this.cel.parentNode, this.template('si-menu'), true);
+
+    return true;
+  }
+
   viewCode() {
     let elem = this.cel;
     let url = elem.getAttribute('data-raw');
@@ -206,8 +231,6 @@ class Github extends Base {
   }
 
   userMenu() {
-    if( this.popup.hasPopUp() ) return;
-
     this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.template('user-menu').render(this._user)));
   }
 
@@ -222,7 +245,7 @@ class Github extends Base {
     delete this._accessToken;
   }
 
-  signIn() {
+  auth() {
     DOM.$('message').style.display = 'none';
 
     let accessToken = DOM.$('ace').value;
@@ -292,7 +315,7 @@ class Github extends Base {
   }
 
   _authenticate() {
-    this._accessToken = 'f7c8a4c66fbd3e0384baf80ff398e452cb4f79e0';
+    this._accessToken = 'be0467e6028a552ed692f424ea041c657082a7ea';
     return true;
 
     let user = this._user;

@@ -130,6 +130,15 @@
   }
 }
 
+.dropdown__link {
+  display: block;
+  color: $black;
+
+  &:hover, &:focus {
+    color: $black;
+  }
+}
+
 .passcode__field {
   margin-bottom: rem-calc(4);
 }

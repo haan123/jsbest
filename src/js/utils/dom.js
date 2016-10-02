@@ -31,12 +31,15 @@ let matches = docElem.matches ||
 
 function traverse(el, selector, method) {
   let cur = el;
+  let matcher = function(elem) {
+    return selector.nodeType === 1 ? (selector === elem) : matches.call(elem, selector);
+  };
 
   for ( ; cur; cur = cur[method] ) {
     // using native matches, this function return true or false
     // when selector matched
     // supporting IE9+
-    if ( cur.nodeType === 1 && matches.call( cur, selector ) ) {
+    if ( cur.nodeType === 1 && matcher(cur) ) {
       return cur;
     }
   }

@@ -106,11 +106,11 @@
     </div>
   </script>
   <script type="text/template" id="login-form-templ">
-    <p class="share__note">This feature require an authentication from <strong>Github</strong> to read public gists, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how, <strong>Please Note: </strong> you don't have to provide any <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">scope</a>, we just need to read your public infomations for this feature to work.</p>
+    <p class="share__note">We need your <strong>Github</strong> authentication to access Github's API, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how, <strong>Please Note: </strong> you don't have to provide any <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">scope</a>, we just need to read your public infomations for this feature to work.</p>
     <input id="ace" type="text" placeholder="Personal Access Token">
     <p id="message" class="message error">Your Personal Access Token is not valid, please try again with difference token.</p>
     <div class="pop-bench__footer">
-      <button class="js-github button success small" data-type="signIn">Sign In</button>
+      <button class="js-github button success small" data-type="auth">Authenticate</button>
       <button class="js-popup button secondary small" data-type="close">Later</button>
     </div>
   </script>
@@ -125,10 +125,15 @@
       <button class="js-popup button secondary small" data-type="close" data-target="share-samples">Maybe Later</button>
     </div>
   </script>
+  <script type="text/template" id="si-menu-templ">
+    <ul>
+      <li class="dropdown__item"><a class="js-github dropdown__link {{starred}}" data-type="star" href="/gists/{{id}}/star"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg><span class="si__label star">{{star}}</span></a></li>
+    </ul>
+  </script>
   <script type="text/template" id="search-item-templ">
     <div class="sample-item si">
-      <div class="controls control--sample">
-        <a class="js-github control-item" data-type="star" href="/gists/{{id}}/star" title="Star"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg><span class="control-item__label star">Star</span><span class="control-item__label unstar">Unstar</span></a>
+      <div class="controls control--gist">
+        <a class="js-github control-item" data-type="menu" data-id="{{id}}"><span class="icon icon--lg icon--dots"></span></a>
       </div>
 
       <div class="si__head">
@@ -150,6 +155,11 @@
   </script>
   <script type="text/template" id="code-templ">
     <pre class="file__code language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
+  </script>
+  <script type="text/template" id="dropdown-templ">
+    <div class="dropdown {{className}}">
+      {{>content}}
+    </div>
   </script>
 
   <script src="js/vendor.js"></script>

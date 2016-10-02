@@ -13,6 +13,7 @@ class PopUp extends Handler {
     });
 
     this.popBenchTempl = hogan.compile(DOM.$('pop-bench-templ').innerHTML);
+    this.dropdownTempl = hogan.compile(DOM.$('dropdown-templ').innerHTML);
 
     this._views = [];
   }
@@ -54,10 +55,23 @@ class PopUp extends Handler {
    * Show dropdown list
    * @public
    */
-  dropdown(target, dropdown) {
-    target.appendChild(dropdown);
-    this._modal = 0;
-    this._dropdown = dropdown;
+  dropdown(data, target, partial, manual) {
+    if( this.hasPopUp() ) return;
+
+    let render = () => {
+      let drop = this.dropdownTempl.render(data, {
+        content: partial
+      });
+
+      target.appendChild(drop);
+
+      this._dropdown = drop;
+      this._modal = 0;
+      this._manual = manual || false;
+    };
+
+    if( typeof data === 'function' ) data(render);
+    else render(data);
   }
 
   closeModal() {
@@ -67,6 +81,13 @@ class PopUp extends Handler {
     modal.parentNode.style.display = 'none';
     modal.innerHTML = '';
 
+    delete this._modal;
+  }
+
+  closeDropdown() {
+    this._dropdown.parentNode.removeChild(this._dropdown);
+
+    delete this._dropdown;
     delete this._modal;
   }
 
@@ -80,7 +101,7 @@ class PopUp extends Handler {
 
     content.innerHTML = partial.render(data);
     DOM.removeClass(container, 'sub-view');
-    
+
     if( this._views.length ) container.className += ' sub-view';
 
     this.setCurrentView(data, partial);
@@ -115,10 +136,10 @@ class PopUp extends Handler {
 
     // handle when popup is element node
     if( this._dropdown ) {
-      this._dropdown.parentNode.removeChild(this._dropdown);
+      // handle case when target inside dropdown and manual flag is true
+      if( this._manual && DOM.closest(e.target, this._dropdown) ) return;
 
-      delete this._dropdown;
-      delete this._modal;
+      this.closeDropdown();
     } else if( e.target.className === 'modal-overlay' || this.cel.tagName.toLowerCase() === 'button' ) {
       this.closeModal();
     }

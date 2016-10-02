@@ -55,6 +55,18 @@
   }
 }
 
+.si__menu {
+  top: rem-calc(24);
+  right: 0;
+  min-width: rem-calc(150);
+}
+
+.si__label {
+  position: relative;
+  top: rem-calc(1);
+  left: rem-calc(3);
+}
+
 .file {
   position: relative;
   font-weight: 700;
