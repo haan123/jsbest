@@ -173,3 +173,41 @@ $curve: cubic-bezier(0.650, 0, 0.450, 1);
     box-shadow: inset 0 0 0 30px map-get($foundation-palette, alert);
   }
 }
+
+.spinner {
+  height: 25px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.spinner--small {
+  height: rem-calc(15);
+}
+
+.spinner > div {
+  display: inline-block;
+  width: 3px;
+  height: 100%;
+  margin-right: rem-calc(2);
+  vertical-align: middle;
+  background-color: $blue-light;
+  border-radius: $global-radius;
+
+  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  animation-delay: -1s;
+}
+
+@keyframes sk-stretchdelay {
+  0%, 40%, 100% {
+    transform: scaleY(0.6);
+  }  20% {
+    transform: scaleY(1);
+  }
+}

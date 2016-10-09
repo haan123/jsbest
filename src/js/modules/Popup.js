@@ -55,23 +55,25 @@ class PopUp extends Handler {
    * Show dropdown list
    * @public
    */
-  dropdown(data, target, partial, manual) {
+  dropdown(config, target, manual) {
     if( this.hasPopUp() ) return;
 
-    let render = () => {
-      let drop = this.dropdownTempl.render(data, {
-        content: partial
-      });
-
-      target.appendChild(drop);
-
-      this._dropdown = drop;
-      this._modal = 0;
-      this._manual = manual || false;
+    let render = (data) => {
+      drop.innerHTML = config.partial.render(data);
     };
 
-    if( typeof data === 'function' ) data(render);
-    else render(data);
+    let drop = DOM.toDOM(this.dropdownTempl.render({
+      className: config.className
+    }));
+
+    target.appendChild(drop);
+
+    this._dropdown = drop;
+    this._modal = 0;
+    this._manual = manual || false;
+
+    if( typeof config.data === 'function' ) config.data(render);
+    else render(config.data);
   }
 
   closeModal() {
@@ -85,10 +87,17 @@ class PopUp extends Handler {
   }
 
   closeDropdown() {
-    this._dropdown.parentNode.removeChild(this._dropdown);
+    if( this._modal === 0 ) return this._modal++;
 
-    delete this._dropdown;
-    delete this._modal;
+    if( this._dropdown ) {
+      // handle case when target inside dropdown and manual flag is true
+      if( this._manual && DOM.closest(e.target, this._dropdown) ) return;
+
+      this._dropdown.parentNode.removeChild(this._dropdown);
+
+      delete this._dropdown;
+      delete this._modal;
+    }
   }
 
   setCurrentView(data, partial) {
@@ -97,6 +106,9 @@ class PopUp extends Handler {
 
   renderView(elem, data, partial) {
     let container = DOM.closest(elem, '.pop-bench--stack');
+
+    if( !container ) return;
+
     let content = DOM.children(container, '.pop-bench__content');
 
     content.innerHTML = partial.render(data);

@@ -170,14 +170,18 @@ class Bench extends Base {
         lists.push({
           id: id,
           name: bench.name,
-          time: date.toLocaleString()
+          time: date.toLocaleString('en-US')
         });
       }
     });
 
-    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.template('benches').render({
-      benches: lists
-    })));
+    this.popup.dropdown({
+      className: 'bench-list',
+      partial: this.template('benches'),
+      data: {
+        benches: lists
+      }
+    }, this.cel.parentNode);
   }
 
   _clearUrlBench() {
@@ -195,11 +199,20 @@ class Bench extends Base {
     let bench = this.getBenchItem(id);
 
     // this.setBenchItem(bench, bench.name);
-    this._working = +id;
+    this.setWorkingBench(+id);
 
-    this._clearBenchItems();
-    this._renderBenchItems();
-    this._renderBenchName(bench.name);
+    if( this.setup && this.sample ) {
+      this._clearBenchItems();
+      this._renderBenchItems();
+      this._renderBenchName(bench.name);
+    }
+  }
+
+  openBenchRedirect() {
+    let id = this.cel.getAttribute('data-id');
+
+    this.setWorkingBench(+id);
+    location.href = ROOT_URL;
   }
 
   /**
@@ -302,6 +315,17 @@ class Bench extends Base {
     }
 
     return working;
+  }
+
+  setWorkingBench(id) {
+    let benches = this.benches;
+
+    if( this.removeFromArray(id, benches) !== -1 ) {
+      benches.push(id);
+      localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
+
+      this._working = id;
+    }
   }
 
   /**

@@ -237,19 +237,29 @@ class Sample extends Base {
     // handle remove sample
     if( this._exist(data.name) ) {
       this._removeStoredSample(data.name);
-
+      button();
     // handle add sample
     } else {
-      this._storeSample(data.name, data);
-    }
+      let loader = this.loader({
+        size: 'small',
+        target: elem
+      });
 
-    button();
+      loader.start();
+      utils.ajax(data.raw_url).then((code) => {
+        data.code = code;
+        this._storeSample(data.name, data);
+
+        // button();
+        // loader.end();
+      });
+    }
   }
 
   prepareSampleButtonForGist(file) {
     let data = {
       name: file.filename,
-      code: file.raw_url
+      raw_url: file.raw_url
     };
 
     let sample = {

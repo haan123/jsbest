@@ -101,12 +101,8 @@ pre.file__code {
   text-align: center;
 }
 
-.unstar {
-  display: none;
-}
-
 .starred {
-  .star {
-    display: inline-block;
+  .icon {
+    color: map-get($foundation-palette, 'warning');
   }
 }

@@ -44,6 +44,9 @@ if( _processes ) {
 let e = DOM.$('saved-templ');
 let savedTempl = e && hogan.compile(e.innerHTML);
 
+e = DOM.$('loader-templ');
+let loaderTempl = e && hogan.compile(e.innerHTML);
+
 class Base extends Handler {
   constructor(obj) {
     super(obj);
@@ -90,9 +93,9 @@ class Base extends Handler {
     let type = typeof arr[0];
     let i = type.toLowerCase() !== 'object' ? arr.indexOf(name) : utils.indexOf(arr, 'name', name);
 
-    if( ~i ) arr.splice(i, 1);
+    if( ~i ) return arr.splice(i, 1);
 
-    return arr;
+    return i;
   }
 
   /**
@@ -328,6 +331,22 @@ class Base extends Handler {
 
   isSearchPage() {
     return location.href.indexOf('/search') !== -1;
+  }
+
+  loader(options) {
+    return {
+      el: DOM.toDOM(loaderTempl.render({
+        size: options.size
+      })),
+
+      start() {
+        options.target.appendChild(this.el);
+      },
+
+      end() {
+        options.target.removeChild(this.el);
+      }
+    };
   }
 }
 

@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body class="js-popup" data-type="close">
+<body class="js-popup" data-type="closeDropdown">
   <div id="top-bar" class="top-bar">
     <div class="row top-bar-inner">
       <div class="small-12 columns">
@@ -63,7 +63,7 @@
   </div>
 
   <div class="modal-wrapper" style="display: none;">
-    <div class="modal-overlay"></div>
+    <div class="modal-overlay js-popup" data-type="closeModal"></div>
     <div id="modal"></div>
   </div>
 
@@ -73,7 +73,7 @@
       <div class="pop-bench__head">
         <button class="js-popup pop-bench__back" data-type="prevView"><svg class="icon icon--lg" viewBox="0 0 8 16"><path d="M5.5 3L7 4.5 3.25 8 7 11.5 5.5 13l-5-5z"/></svg></button>
         <h6>{{title}}</h6>
-        <button class="js-popup pop-bench__close" data-type="close"><svg class="icon icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></button>
+        <button class="js-popup pop-bench__close" data-type="closeModal"><svg class="icon icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></button>
       </div>
       <div class="pop-bench__content">
         {{>content}}
@@ -81,20 +81,17 @@
     </div>
   </script>
   <script type="text/template" id="user-menu-templ">
-    <div class="dropdown user-menu">
-      <div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
-      <div class="js-github dropdown__item" data-type="enterAccessTokenModal">Edit Personal Access Token</div>
-      <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div>
-    </div>
+    <div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
+    <div class="js-github dropdown__item" data-type="enterAccessTokenModal">Personal Access Token</div>
+    <div class="js-github dropdown__item" data-type="passcodeSetting">Passcode</div>
+    <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div>
   </script>
   <script type="text/template" id="benches-templ">
-    <div class="bench-list dropdown">
-      <ul>
-        {{#benches}}
-        <li class="js-bench bench__item dropdown__item" data-type="openBench" data-id="{{id}}">{{name}}<time>{{time}}</time></li>
-        {{/benches}}
-      </ul>
-    </div>
+    <ul>
+      {{#benches}}
+      <li class="js-bench bench__item dropdown__item" data-type="openBenchRedirect" data-id="{{id}}">{{name}}<time>{{time}}</time></li>
+      {{/benches}}
+    </ul>
   </script>
   <script type="text/template" id="files-templ">
     <div class="files-list dropdown">
@@ -110,20 +107,25 @@
     <input id="ace" type="text" placeholder="Personal Access Token">
     <p id="message" class="message error">Your Personal Access Token is not valid, please try again with difference token.</p>
     <div class="pop-bench__footer">
-      <button class="js-github button success small" data-type="auth">Authenticate</button>
-      <button class="js-popup button secondary small" data-type="close">Later</button>
+      <button class="js-github button success small" data-type="auth" data-stack="{{stack}}">Authenticate</button>
+      <button class="js-popup button secondary small" data-type="closeModal">Later</button>
     </div>
   </script>
   <script type="text/template" id="passcode-form-templ">
-    <p class="share__note passcode__set {{ptype}}">You can choose to enter passcode or not, but this is our <strong>recommendation</strong>, once you enter passcode, we will encode your <strong>Personal Access Token</strong> and this passcode will be used to authenticate instead of enter your access token every time.</p>
-    <p class="share__note passcode__enter {{ptype}}">Please enter passcode to continue.</p>
+    <p class="share__note">Passcode is used to enscript your Personal Access Token (PAT), instead of entering PAT every time, you just have to enter 5 digits of passcode.</p>
     <input id="passcode" class="passcode__field" type="number" placeholder="Enter Your Passcode">
     <p class="info">Passcode must have 5 number, e.g. 12345</p>
     <p id="message" class="message error">Wrong passcode, please try again.</p>
     <div class="pop-bench__footer">
       <button class="js-github button success small" data-type="{{ptype}}Passcode" data-target="share-samples">{{pbutton}}</button>
-      <button class="js-popup button secondary small" data-type="close" data-target="share-samples">Maybe Later</button>
+      <button class="js-popup button secondary small" data-type="closeModal" data-target="share-samples">Maybe Later</button>
     </div>
+  </script>
+  <script type="text/template" id="passcode-setting-templ">
+    <div class="gist-choose">
+      <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="enterPasscodeView" href="#">Add/Edit Passcode <small>Add or Edit your passcode</small></a></div>
+      <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="turnOffPasscode" href="#">Turn off Passcode <small><b>Warning:</b> other person can see your original Personal Access Token</small></a></div>
+  </div>
   </script>
   <script type="text/template" id="si-menu-templ">
     <ul>
@@ -157,9 +159,10 @@
     <pre class="file__code language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
   </script>
   <script type="text/template" id="dropdown-templ">
-    <div class="dropdown {{className}}">
-      {{>content}}
-    </div>
+    <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
+  </script>
+  <script type="text/template" id="loader-templ">
+    <div class="spinner spinner--{{size}}"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div>
   </script>
 
   <script src="js/vendor.js"></script>

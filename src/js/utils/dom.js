@@ -93,4 +93,19 @@ DOM.removeClass = function(elem, value) {
   return (elem.className = current.trim());
 };
 
+let rspace = /[\t\r\n\f]/g;
+
+DOM.hasClass = function(elem, value) {
+  let className, i = 0;
+
+  className = " " + value + " ";
+
+  if ( elem.nodeType === 1 && ( " " + elem.className + " " ).replace( rspace, " " )
+      .indexOf( className ) > -1 ) {
+    return true;
+  }
+
+  return false;
+};
+
 export default DOM;

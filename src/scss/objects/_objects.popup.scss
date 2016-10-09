@@ -142,15 +142,3 @@
 .passcode__field {
   margin-bottom: rem-calc(4);
 }
-
-.passcode__set {
-  &.enter {
-    display: none;
-  }
-}
-
-.passcode__enter {
-  &.set {
-    display: none;
-  }
-}

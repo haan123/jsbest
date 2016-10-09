@@ -72,7 +72,7 @@ class Github extends Base {
 
     this.popup = _popup;
 
-    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'si-menu']);
+    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'si-menu', 'passcode-setting']);
 
     this._user = this._getUser();
 
@@ -82,7 +82,7 @@ class Github extends Base {
     if( this._user ) this.renderUser();
     if( isSearch ) this.initSearch();
 
-    if( isSearch) this.search('@haan123');
+    // if( isSearch) this.search('@haan123');
   }
 
   /**
@@ -145,12 +145,20 @@ class Github extends Base {
    * Handler: star gist
    */
   star() {
-    let url = this.cel.getAttribute('href');
+    let elem = this.cel;
+    let url = elem.getAttribute('href');
 
     this._api('put', url).then((res) => {
-      console.log(res);
-    }).catch((err) => {
-      console.log(err);
+      let label = 'Star';
+
+      if( !DOM.hasClass(elem, 'starred') ) {
+        label = 'Unstar';
+        elem.className += ' starred';
+      } else {
+        DOM.removeClass(elem, 'starred');
+      }
+
+      elem.lastChild.innerHTML = label;
     });
   }
 
@@ -159,22 +167,27 @@ class Github extends Base {
    */
   menu() {
     let id = this.cel.getAttribute('data-id');
+    let _this = this;
 
-    this.popup.dropdown((render) => {
-      let data = {
-        star: 'Star',
-        className: 'si__menu'
-      };
+    this.popup.dropdown({
+      className: 'si__menu',
+      partial: this.template('si-menu'),
+      data(render) {
+        let data = {
+          star: 'Star',
+          id: id
+        };
 
-      this._api('/gists/' + id + '/star').then(() => {
-        data.starred = 'starred';
-        data.star = 'Unstar';
+        _this._api('/gists/' + id + '/star').then(() => {
+          data.starred = 'starred';
+          data.star = 'Unstar';
 
-        render(data);
-      }).catch(() => {
-        render(data);
-      });
-    }, this.cel.parentNode, this.template('si-menu'), true);
+          render(data);
+        }).catch((err) => {
+          render(data);
+        });
+      }
+    }, this.cel.parentNode, true);
 
     return true;
   }
@@ -208,10 +221,11 @@ class Github extends Base {
    */
   _api(type, path, params) {
     if( !this._accessToken ) return;
+
     let options = {};
     if( type[0] === '/' ) {
-      path = type;
       params = path;
+      path = type;
     } else {
       options.type = type;
     }
@@ -231,7 +245,11 @@ class Github extends Base {
   }
 
   userMenu() {
-    this.popup.dropdown(this.cel.parentNode, DOM.toDOM(this.template('user-menu').render(this._user)));
+    this.popup.dropdown({
+      className: 'user-menu',
+      partial: this.template('user-menu'),
+      data: this._user
+    }, this.cel.parentNode);
   }
 
   renderUser() {
@@ -243,6 +261,8 @@ class Github extends Base {
 
     delete this._user;
     delete this._accessToken;
+
+    localStorage.setItem('user', JSON.stringify(this._user));
   }
 
   auth() {
@@ -262,15 +282,21 @@ class Github extends Base {
 
       localStorage.setItem('user', JSON.stringify(this._user));
 
-      this.popup.nextView(this.cel, {
-        ptype: 'set',
-        pbutton: 'Secure My Token'
-      }, this.template('passcode-form'));
+      if( this.cel.getAttribute('data-stack') === 'true' ) {
+        this.enterPasscodeView();
+      } else this.popup.closeModal();
 
       this.renderUser();
     }).catch((err) => {
       DOM.$('message').style.display = 'block';
     });
+  }
+
+  passcodeSetting() {
+    if( !this._authenticate() )
+    this.popup.modal({
+      title: 'Passcode Setting'
+    }, this.template('passcode-setting'), true);
   }
 
   setPasscode() {
@@ -288,8 +314,6 @@ class Github extends Base {
     user.hasPasscode = true;
 
     localStorage.setItem('user', JSON.stringify(user));
-
-    this._accessToken = encoded[0];
 
     this.popup.closeModal();
   }
@@ -314,37 +338,38 @@ class Github extends Base {
     });
   }
 
-  _authenticate() {
-    this._accessToken = 'be0467e6028a552ed692f424ea041c657082a7ea';
-    return true;
-
+  turnOffPasscode() {
     let user = this._user;
-    let needPasscode = user && user.hasPasscode;
 
-    if( this._accessToken ) return true;
+    user.access_token = this._accessToken;
+    delete user.hasPasscode;
 
-    if( needPasscode ) {
-      this.enterPasscodeModal();
-    } else {
-      this.enterAccessTokenModal(true);
-    }
+    localStorage.setItem('user', JSON.stringify(user));
 
-    return false;
+    this.popup.closeModal();
   }
 
   enterPasscodeModal() {
     this.popup.modal({
-      title: 'Enter Passcode',
+      title: 'Passcode',
       ptype: 'enter',
       pbutton: 'Done'
     }, this.template('passcode-form'));
   }
 
+  enterPasscodeView() {
+    this.popup.nextView(this.cel, {
+      ptype: 'set',
+      pbutton: 'Secure My Token'
+    }, this.template('passcode-form'));
+  }
+
   enterAccessTokenModal(isStack) {
     this.popup.modal({
-      title: 'Enter Personal Access Token',
+      title: 'Authentication',
       ptype: 'enter',
-      pbutton: 'Done'
+      pbutton: 'Done',
+      stack: isStack
     }, this.template('login-form'), isStack);
   }
 
@@ -361,6 +386,23 @@ class Github extends Base {
     } catch(e) {}
 
     return user;
+  }
+
+  _authenticate() {
+    // this._accessToken = '7f996ea58310da4556e587c59661a15925051644';
+    // return true;
+    if( this._accessToken ) return true;
+
+    let user = this._user;
+    let needPasscode = user && user.hasPasscode;
+
+    if( needPasscode ) {
+      this.enterPasscodeModal();
+    } else if( user && user.access_token ) {
+      this._accessToken = user.access_token;
+    } else this.enterAccessTokenModal(true);
+
+    return false;
   }
 
 }
