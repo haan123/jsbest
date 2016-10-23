@@ -55,7 +55,7 @@ class PopUp extends Handler {
    * Show dropdown list
    * @public
    */
-  dropdown(config, target, manual) {
+  dropdown(config, target) {
     if( this.hasPopUp() ) return;
 
     let render = (data) => {
@@ -70,7 +70,6 @@ class PopUp extends Handler {
 
     this._dropdown = drop;
     this._modal = 0;
-    this._manual = manual || false;
 
     if( typeof config.data === 'function' ) config.data(render);
     else render(config.data);
@@ -90,8 +89,6 @@ class PopUp extends Handler {
     if( this._modal === 0 ) return this._modal++;
 
     if( this._dropdown ) {
-      // handle case when target inside dropdown and manual flag is true
-      if( this._manual && DOM.closest(e.target, this._dropdown) ) return;
 
       this._dropdown.parentNode.removeChild(this._dropdown);
 
@@ -148,8 +145,6 @@ class PopUp extends Handler {
 
     // handle when popup is element node
     if( this._dropdown ) {
-      // handle case when target inside dropdown and manual flag is true
-      if( this._manual && DOM.closest(e.target, this._dropdown) ) return;
 
       this.closeDropdown();
     } else if( e.target.className === 'modal-overlay' || this.cel.tagName.toLowerCase() === 'button' ) {

@@ -1,10 +1,13 @@
 import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
+import Promise from 'bluebird';
 
 const config = {
   client_id: '11218ed60d09b213b537',
-  api: 'https://api.github.com'
+  api: 'https://api.github.com',
+  raw_url: 'https://gist.githubusercontent.com',
+  avatar: 'https://avatars.githubusercontent.com/u'
 };
 
 function makeSand(secret) {
@@ -72,7 +75,7 @@ class Github extends Base {
 
     this.popup = _popup;
 
-    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'si-menu', 'passcode-setting']);
+    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'passcode-setting']);
 
     this._user = this._getUser();
 
@@ -124,9 +127,10 @@ class Github extends Base {
 
         utils.forEach(gists, (gist) => {
           let arr = [];
+
           utils.forEach(gist.files, (file) => {
             // create new sample object to add to sample list
-            this.sample.prepareSampleButtonForGist(file);
+            this.sample.prepareSampleButtonForGist(file, gist);
 
             arr.push(file);
           });
@@ -144,52 +148,31 @@ class Github extends Base {
   /**
    * Handler: star gist
    */
-  star() {
-    let elem = this.cel;
-    let url = elem.getAttribute('href');
+  star(url, starred) {
+    if( !this._authenticate() ) return;
 
-    this._api('put', url).then((res) => {
-      let label = 'Star';
+    let method = 'put';
+    if( starred === 'true' ) method = 'DELETE';
 
-      if( !DOM.hasClass(elem, 'starred') ) {
-        label = 'Unstar';
-        elem.className += ' starred';
-      } else {
-        DOM.removeClass(elem, 'starred');
-      }
-
-      elem.lastChild.innerHTML = label;
-    });
+    return this._api(method, url);
   }
 
-  /**
-   * Handler: show search menu
-   */
-  menu() {
-    let id = this.cel.getAttribute('data-id');
-    let _this = this;
+  toStarModel(data) {
+    let star = data.star = {};
 
-    this.popup.dropdown({
-      className: 'si__menu',
-      partial: this.template('si-menu'),
-      data(render) {
-        let data = {
-          star: 'Star',
-          id: id
-        };
+    star.id = data.id || data.raw_url.substr(data.raw_url.indexOf(data.owner.login)).split('/')[1];
+    star.title = data.starred ? 'Unstar' : 'star';
+    star.state = data.starred ? 'is-starred' : '';
 
-        _this._api('/gists/' + id + '/star').then(() => {
-          data.starred = 'starred';
-          data.star = 'Unstar';
+    return star;
+  }
 
-          render(data);
-        }).catch((err) => {
-          render(data);
-        });
-      }
-    }, this.cel.parentNode, true);
-
-    return true;
+  isStarred(id) {
+    return this._api('/gists/' + id + '/star').then(() => {
+      return true;
+    }).catch((err) => {
+      return false;
+    });
   }
 
   viewCode() {
@@ -373,6 +356,14 @@ class Github extends Base {
     }, this.template('login-form'), isStack);
   }
 
+  toAvatarUrl(id) {
+    return `${config.avatar}/${id}?v=3`;
+  }
+
+  toRawUrl(data) {
+    return `${config.raw_url}/${data.owner.login}/${data.gid}/raw/${data.id}/${data.name}`;
+  }
+
   /**
    * Get user
    *
@@ -400,6 +391,8 @@ class Github extends Base {
       this.enterPasscodeModal();
     } else if( user && user.access_token ) {
       this._accessToken = user.access_token;
+
+      return true;
     } else this.enterAccessTokenModal(true);
 
     return false;

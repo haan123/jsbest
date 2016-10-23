@@ -21,9 +21,13 @@
 }
 
 .setup__heading {
-  font-weight: 700;
+  margin-top: $global-margin / 2;
   font-size: rem-calc(13);
+  font-weight: 700;
   line-height: rem-calc(22);
   color: $dark-gray;
-  margin-top: $global-margin / 2;
+}
+
+.sample-share--setup {
+  display: none !important;
 }

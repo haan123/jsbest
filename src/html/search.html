@@ -134,20 +134,18 @@
   </script>
   <script type="text/template" id="search-item-templ">
     <div class="sample-item si">
-      <div class="controls control--gist">
-        <a class="js-github control-item" data-type="menu" data-id="{{id}}"><span class="icon icon--lg icon--dots"></span></a>
-      </div>
-
-      <div class="si__head">
-        <img class="si__img" src="{{owner.avatar_url}}" alt="@{{owner.login}}">
-        <span class="si__path"><a href="{{owner.html_url}}">{{owner.login}}</a> / <a href="{{html_url}}">{{name}}</a></span>
-        <p class="si__description">{{description}}</p>
+      <div class="media owner">
+        <div class="media__left"><img class="media__object" src="{{owner.avatar_url}}" alt="@{{owner.login}}"></div>
+        <div class="media__body">
+          <a class="owner__path" href="{{owner.html_url}}">{{owner.login}}</a> / <a class="owner__path" href="{{html_url}}">{{name}}</a>
+          <div class="owner__description">{{description}}</div>
+        </div>
       </div>
 
       {{#files}}
       <div class="file">
         <div class="file__info">
-          <span class="js-sample file__control button {{sample.buttonClass}}" data-type="SampleGist" data-sample-item="{{sample.data}}">{{sample.buttonText}} Sample</span>
+          <span class="js-sample file__control button {{sample.buttonClass}}" data-type="sampleGist" data-sample-item="{{sample.data}}">{{sample.buttonText}} Sample</span>
           <span class="file__name">{{filename}}</span>
         </div>
         <pre class="js-github file__code language-text" data-type="viewCode" data-raw="{{raw_url}}" data-language="{{language}}">View Code</pre>
@@ -162,7 +160,7 @@
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
   </script>
   <script type="text/template" id="loader-templ">
-    <div class="spinner spinner--{{size}}"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div>
+    <div class="spinner spinner--{{size}}"><div class="rect rect1"></div><div class="rect rect2"></div><div class="rect rect3"></div></div>
   </script>
 
   <script src="js/vendor.js"></script>

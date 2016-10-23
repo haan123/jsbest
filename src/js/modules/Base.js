@@ -122,9 +122,9 @@ class Base extends Handler {
     return _cache.get(id);
   }
 
-  storeCache(id, code) {
+  storeCache(id, data) {
     let cache = this.getCacheItem(id);
-    this.setCacheItem(id, utils.extend(cache || {}, { code: code }));
+    this.setCacheItem(id, utils.extend(cache || {}, data));
 
     return cache;
   }
@@ -210,13 +210,12 @@ class Base extends Handler {
    * @private
    * @param {String} id
    */
-  renderSavedState(name, item, code, id, data) {
+  renderSavedState(name, item, data, partials) {
     let editor = this[name + 'Editor'];
-    this.storeCache(id);
 
     if( editor ) editor.toTextArea();
-    item.innerHTML = savedTempl.render(data);
-    item.setAttribute('data-uid', id);
+    item.innerHTML = savedTempl.render(data, partials);
+    item.setAttribute('data-uid', data.id);
 
     // render uneditable state's code editor
     utils.forEach(data.prism, (config) => {

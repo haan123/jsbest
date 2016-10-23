@@ -1,9 +1,12 @@
 import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
+import Promise from 'bluebird';
+
+const MAXIMUM_FILE_SIZE = 2000;
 
 class Sample extends Base {
-  constructor(_process, _bench, _popup) {
+  constructor(_process, _bench, _popup, github) {
     super({
       mid: 'sample',
       events: {
@@ -16,8 +19,9 @@ class Sample extends Base {
     this.processList = DOM.$('process');
     this.process = _process;
     this.popup = _popup;
+    this.github = github;
 
-    this.setTemplate(['process-row', 'sample-form', 'pop-share-sample', 'pop-share-samples', 'checkmark', 'cross']);
+    this.setTemplate(['process-row', 'sample-form', 'pop-share-sample', 'pop-share-samples', 'checkmark', 'cross', 'star']);
 
     this._initSamples();
   }
@@ -40,8 +44,8 @@ class Sample extends Base {
    *
    * @return {Boolean}
    */
-  _exist(name) {
-    return this.getCacheItem(name);
+  _exist(id) {
+    return this.getCacheItem(id);
   }
 
   /**
@@ -103,6 +107,7 @@ class Sample extends Base {
     let elem = this.cel;
     let item = edit ? this.getItem(elem) : this.createSampleItem(elem);
     let id = edit ? item.getAttribute('data-uid') : 'add';
+    let cache = this.getCacheItem(id);
 
     this.showForm(item, 'sample', [{
       name: 'sample'
@@ -112,7 +117,7 @@ class Sample extends Base {
     }, edit);
 
     if( edit ) {
-      DOM.$('sample-' + id + '-name').value = item.getAttribute('data-uid');
+      DOM.$('sample-' + id + '-name').value = cache.name;
     }
   }
 
@@ -131,9 +136,22 @@ class Sample extends Base {
 
     if( !samples.length ) return;
 
+    let render = (sample) => {
+      if( !isSearchPage ) {
+        this._save(sample);
+      }
+
+      this.storeCache(sample.id, sample);
+    };
+
     utils.forEach(samples, (sample) => {
-      if( !isSearchPage ) this._save(sample);
-      this.storeCache(sample.name, sample.code);
+      // Try to get code from raw url if its size > MAXIMUM_FILE_SIZE
+      if( !sample.code && sample.raw_url ) {
+        utils.ajax(sample.raw_url).then((code) => {
+          sample.code = code;
+          render(sample);
+        });
+      } else render(sample);
     });
   }
 
@@ -144,18 +162,18 @@ class Sample extends Base {
    * @param {String} name
    * @param {Object} data - { name: String, code: String }
    */
-  _storeSample(name, data) {
+  _storeSample(id, data) {
     let _bench = this.bench.getWorkingBench();
     let samples = _bench.samples;
-    name = data.oldId || name;
+    id = data.oldId || id;
 
-    this.removeFromArray(name, samples);
+    this.removeFromArray(id, samples);
 
     delete data.oldId;
     samples.push(data);
 
     this.bench.setBenchItem(_bench);
-    this.storeCache(name);
+    this.storeCache(id, data);
   }
 
   /**
@@ -164,14 +182,14 @@ class Sample extends Base {
    *
    * @param  {String} name
    */
-  _removeStoredSample(name) {
+  _removeStoredSample(id) {
     let _bench = this.bench.getWorkingBench();
     let samples = _bench.samples;
 
-    this.removeFromArray(name, samples);
+    this.removeFromArray(id, samples);
 
     this.bench.setBenchItem(_bench);
-    this.removeFromCache(name);
+    this.removeFromCache(id);
   }
 
   /**
@@ -181,44 +199,77 @@ class Sample extends Base {
    * @param {Object} data
    */
   _save(data, item) {
-    let name = data.name;
+    let id = data.id;
     let code = data.code;
     let oldId = data.oldId;
 
-    if( !name|| !code || (!oldId && this._exist(name)) ) return;
+    if( !id || !code || (!oldId && this._exist(id)) ) return;
 
     if( !item ) {
       item = this.createSampleItem(DOM.$('sample-add'));
     } else {
-      this._storeSample(name, data);
+      this._storeSample(id, data);
     }
 
-    this.process.addSuite(name, code);
+    this.process.addSuite(id, code);
     this.revealAddButton('sample');
 
-    this.renderSavedState('sample', item, code, name, {
-      handler: 'sample',
-      name: 'Sample',
-      id: name,
-      sample: [{ id: name }],
-      prism: [{
-        pid: name,
-        language: 'javascript',
-        code: code
-      }]
-    });
+    this.renderSampleItem(data, item);
 
     this.renderRow({
-      id: name,
-      name: name
+      id: id,
+      name: data.name
     }, oldId);
+  }
+
+  renderSampleItem(data, item) {
+    let partials = {};
+
+    if( data.owner ) {
+      partials.star = this.template('star');
+      this.toGistModel(data);
+    }
+
+    this.renderSavedState('sample', item, utils.extend({}, data, {
+      handler: 'sample',
+      name: 'Sample',
+      sample: { id: data.name },
+      prism: [{
+        pid: data.name,
+        language: 'javascript',
+        code: data.code
+      }]
+    }), partials);
+  }
+
+  /**
+   * Handler: star a gist
+   */
+  star() {
+    this.github.star(this.cel.getAttribute('href'), this.cel.getAttribute('data-starred')).then(() => {
+      let starHTML = this.template('star').render(this.github.toStarModel({
+        starred: true,
+        id: this.cel.getAttribute('data-id')
+      }));
+
+      let parent = this.cel.parentNode;
+      parent.insertBefore(DOM.toDOM(starHTML), this.cel);
+      parent.removeChild(this.cel);
+    });
+  }
+
+  toGistModel(data, partials) {
+    let owner = data.owner;
+
+    owner.avatar_url = this.github.toAvatarUrl(owner.id);
+    this.github.toStarModel(data);
   }
 
 
   /**
    * Handler: add/remove sample from github's gist
    */
-  SampleGist() {
+  sampleGist() {
     let elem = this.cel;
     let data = JSON.parse(elem.getAttribute('data-sample-item'));
     let button = () => {
@@ -246,20 +297,34 @@ class Sample extends Base {
       });
 
       loader.start();
-      utils.ajax(data.raw_url).then((code) => {
-        data.code = code;
-        this._storeSample(data.name, data);
+      Promise.join(utils.ajax(this.github.toRawUrl(data)).then((code) => {
+        if( data.size < MAXIMUM_FILE_SIZE ) {
+          data.code = code;
+        }
 
-        // button();
-        // loader.end();
+        return data;
+      }), this.github.isStarred(data.gid), (data, starred) => {
+        data.starred = starred;
+
+        this._storeSample(data.id, data);
+
+        button();
       });
     }
   }
 
-  prepareSampleButtonForGist(file) {
+  prepareSampleButtonForGist(file, gist) {
+    let arr = file.raw_url.split('/');
+
     let data = {
       name: file.filename,
-      raw_url: file.raw_url
+      gid: gist.id,
+      id: arr[arr.length - 2],
+      size: file.size,
+      owner: {
+        login: gist.owner.login,
+        id: gist.owner.id
+      }
     };
 
     let sample = {
@@ -267,7 +332,7 @@ class Sample extends Base {
       buttonText: 'Add'
     };
 
-    if( this._exist(data.name) ) {
+    if( this._exist(data.id) ) {
       sample.buttonClass = 'alert';
       sample.buttonText = 'Remove';
     }
@@ -281,6 +346,7 @@ class Sample extends Base {
     let code = this.getEditor('sample-add').getValue().trim();
 
     this._save({
+      id: new Date().getTime() + '',
       name: name,
       code: code
     }, item);
@@ -377,24 +443,14 @@ class Sample extends Base {
     let elem = this.cel;
     let item = this.getItem(elem);
     let isAdd = ~item.className.indexOf(this.getStateClass('add'));
-    let name = item.getAttribute('data-uid');
-    let cache = this.getCacheItem(name);
+    let id = item.getAttribute('data-uid');
+    let cache = this.getCacheItem(id);
 
     if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('sample');
     } else {
-      this.renderSavedState('sample', item, cache.code, name, {
-        handler: 'sample',
-        name: 'Sample',
-        id: name,
-        sample: [{ id: name }],
-        prism: [{
-          pid: name,
-          language: 'javascript',
-          code: cache.code
-        }]
-      });
+      this.renderSampleItem(cache, item);
     }
 
   }

@@ -1,0 +1,23 @@
+.owner {
+  margin-bottom: $global-margin;
+}
+
+.owner__path {
+  display: inline-block;
+  font-weight: 700;
+
+  &:hover, &:focus {
+    text-decoration: underline;
+  }
+}
+
+.owner__description {
+  color: $dark-gray;
+}
+
+.owner__star {
+}
+
+.is-starred {
+  color: map-get($foundation-palette, 'warning');
+}

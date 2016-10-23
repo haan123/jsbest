@@ -90,24 +90,26 @@
 // -------------------------------------
 
 @import 'objects/objects.layout';
-@import 'objects/objects.iframe-demo';
-@import 'objects/objects.icon';
-@import 'objects/objects.sample-item';
-@import 'objects/objects.top-bar';
-@import 'objects/objects.process';
-@import 'objects/objects.setup';
 @import 'objects/objects.table';
-@import 'objects/objects.badge';
-@import 'objects/objects.footer';
-@import 'objects/objects.control';
-@import 'objects/objects.popup';
-@import 'objects/objects.bench';
-@import 'objects/objects.user';
-@import 'objects/objects.search';
+@import 'objects/objects.media';
 
 // -------------------------------------
 //   6. Components - UI Styles
 // -------------------------------------
+@import 'components/iframe-demo';
+@import 'components/icon';
+@import 'components/sample-item';
+@import 'components/top-bar';
+@import 'components/process';
+@import 'components/setup';
+@import 'components/badge';
+@import 'components/footer';
+@import 'components/control';
+@import 'components/popup';
+@import 'components/bench';
+@import 'components/user';
+@import 'components/search';
+@import 'components/owner';
 
 // -------------------------------------
 //   7. Themes

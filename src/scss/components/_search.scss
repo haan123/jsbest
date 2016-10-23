@@ -23,38 +23,6 @@
   font-size: rem-calc(12);
 }
 
-.si__head {
-  overflow: hidden;
-}
-
-.si__img {
-  float: left;
-  width: rem-calc(36);
-  height: rem-calc(36);
-  padding: rem-calc(1);
-  margin-right: rem-calc(6);
-  vertical-align: text-top;
-  border-radius: $global-radius;
-}
-
-.si__description {
-  margin: 0;
-  color: $dark-gray;
-}
-
-.si__path {
-  display: inline-block;
-  vertical-align: text-top;
-
-  a {
-    font-weight: 700;
-
-    &:hover, &:focus {
-      text-decoration: underline;
-    }
-  }
-}
-
 .si__menu {
   top: rem-calc(24);
   right: 0;
@@ -76,6 +44,14 @@
   @include clearfix();
 
   margin-top: $global-margin;
+
+  .spinner {
+    margin-left: rem-calc(5);
+  }
+
+  .rect {
+    background: $white;
+  }
 }
 
 .file__name {
@@ -99,10 +75,4 @@ pre.file__code {
   margin: 0;
   font-family: $body-font-family;
   text-align: center;
-}
-
-.starred {
-  .icon {
-    color: map-get($foundation-palette, 'warning');
-  }
 }

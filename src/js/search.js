@@ -11,4 +11,4 @@ let _popup = new PopUp();
 let _bench = new Bench(_popup);
 
 let github = new Github(_popup);
-github.sample = new Sample(null, _bench, _popup);
+github.sample = new Sample(null, _bench, _popup, github);
