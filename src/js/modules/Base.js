@@ -3,6 +3,7 @@ import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 import Events from '../utils/Events';
+import Promise from 'bluebird';
 
 const MIN_LINE = '\n\n\n\n';
 const SAMPLE_ITEM_CLASS = 'sample-item';
@@ -89,9 +90,9 @@ class Base extends Handler {
    * @param  {String} name
    * @param  {Array} arr
    */
-  removeFromArray(name, arr) {
+  removeFromArray(id, arr) {
     let type = typeof arr[0];
-    let i = type.toLowerCase() !== 'object' ? arr.indexOf(name) : utils.indexOf(arr, 'name', name);
+    let i = type.toLowerCase() !== 'object' ? arr.indexOf(id) : utils.indexOf(arr, 'id', id);
 
     if( ~i ) return arr.splice(i, 1);
 
@@ -193,6 +194,10 @@ class Base extends Handler {
     return editor;
   }
 
+  uuid() {
+    return (new Date()).getTiem();
+  }
+
   /**
    * Return correspond editor type
    * @public
@@ -211,20 +216,32 @@ class Base extends Handler {
    * @param {String} id
    */
   renderSavedState(name, item, data, partials) {
-    let editor = this[name + 'Editor'];
+    return new Promise((resolve, reject) => {
+      let editor = this[name + 'Editor'];
 
-    if( editor ) editor.toTextArea();
-    item.innerHTML = savedTempl.render(data, partials);
-    item.setAttribute('data-uid', data.id);
+      if( editor ) editor.toTextArea();
+      item.innerHTML = savedTempl.render(data, partials);
+      item.setAttribute('data-uid', data.id);
 
-    // render uneditable state's code editor
-    utils.forEach(data.prism, (config) => {
-      this.toStaticCode(config.pid, config.code, config.language);
+      // render uneditable state's code editor
+      utils.forEach(data.prism, (config) => {
+        this.loader({
+          target: DOM.$('static-' + config.id)
+        }).start();
+
+        if(  config.raw_url ) {
+          utils.ajax(this.github.toRawUrl(data)).then((code) => {
+            config.code = code;
+            this.toStaticCode(config);
+            resolve(code);
+          });
+        } else this.toStaticCode(config);
+      });
+
+      this._setStateClass(item, 'saved');
+
+      delete this[name + 'Editor'];
     });
-
-    this._setStateClass(item, 'saved');
-
-    delete this[name + 'Editor'];
   }
 
   /**
@@ -242,17 +259,15 @@ class Base extends Handler {
   /**
    * Disable edit actions from editor
    *
-   * @param {String} id
-   * @param {String} value
-   * @param {String} lang
+   * @param {Object} config
    */
-  toStaticCode(id, code, lang) {
-    let elem = DOM.$('static-' + id);
+  toStaticCode(config) {
+    let elem = DOM.$('static-' + config.id);
 
-    if( !code ) {
+    if( !config.code ) {
       let pre = elem.parentNode;
       pre.parentNode.removeChild(pre);
-    } else elem.innerHTML = this._highlight(code, lang);
+    } else elem.innerHTML = this._highlight(config.code, config.language);
   }
 
   /**
@@ -335,7 +350,7 @@ class Base extends Handler {
   loader(options) {
     return {
       el: DOM.toDOM(loaderTempl.render({
-        size: options.size
+        size: options.size || ''
       })),
 
       start() {

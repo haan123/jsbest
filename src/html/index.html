@@ -129,7 +129,9 @@
     <div class="controls control--sample">
       {{#star}}{{>star}}{{/star}}
       <a class="js-{{handler}} control-item sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
+      {{^owner}}
       <a class="js-{{handler}} control-item" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
+      {{/owner}}
       <a class="js-{{handler}} control-item" data-type="remove{{name}}" href="#" title="Remove Sample"><svg class="icon icon--lg icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></a>
     </div>
 
@@ -149,11 +151,11 @@
       </div>
     </div>
     {{/owner}}
-    <h5 id="{{id}}">{{id}} <a class="sample-item__anchor" href="#{{id}}" title="Anchor link for {{id}}" aria-label="Acchor link for {{id}}"><svg class="icon" viewBox="0 0 16 16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a></h5>
+    <h5 id="{{id}}">{{name}} <a class="sample-item__anchor" href="#{{id}}" title="Anchor link for {{name}}" aria-label="Acchor link for {{name}}"><svg class="icon" viewBox="0 0 16 16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"/></svg></a></h5>
     {{/sample}}
 
     {{#prism}}
-    <pre class="sample-item__static language-{{language}}"><code id="static-{{pid}}" class="language-{{language}}"></code></pre>
+    <pre class="sample-item__static language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
     {{/prism}}
   </script>
   <script type="text/template" id="sample-form-templ">
@@ -284,6 +286,9 @@
   </script>
   <script type="text/template" id="dropdown-templ">
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
+  </script>
+  <script type="text/template" id="loader-templ">
+    <div class="spinner{{#size}} spinner--{{size}}{{/size}}"><div class="rect rect1"></div><div class="rect rect2"></div><div class="rect rect3"></div></div>
   </script>
 
   <script src="js/benchmark.js"></script>

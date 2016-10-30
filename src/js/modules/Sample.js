@@ -136,22 +136,10 @@ class Sample extends Base {
 
     if( !samples.length ) return;
 
-    let render = (sample) => {
+    utils.forEach(samples, (sample) => {
       if( !isSearchPage ) {
         this._save(sample);
       }
-
-      this.storeCache(sample.id, sample);
-    };
-
-    utils.forEach(samples, (sample) => {
-      // Try to get code from raw url if its size > MAXIMUM_FILE_SIZE
-      if( !sample.code && sample.raw_url ) {
-        utils.ajax(sample.raw_url).then((code) => {
-          sample.code = code;
-          render(sample);
-        });
-      } else render(sample);
     });
   }
 
@@ -162,18 +150,15 @@ class Sample extends Base {
    * @param {String} name
    * @param {Object} data - { name: String, code: String }
    */
-  _storeSample(id, data) {
+  _storeSample(data) {
     let _bench = this.bench.getWorkingBench();
     let samples = _bench.samples;
-    id = data.oldId || id;
 
-    this.removeFromArray(id, samples);
-
-    delete data.oldId;
+    this.removeFromArray(data.id, samples);
     samples.push(data);
 
     this.bench.setBenchItem(_bench);
-    this.storeCache(id, data);
+    this.storeCache(data.id, data);
   }
 
   /**
@@ -200,46 +185,40 @@ class Sample extends Base {
    */
   _save(data, item) {
     let id = data.id;
-    let code = data.code;
-    let oldId = data.oldId;
 
-    if( !id || !code || (!oldId && this._exist(id)) ) return;
+    if( !item ) item = this.createSampleItem(DOM.$('sample-add'));
 
-    if( !item ) {
-      item = this.createSampleItem(DOM.$('sample-add'));
-    } else {
-      this._storeSample(id, data);
-    }
+    this.renderSampleItem(data, item).then((code) => {
+      if( code ) data.code = code;
 
-    this.process.addSuite(id, code);
+      this._storeSample(data);
+      this.process.addSuite(data.id, data.code);
+      this.renderRow(data);
+    });
+
     this.revealAddButton('sample');
-
-    this.renderSampleItem(data, item);
-
-    this.renderRow({
-      id: id,
-      name: data.name
-    }, oldId);
   }
 
   renderSampleItem(data, item) {
     let partials = {};
+    let prism = {
+      id: data.id,
+      language: 'javascript'
+    };
+    let config = utils.extend({}, data, {
+      handler: 'sample',
+      name: 'Sample',
+      sample: { name: data.name },
+      prism: [prism]
+    });
 
     if( data.owner ) {
       partials.star = this.template('star');
       this.toGistModel(data);
+      prism.raw_url = this.github.toRawUrl(data);
     }
 
-    this.renderSavedState('sample', item, utils.extend({}, data, {
-      handler: 'sample',
-      name: 'Sample',
-      sample: { id: data.name },
-      prism: [{
-        pid: data.name,
-        language: 'javascript',
-        code: data.code
-      }]
-    }), partials);
+    return this.renderSavedState('sample', item, config, partials);
   }
 
   /**
@@ -273,12 +252,11 @@ class Sample extends Base {
     let elem = this.cel;
     let data = JSON.parse(elem.getAttribute('data-sample-item'));
     let button = () => {
-      let state = this._exist(data.name) ? 'Remove' : 'Add';
+      let state = this._exist(data.id) ? 'Remove' : 'Add';
 
-      let text = state + ' Sample';
       DOM.removeClass(elem, 'alert');
 
-      elem.innerHTML = text;
+      elem.innerHTML = state + ' Sample';
 
       if( state === 'Remove' ) {
         elem.className += ' alert';
@@ -286,24 +264,14 @@ class Sample extends Base {
     };
 
     // handle remove sample
-    if( this._exist(data.name) ) {
-      this._removeStoredSample(data.name);
+    if( this._exist(data.id) ) {
+      this._removeStoredSample(data.id);
       button();
     // handle add sample
     } else {
-      let loader = this.loader({
-        size: 'small',
-        target: elem
-      });
+      this.loader({ size: 'small', target: elem }).start();
 
-      loader.start();
-      Promise.join(utils.ajax(this.github.toRawUrl(data)).then((code) => {
-        if( data.size < MAXIMUM_FILE_SIZE ) {
-          data.code = code;
-        }
-
-        return data;
-      }), this.github.isStarred(data.gid), (data, starred) => {
+      this.github.isStarred(data.gid).then((starred) => {
         data.starred = starred;
 
         this._storeSample(data.id, data);
@@ -320,7 +288,7 @@ class Sample extends Base {
       name: file.filename,
       gid: gist.id,
       id: arr[arr.length - 2],
-      size: file.size,
+      description: gist.description,
       owner: {
         login: gist.owner.login,
         id: gist.owner.id
@@ -415,23 +383,16 @@ class Sample extends Base {
 
   edit() {
     let item = this.getItem(this.cel);
-    let oldId = item.getAttribute('data-uid');
-    let name = DOM.$('sample-' + oldId + '-name').value;
-    let code = this.getEditor('sample-' +  oldId).getValue().trim();
+    let id = item.getAttribute('data-uid');
+    let name = DOM.$('sample-' + id + '-name').value;
+    let code = this.getEditor('sample-' +  id).getValue().trim();
 
     if( !name || !code ) return;
-    if( name !== oldId && this._exist(name) ) {
-      return;
-    }
 
-    this.removeFromCache(oldId);
-    this.process.removeSuite(oldId);
+    this.removeFromCache(id);
+    this.process.removeSuite(id);
 
-    this._save({
-      oldId: oldId,
-      name: name,
-      code: code
-    }, item);
+    this._save({ id: id, name: name, code: code }, item);
   }
 
   /**
@@ -464,13 +425,11 @@ class Sample extends Base {
     this.process.run();
   }
 
-  renderRow(obj, oldId) {
-    let row = DOM.toDOM(this.template('process-row').render(obj));
+  renderRow(data) {
+    let row = DOM.toDOM(this.template('process-row').render(data));
 
-    if( oldId ) {
-      let orow = DOM.$('sample-' + oldId);
-      orow.parentNode.removeChild(orow);
-    }
+    let orow = DOM.$('sample-' + data.id);
+    if( orow ) orow.parentNode.removeChild(orow);
 
     this.processList.appendChild(row);
   }

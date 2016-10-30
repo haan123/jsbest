@@ -2,8 +2,6 @@ import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
 
-const MODULE_NAME = '__SETUP__';
-
 class Setup extends Base {
   constructor(_process, _bench) {
     super({
@@ -17,11 +15,10 @@ class Setup extends Base {
     this.context = _process.context;
     this.process = _process;
 
+    this._id = 'setup';
     this.bench = _bench;
 
     this.setTemplate(['setup-form', 'setup-url']);
-
-    this.cache = this.setCacheItem(MODULE_NAME, {});
 
     this._initSetup();
   }
@@ -46,6 +43,7 @@ class Setup extends Base {
     let elem = this.cel;
     let item = edit ? elem : this.createSampleItem(elem);
     let id = edit || 'add';
+    let cache = this.getCacheItem(this._id);
 
     this.showForm(item, 'setup', [{
       name: 'setup-html',
@@ -60,7 +58,7 @@ class Setup extends Base {
     }], {
       type: edit || 'add',
       id: id,
-      urls: this.cache.urls || ''
+      urls: cache.urls || ''
     }, edit);
 
     this.getEditor('setup-html-' + id).focus();
@@ -73,14 +71,9 @@ class Setup extends Base {
   _initSetup() {
     let _bench = this.bench.getWorkingBench();
 
-    if( !_bench ) return;
+    if( !_bench || !_bench.setup ) return;
 
-    let setup = _bench.setup;
-
-    if( !setup.code ) return;
-
-    this._save(setup);
-    this.cache = this.storeCache(setup.name, setup.code);;
+    this._save(_bench.setup);
   }
 
   /**
@@ -95,7 +88,7 @@ class Setup extends Base {
     _bench.setup = data;
 
     this.bench.setBenchItem(_bench);
-    this.storeCache(MODULE_NAME);
+    this.storeCache(this._id, data);
   }
 
   /**
@@ -131,7 +124,7 @@ class Setup extends Base {
    * Store url from current working bench
    * @private
    *
-   * @param  {Object} url
+   * @param  {Object} url`
    */
   _StoredUrl(url) {
     let _bench = this.bench.getWorkingBench();
@@ -151,13 +144,13 @@ class Setup extends Base {
     let code = data.code;
     let urls = data.urls;
 
+    this._storeSetup(data);
+
     if( !code ) return;
 
     if( !item  ) {
       item = this.createSampleItem(DOM.$('setup-add'));
       if( urls ) utils.forEach(urls, (url) => this._cachedUrl(url));
-    } else {
-      this._storeSetup(data);
     }
 
     this.process._queueForIframe(() => {
@@ -169,21 +162,28 @@ class Setup extends Base {
 
     this.process.bmSetup(code.js);
 
-    this.renderSavedState('setup', item, code, MODULE_NAME, {
+    this.renderSetup(data, item);
+  }
+
+  renderSetup(data, item) {
+    let config = utils.extend({}, data, {
       handler: 'setup',
       name: 'Setup',
-      id: 'setup',
-      urls: urls,
+      urls: data.urls,
       prism: [{
-        pid: 'setup-html',
+        id: 'setup-html',
         language: 'markup',
-        code: code.html
+        code: data.code.html
       }, {
-        pid: 'setup-js',
+        id: 'setup-js',
         language: 'javascript',
-        code: code.js
+        code: data.code.js
       }]
     });
+
+    this.renderSavedState('setup', item, config);
+
+    return config;
   }
 
   /**
@@ -194,13 +194,14 @@ class Setup extends Base {
     let html = this.getEditor('setup-html-' + type);
     let js = this.getEditor('setup-js-' + type);
     let item = this.getItem(this.cel);
+    let cache = this.getCacheItem(this._id);
 
     this._save({
       code: {
         html: html.getValue().trim(),
         js: js.getValue().trim()
       },
-      urls: this.cache.urls
+      urls: cache.urls
     }, item);
   }
 
@@ -220,28 +221,15 @@ class Setup extends Base {
     let elem = this.cel;
     let item = this.getItem(elem);
     let isAdd = ~item.className.indexOf(this.getStateClass('add'));
-    let code = this.cache.code;
+    let cache = this.getCacheItem(this._id);
+    let code = cache.code;
 
     if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('setup');
-      this.cache.urls = [];
+      cache.urls = [];
     } else {
-      this.renderSavedState('setup', item, code, MODULE_NAME, {
-        handler: 'setup',
-        name: 'Setup',
-        id: 'setup',
-        urls: this.cache.urls,
-        prism: [{
-          pid: 'setup-html',
-          language: 'markup',
-          code: code.html
-        }, {
-          pid: 'setup-js',
-          language: 'javascript',
-          code: code.js
-        }]
-      });
+      this.renderSetup(cache, item);
     }
   }
 
@@ -300,7 +288,7 @@ class Setup extends Base {
    * @return {Number}
    */
   _cachedUrl(url) {
-    let cache = this.cache;
+    let cache = this.getCacheItem(this._id);
     url = typeof url === 'string' ? { url: url} : url;
 
     if( !cache.urls ) cache.urls = [];
@@ -320,11 +308,11 @@ class Setup extends Base {
    */
   removeUrl() {
     let id = this.cel.getAttribute('data-url-id');
-    // if( !id ) return;
+    let cache = this.getCacheItem(this._id);
 
     let setup = this.cel.parentNode;
 
-    this.cache.urls.splice(id, 1);
+    cache.urls.splice(id, 1);
     setup.parentNode.removeChild(setup);
   }
 
