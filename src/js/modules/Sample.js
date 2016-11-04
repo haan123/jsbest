@@ -140,6 +140,8 @@ class Sample extends Base {
       if( !isSearchPage ) {
         this._save(sample);
       }
+
+      this.storeCache(sample.id, sample);
     });
   }
 
@@ -189,10 +191,10 @@ class Sample extends Base {
     if( !item ) item = this.createSampleItem(DOM.$('sample-add'));
 
     this.renderSampleItem(data, item).then((code) => {
-      if( code ) data.code = code;
+      code = data.code || code;
 
       this._storeSample(data);
-      this.process.addSuite(data.id, data.code);
+      this.process.addSuite(data.id, code);
       this.renderRow(data);
     });
 
@@ -201,47 +203,52 @@ class Sample extends Base {
 
   renderSampleItem(data, item) {
     let partials = {};
-    let prism = {
-      id: data.id,
-      language: 'javascript'
-    };
-    let config = utils.extend({}, data, {
+    let config = {
       handler: 'sample',
       name: 'Sample',
       sample: { name: data.name },
-      prism: [prism]
-    });
+      prism: [{
+        id: data.id,
+        language: 'javascript',
+        raw_url: this.github.toRawUrl(data),
+        code: data.code
+      }]
+    }, ownerModel;
 
     if( data.owner ) {
       partials.star = this.template('star');
-      this.toGistModel(data);
-      prism.raw_url = this.github.toRawUrl(data);
+      ownerModel = this.toOwnerModel(data);
     }
 
-    return this.renderSavedState('sample', item, config, partials);
+    return this.renderSavedState('sample', item, utils.extend({}, data, ownerModel, config), partials);
   }
 
   /**
    * Handler: star a gist
    */
   star() {
+    let id = this.cel.getAttribute('data-id');
+    let cache = this.getCacheItem(id);
+
     this.github.star(this.cel.getAttribute('href'), this.cel.getAttribute('data-starred')).then(() => {
-      let starHTML = this.template('star').render(this.github.toStarModel({
-        starred: true,
-        id: this.cel.getAttribute('data-id')
-      }));
+      cache.starred = true;
+
+      let starHTML = this.template('star').render(cache);
 
       let parent = this.cel.parentNode;
       parent.insertBefore(DOM.toDOM(starHTML), this.cel);
       parent.removeChild(this.cel);
+
+      this._storeSample(data);
     });
   }
 
-  toGistModel(data, partials) {
-    let owner = data.owner;
+  toOwnerModel(data) {
+    let _owner = {};
 
-    owner.avatar_url = this.github.toAvatarUrl(owner.id);
-    this.github.toStarModel(data);
+    _owner.avatar_url = this.github.toAvatarUrl(data.owner.id);
+
+    return { owner: utils.extend({}, data.owner, _owner) };
   }
 
 
@@ -269,12 +276,15 @@ class Sample extends Base {
       button();
     // handle add sample
     } else {
-      this.loader({ size: 'small', target: elem }).start();
+      this.loader({
+         target: elem,
+         options: ['small', 'inline']
+      }).start();
 
       this.github.isStarred(data.gid).then((starred) => {
         data.starred = starred;
 
-        this._storeSample(data.id, data);
+        this._storeSample(data);
 
         button();
       });
@@ -328,11 +338,10 @@ class Sample extends Base {
 
   shareSamplePopUp() {
     let item = this.getItem(this.cel);
-    let name = item.getAttribute('data-uid');
-    let url = this.bench.toUrl(name);
+    let id = item.getAttribute('data-uid');
+    let url = this.bench.toUrl(id);
 
     this.popup.modal({
-      name: name,
       title: 'Share Sample',
       url: url
     }, this.template('pop-share-sample'));

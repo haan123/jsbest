@@ -52,6 +52,8 @@ class Base extends Handler {
   constructor(obj) {
     super(obj);
     this._templates = {};
+
+    this.setTemplate(['saved']);
   }
 
   setTemplate(names=[]) {
@@ -60,7 +62,14 @@ class Base extends Handler {
 
       if( !templ ) return;
 
-      this._templates[name] = hogan.compile(templ.innerHTML);
+      var _t = `{{#root}}${templ.innerHTML}{{/root}}`;
+
+      let template = this._templates[name] = hogan.compile(_t);
+      let _render = template.render;
+
+      template.render = function(context, partials, indent) {
+        return _render.call(this, { root: context }, partials, indent);
+      };
     });
   }
 
@@ -235,7 +244,10 @@ class Base extends Handler {
             this.toStaticCode(config);
             resolve(code);
           });
-        } else this.toStaticCode(config);
+        } else {
+          this.toStaticCode(config);
+          resolve(config.code);
+        }
       });
 
       this._setStateClass(item, 'saved');
@@ -347,18 +359,21 @@ class Base extends Handler {
     return location.href.indexOf('/search') !== -1;
   }
 
-  loader(options) {
+  loader(configs) {
+    let options = [];
+    utils.forEach(configs.options || [], (option) => options.push({ option: option }));
+
+    configs.options = options;
+
     return {
-      el: DOM.toDOM(loaderTempl.render({
-        size: options.size || ''
-      })),
+      el: DOM.toDOM(loaderTempl.render(configs)),
 
       start() {
-        options.target.appendChild(this.el);
+        configs.target.appendChild(this.el);
       },
 
       end() {
-        options.target.removeChild(this.el);
+        configs.target.removeChild(this.el);
       }
     };
   }

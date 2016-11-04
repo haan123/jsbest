@@ -184,6 +184,10 @@ $curve: cubic-bezier(0.650, 0, 0.450, 1);
   height: rem-calc(15);
 }
 
+.spinner--inline {
+  display: inline-block;
+}
+
 .spinner > div {
   display: inline-block;
   width: 3px;

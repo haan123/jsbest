@@ -151,20 +151,10 @@ class Github extends Base {
   star(url, starred) {
     if( !this._authenticate() ) return;
 
-    let method = 'put';
+    let method = 'PUT';
     if( starred === 'true' ) method = 'DELETE';
 
     return this._api(method, url);
-  }
-
-  toStarModel(data) {
-    let star = data.star = {};
-
-    star.id = data.id || data.raw_url.substr(data.raw_url.indexOf(data.owner.login)).split('/')[1];
-    star.title = data.starred ? 'Unstar' : 'star';
-    star.state = data.starred ? 'is-starred' : '';
-
-    return star;
   }
 
   isStarred(id) {
@@ -361,6 +351,8 @@ class Github extends Base {
   }
 
   toRawUrl(data) {
+    if( !data.owner ) return '';
+
     return `${config.raw_url}/${data.owner.login}/${data.gid}/raw/${data.id}/${data.name}`;
   }
 

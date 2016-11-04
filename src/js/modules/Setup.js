@@ -35,10 +35,6 @@ class Setup extends Base {
     this[type]();
   }
 
-  getModuleName() {
-    return MODULE_NAME;
-  }
-
   openSetup(edit) {
     let elem = this.cel;
     let item = edit ? elem : this.createSampleItem(elem);
@@ -97,13 +93,13 @@ class Setup extends Base {
    *
    * @param  {String} name
    */
-  _removeStoredSetup(name) {
+  _removeStoredSetup(id) {
     let _bench = this.bench.getWorkingBench();
 
     _bench.setup = {};
 
     this.bench.setBenchItem(_bench);
-    this.removeFromCache(name);
+    this.removeFromCache(id);
   }
 
   /**
@@ -167,6 +163,7 @@ class Setup extends Base {
 
   renderSetup(data, item) {
     let config = utils.extend({}, data, {
+      id: 'setup',
       handler: 'setup',
       name: 'Setup',
       urls: data.urls,

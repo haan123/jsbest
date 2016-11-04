@@ -123,11 +123,11 @@
     </div>
   </script>
   <script type="text/template" id="star-templ">
-    <a class="js-sample control-item owner__star {{state}}" data-type="star" data-id="{{id}}" data-starred="{{starred}}" href="/gists/{{id}}/star" title="{{title}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></a>
+    <a class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{root.id}}" href="/gists/{{gid}}/star" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></a>
   </script>
   <script type="text/template" id="saved-templ">
     <div class="controls control--sample">
-      {{#star}}{{>star}}{{/star}}
+      {{#owner}}{{>star}}{{/owner}}
       <a class="js-{{handler}} control-item sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
       {{^owner}}
       <a class="js-{{handler}} control-item" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
@@ -144,9 +144,9 @@
     {{#sample}}
     {{#owner}}
     <div class="media owner">
-      <div class="media__left"><img class="media__object" src="{{owner.avatar_url}}" alt="@{{owner.login}}"></div>
+      <div class="media__left"><img class="media__object" src="{{avatar_url}}" alt="@{{login}}"></div>
       <div class="media__body">
-        <a class="owner__path" href="{{owner.html_url}}">{{owner.login}}</a>
+        <a class="owner__path" href="{{html_url}}">{{owner.login}}</a>
         <div class="owner__description">{{description}}</div>
       </div>
     </div>

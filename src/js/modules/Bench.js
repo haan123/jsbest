@@ -267,7 +267,7 @@ class Bench extends Base {
       let id = item.getAttribute('data-uid');
       if( !id ) return;
 
-      if( id === this.setup.getModuleName() ) {
+      if( id === 'setup' ) {
         this.setup.removeSetupView(item, id);
       } else {
         this.sample.removeSampleView(item, id);
@@ -379,13 +379,13 @@ class Bench extends Base {
    *
    * @return {String}
    */
-  toUrl(names) {
+  toUrl(ids) {
     let bench = this.getWorkingBench();
-    names = typeof names === 'string' ? [names] : names;
+    ids = typeof ids === 'string' ? [ids] : ids;
     let arr = [];
 
     utils.forEach(bench.samples, (sample) => {
-      if( ~names.indexOf(sample.name) ) {
+      if( ~ids.indexOf(sample.id) ) {
         arr.push(sample);
       }
     });
