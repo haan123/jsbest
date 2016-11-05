@@ -52,8 +52,6 @@ class Base extends Handler {
   constructor(obj) {
     super(obj);
     this._templates = {};
-
-    this.setTemplate(['saved']);
   }
 
   setTemplate(names=[]) {
@@ -62,14 +60,7 @@ class Base extends Handler {
 
       if( !templ ) return;
 
-      var _t = `{{#root}}${templ.innerHTML}{{/root}}`;
-
-      let template = this._templates[name] = hogan.compile(_t);
-      let _render = template.render;
-
-      template.render = function(context, partials, indent) {
-        return _render.call(this, { root: context }, partials, indent);
-      };
+      this._templates[name] = hogan.compile(templ.innerHTML);
     });
   }
 

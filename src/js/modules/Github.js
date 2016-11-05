@@ -152,7 +152,7 @@ class Github extends Base {
     if( !this._authenticate() ) return;
 
     let method = 'PUT';
-    if( starred === 'true' ) method = 'DELETE';
+    if( starred === true ) method = 'DELETE';
 
     return this._api(method, url);
   }

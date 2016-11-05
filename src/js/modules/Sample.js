@@ -212,10 +212,11 @@ class Sample extends Base {
         language: 'javascript',
         raw_url: this.github.toRawUrl(data),
         code: data.code
-      }]
+      }],
+      hasOwner: !!data.owner
     }, ownerModel;
 
-    if( data.owner ) {
+    if( config.hasOwner ) {
       partials.star = this.template('star');
       ownerModel = this.toOwnerModel(data);
     }
@@ -230,8 +231,8 @@ class Sample extends Base {
     let id = this.cel.getAttribute('data-id');
     let cache = this.getCacheItem(id);
 
-    this.github.star(this.cel.getAttribute('href'), this.cel.getAttribute('data-starred')).then(() => {
-      cache.starred = true;
+    this.github.star(this.cel.getAttribute('href'), cache.starred).then(() => {
+      cache.starred = cache.starred ? false : true;
 
       let starHTML = this.template('star').render(cache);
 
@@ -239,7 +240,7 @@ class Sample extends Base {
       parent.insertBefore(DOM.toDOM(starHTML), this.cel);
       parent.removeChild(this.cel);
 
-      this._storeSample(data);
+      this._storeSample(cache);
     });
   }
 

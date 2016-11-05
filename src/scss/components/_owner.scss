@@ -15,9 +15,10 @@
   color: $dark-gray;
 }
 
-.owner__star {
-}
-
 .is-starred {
   color: map-get($foundation-palette, 'warning');
+
+  &:hover, &:focus {
+    color: map-get($foundation-palette, 'warning');
+  }
 }
