@@ -10,6 +10,10 @@ const config = {
   avatar: 'https://avatars.githubusercontent.com/u'
 };
 
+// need to add `.` because github does not allow personal access token to be embed in public repository
+const PUBLIC_ACCESS_TOKEN = '5.25977683e0305126aa92929bc7bb6ead4f47d2f';
+const PAT = 'passcode_access_token';
+
 function makeSand(secret) {
   return (1 * new Date()).toString().slice(-3) + secret;
 }
@@ -73,6 +77,8 @@ class Github extends Base {
       }
     });
 
+    this._accessToken = PUBLIC_ACCESS_TOKEN.replace('.', '');
+
     this.popup = _popup;
 
     this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'passcode-setting']);
@@ -84,8 +90,6 @@ class Github extends Base {
 
     if( this._user ) this.renderUser();
     if( isSearch ) this.initSearch();
-
-    // if( isSearch) this.search('@haan123');
   }
 
   /**
@@ -149,7 +153,7 @@ class Github extends Base {
    * Handler: star gist
    */
   star(url, starred) {
-    if( !this._authenticate() ) return;
+    if( !this._authenticate() ) throw 'Not Athenticated';
 
     let method = 'PUT';
     if( starred === true ) method = 'DELETE';
@@ -169,19 +173,21 @@ class Github extends Base {
     let elem = this.cel;
     let url = elem.getAttribute('data-raw');
 
-    utils.ajax(url).then((code) => {
-      let id = 1*(new Date());
-      let lang = elem.getAttribute('data-language');
+    this.loader({ target: elem, fullFill: true }).start();
 
-      let html = DOM.toDOM(this.template('code').render({
-        language: lang,
-        id: id
-      }));
+    utils.ajax(url).then((code) => {
+      let config = {
+        code: code,
+        id: 1*(new Date()),
+        language: elem.getAttribute('data-language')
+      };
+
+      let html = DOM.toDOM(this.template('code').render(config));
 
       elem.parentNode.insertBefore(html, elem);
       elem.parentNode.removeChild(elem);
 
-      this.toStaticCode(id, code, lang);
+      this.toStaticCode(config);
     });
   }
 
@@ -266,7 +272,8 @@ class Github extends Base {
   }
 
   passcodeSetting() {
-    if( !this._authenticate() )
+    if( !this._authenticate() ) return;
+
     this.popup.modal({
       title: 'Passcode Setting'
     }, this.template('passcode-setting'), true);
@@ -304,6 +311,8 @@ class Github extends Base {
     this._accessToken = token;
 
     this._api('/user').then(() => {
+      sessionStorage.setItem(PAT, token);
+
       this.popup.closeModal();
     }).catch(() => {
       delete this._accessToken;
@@ -372,14 +381,18 @@ class Github extends Base {
   }
 
   _authenticate() {
-    // this._accessToken = '7f996ea58310da4556e587c59661a15925051644';
-    // return true;
     if( this._accessToken ) return true;
 
     let user = this._user;
     let needPasscode = user && user.hasPasscode;
 
     if( needPasscode ) {
+      let passcodeAccessToken = sessionStorage.getItem(PAT);
+      if( passcodeAccessToken ) {
+          this._accessToken = passcodeAccessToken;
+          return true;
+      }
+
       this.enterPasscodeModal();
     } else if( user && user.access_token ) {
       this._accessToken = user.access_token;

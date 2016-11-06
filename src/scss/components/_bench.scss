@@ -80,6 +80,19 @@
   }
 }
 
+.bench__item--active {
+  .bench__name {
+
+    &::after {
+      display: inline-block;
+      margin-left: rem-calc(4);
+      color: map-get($foundation-palette, 'success');
+      content: '\2022';
+      border-radius: 50%;
+    }
+  }
+}
+
 @include breakpoint('medium') {
   .dialog {
     width: rem-calc(600);

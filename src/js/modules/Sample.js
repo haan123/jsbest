@@ -191,6 +191,17 @@ class Sample extends Base {
     if( !item ) item = this.createSampleItem(DOM.$('sample-add'));
 
     this.renderSampleItem(data, item).then((code) => {
+      // this.loader({
+      //    target: document.getElementById(data.id),
+      //    options: ['small', 'inline']
+      // }).start();
+
+      this.github.isStarred(data.gid).then((starred) => {
+        let button = document.getElementById(data.id);
+
+        
+      });
+
       code = data.code || code;
 
       this._storeSample(data);
@@ -241,6 +252,14 @@ class Sample extends Base {
       parent.removeChild(this.cel);
 
       this._storeSample(cache);
+
+      if( window.ga ) {
+        ga('send', {
+          hitType: 'event',
+          eventCategory: 'GitHub',
+          eventAction: cache.starred ? 'star' : 'unstar'
+        });
+      }
     });
   }
 
@@ -274,22 +293,12 @@ class Sample extends Base {
     // handle remove sample
     if( this._exist(data.id) ) {
       this._removeStoredSample(data.id);
-      button();
     // handle add sample
     } else {
-      this.loader({
-         target: elem,
-         options: ['small', 'inline']
-      }).start();
-
-      this.github.isStarred(data.gid).then((starred) => {
-        data.starred = starred;
-
-        this._storeSample(data);
-
-        button();
-      });
+      this._storeSample(data);
     }
+
+    button();
   }
 
   prepareSampleButtonForGist(file, gist) {

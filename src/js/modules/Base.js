@@ -42,16 +42,12 @@ if( _processes ) {
   Events.bind(window, 'scroll', _scroll);
 }
 
-let e = DOM.$('saved-templ');
-let savedTempl = e && hogan.compile(e.innerHTML);
-
-e = DOM.$('loader-templ');
-let loaderTempl = e && hogan.compile(e.innerHTML);
-
 class Base extends Handler {
   constructor(obj) {
     super(obj);
     this._templates = {};
+
+    this.setTemplate(['saved', 'loader']);
   }
 
   setTemplate(names=[]) {
@@ -60,7 +56,7 @@ class Base extends Handler {
 
       if( !templ ) return;
 
-      this._templates[name] = hogan.compile(templ.innerHTML);
+      this._templates[name] = hogan.compile(templ.innerHTML.trim());
     });
   }
 
@@ -220,7 +216,7 @@ class Base extends Handler {
       let editor = this[name + 'Editor'];
 
       if( editor ) editor.toTextArea();
-      item.innerHTML = savedTempl.render(data, partials);
+      item.innerHTML = this.template('saved').render(data, partials);
       item.setAttribute('data-uid', data.id);
 
       // render uneditable state's code editor
@@ -357,10 +353,14 @@ class Base extends Handler {
     configs.options = options;
 
     return {
-      el: DOM.toDOM(loaderTempl.render(configs)),
+      templ: this.template('loader').render(configs),
 
       start() {
-        configs.target.appendChild(this.el);
+        if( configs.fullFill ) {
+          configs.target.innerHTML = this.templ;
+        } else {
+          configs.target.appendChild(DOM.toDOM(this.templ));
+        }
       },
 
       end() {

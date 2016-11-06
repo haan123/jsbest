@@ -5,10 +5,6 @@
   background: $white;
   border: 1px solid $light-gray;
   border-radius: $global-radius;
-
-  input {
-    margin-right: 0;
-  }
 }
 
 .pop-bench__close,
@@ -81,7 +77,6 @@
 .login__label {
   padding-top: $global-padding / 2;
   padding-left: rem-calc(4);
-  font-size: rem-calc(16);
   cursor: pointer;
   border-top: 1px solid $light-gray;
 }

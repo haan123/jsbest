@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 
-<body class="js-popup" data-type="close">
+<body class="js-popup" data-type="closeDropdown">
   <div id="top-bar" class="top-bar">
     <div class="row top-bar-inner">
       <div class="small-12 columns">
@@ -103,7 +103,7 @@
   </div>
 
   <div class="modal-wrapper" style="display: none;">
-    <div class="modal-overlay"></div>
+    <div class="modal-overlay js-popup" data-type="closeModal"></div>
     <div id="modal"></div>
   </div>
 
@@ -123,16 +123,16 @@
     </div>
   </script>
   <script type="text/template" id="star-templ">
-    <a class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" href="/gists/{{gid}}/star" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></a>
+    <span id="star-{{id}}" class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" href="/gists/{{gid}}/star" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
   </script>
   <script type="text/template" id="saved-templ">
     <div class="controls control--sample">
       {{#hasOwner}}{{>star}}{{/hasOwner}}
-      <a class="js-{{handler}} control-item sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></a>
+      <span class="js-{{handler}} control-item sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></span>
       {{^hasOwner}}
-      <a class="js-{{handler}} control-item" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></a>
+      <span class="js-{{handler}} control-item" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></span>
       {{/hasOwner}}
-      <a class="js-{{handler}} control-item" data-type="remove{{name}}" href="#" title="Remove Sample"><svg class="icon icon--lg icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></a>
+      <span class="js-{{handler}} control-item" data-type="remove{{name}}" href="#" title="Remove Sample"><svg class="icon icon--lg icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></span>
     </div>
 
     {{#urls}}
@@ -146,7 +146,7 @@
     <div class="media owner">
       <div class="media__left"><img class="media__object" src="{{avatar_url}}" alt="@{{login}}"></div>
       <div class="media__body">
-        <a class="owner__path" href="{{html_url}}">{{login}}</a>
+        <a class="owner__path" href="https://github.com/{{login}}" target="_blank">{{login}}</a> / <a class="owner__path" href="https://gist.github.com/{{gid}}" target="_blank">{{name}}</a>
         <div class="owner__description">{{description}}</div>
       </div>
     </div>
@@ -212,7 +212,7 @@
       <div class="pop-bench__head">
         <button class="js-popup pop-bench__back" data-type="prevView"><svg class="icon icon--lg" viewBox="0 0 8 16"><path d="M5.5 3L7 4.5 3.25 8 7 11.5 5.5 13l-5-5z"/></svg></button>
         <h6>{{title}}</h6>
-        <button class="js-popup pop-bench__close" data-type="close"><svg class="icon icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></button>
+        <button class="js-popup pop-bench__close" data-type="closeModal"><svg class="icon icon--x" viewBox="0 0 12 16"><path d="M7.48 8l3.75 3.75-1.48 1.48L6 9.48l-3.75 3.75-1.48-1.48L4.52 8 .77 4.25l1.48-1.48L6 6.52l3.75-3.75 1.48 1.48z"/></svg></button>
       </div>
       <div class="pop-bench__content">
         {{>content}}
@@ -221,7 +221,8 @@
   </script>
   <script type="text/template" id="user-menu-templ">
     <div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
-    <div class="js-github dropdown__item" data-type="enterAccessTokenModal">Edit Personal Access Token</div>
+    <div class="js-github dropdown__item" data-type="enterAccessTokenModal">Personal Access Token</div>
+    <div class="js-github dropdown__item" data-type="passcodeSetting">Passcode</div>
     <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div>
   </script>
   <script type="text/template" id="pop-save-templ">
@@ -234,7 +235,7 @@
     <p>Are your sure you want to remove <strong>{{name}}</strong>?</p>
     <div class="pop-bench__footer">
       <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
-      <button class="js-popup button secondary small" data-type="close">No</button>
+      <button class="js-popup button secondary small" data-type="closeModal">No</button>
     </div>
   </script>
   <script type="text/template" id="pop-share-sample-templ">
@@ -246,7 +247,7 @@
   </script>
   <script type="text/template" id="pop-share-samples-templ">
     <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
-    <h6 class="share__heading">Chooses Samples you want to Share</h6>
+    <h6 class="share__heading">Choose samples you want to Share</h6>
     <div class="share__content">
       {{#samples}}
       <label class="share__label"><input class="js-sample" data-type="chooseShareSample" data-target="share-samples" type="checkbox" value="{{name}}"> {{name}}</label>
@@ -260,7 +261,7 @@
   <script type="text/template" id="benches-templ">
     <ul>
       {{#benches}}
-      <li class="js-bench bench__item dropdown__item" data-type="openBench" data-id="{{id}}">{{name}}<time>{{time}}</time></li>
+      <li class="js-bench bench__item dropdown__item {{#active}}bench__item--active{{/active}}" data-type="openBench" data-id="{{id}}"><span class="bench__name">{{name}}</span><time>{{time}}</time></li>
       {{/benches}}
     </ul>
   </script>
@@ -269,8 +270,8 @@
     <input id="ace" type="text" placeholder="Personal Access Token">
     <p id="message" class="message error">Your Personal Access Token is not valid, please try again with difference token.</p>
     <div class="pop-bench__footer">
-      <button class="js-github button success small" data-type="signIn">Sign In</button>
-      <button class="js-popup button secondary small" data-type="close">Later</button>
+      <button class="js-github button success small" data-type="auth">Sign In</button>
+      <button class="js-popup button secondary small" data-type="closeModal">Later</button>
     </div>
   </script>
   <script type="text/template" id="passcode-form-templ">
@@ -281,8 +282,14 @@
     <p id="message" class="message error">Wrong passcode, please try again.</p>
     <div class="pop-bench__footer">
       <button class="js-github button success small" data-type="{{ptype}}Passcode" data-target="share-samples">{{pbutton}}</button>
-      <button class="js-popup button secondary small" data-type="close" data-target="share-samples">Maybe Later</button>
+      <button class="js-popup button secondary small" data-type="closeModal" data-target="share-samples">Maybe Later</button>
     </div>
+  </script>
+  <script type="text/template" id="passcode-setting-templ">
+    <div class="gist-choose">
+      <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="enterPasscodeView" href="#">Add/Edit Passcode <small>Add or Edit your passcode</small></a></div>
+      <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="turnOffPasscode" href="#">Turn off Passcode <small><b>Warning:</b> other person can see your original Personal Access Token</small></a></div>
+  </div>
   </script>
   <script type="text/template" id="dropdown-templ">
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>

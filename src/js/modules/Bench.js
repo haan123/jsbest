@@ -165,13 +165,17 @@ class Bench extends Base {
     utils.forEach(benches, (id) => {
       let bench = this.getBenchItem(id);
       let date = new Date(id);
+      let isActive = this._working === id;
+      let data = {
+        id: id,
+        name: bench.name,
+        time: date.toLocaleString('en-US'),
+        active: this._working === id
+      };
 
       if( bench ) {
-        lists.push({
-          id: id,
-          name: bench.name,
-          time: date.toLocaleString('en-US')
-        });
+        if( isActive ) lists.unshift(data);
+        else lists.push(data);
       }
     });
 

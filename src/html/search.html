@@ -89,7 +89,7 @@
   <script type="text/template" id="benches-templ">
     <ul>
       {{#benches}}
-      <li class="js-bench bench__item dropdown__item" data-type="openBenchRedirect" data-id="{{id}}">{{name}}<time>{{time}}</time></li>
+      <li class="js-bench bench__item dropdown__item {{#active}}bench__item--active{{/active}}" data-type="openBenchRedirect" data-id="{{id}}"><span class="bench__name">{{name}}</span><time>{{time}}</time></li>
       {{/benches}}
     </ul>
   </script>
