@@ -138,7 +138,7 @@ class Sample extends Base {
 
     utils.forEach(samples, (sample) => {
       if( !isSearchPage ) {
-        this._save(sample);
+        this._save(sample, null, true);
       }
 
       this.storeCache(sample.id, sample);
@@ -185,26 +185,25 @@ class Sample extends Base {
    * @public
    * @param {Object} data
    */
-  _save(data, item) {
+  _save(data, item, fromDB) {
     let id = data.id;
 
     if( !item ) item = this.createSampleItem(DOM.$('sample-add'));
 
     this.renderSampleItem(data, item).then((code) => {
-      // this.loader({
-      //    target: document.getElementById(data.id),
-      //    options: ['small', 'inline']
-      // }).start();
+      if( data.owner ) {
+        this.github.isStarred(data.gid).then((starred) => {
+          let button = document.getElementById('star-' + data.id);
+          let parent = button.parentNode;
 
-      this.github.isStarred(data.gid).then((starred) => {
-        let button = document.getElementById(data.id);
-
-        
-      });
+          parent.insertBefore(DOM.toDOM(this.template('star').render(utils.extend({}, data, { starred: starred }))), button);
+          parent.removeChild(button);
+        });
+      }
 
       code = data.code || code;
 
-      this._storeSample(data);
+      if( !fromDB ) this._storeSample(data);
       this.process.addSuite(data.id, code);
       this.renderRow(data);
     });
@@ -241,23 +240,20 @@ class Sample extends Base {
   star() {
     let id = this.cel.getAttribute('data-id');
     let cache = this.getCacheItem(id);
+    let starred = +this.cel.getAttribute('data-starred');
 
-    this.github.star(this.cel.getAttribute('href'), cache.starred).then(() => {
-      cache.starred = cache.starred ? false : true;
-
-      let starHTML = this.template('star').render(cache);
-
+    this.github.star(this.cel.getAttribute('data-url'), starred, this.cel).then(() => {
       let parent = this.cel.parentNode;
-      parent.insertBefore(DOM.toDOM(starHTML), this.cel);
+      parent.insertBefore(DOM.toDOM(this.template('star').render(utils.extend({}, cache, {
+        starred: starred ? 0 : 1
+      }))), this.cel);
       parent.removeChild(this.cel);
-
-      this._storeSample(cache);
 
       if( window.ga ) {
         ga('send', {
           hitType: 'event',
           eventCategory: 'GitHub',
-          eventAction: cache.starred ? 'star' : 'unstar'
+          eventAction: starred ? 'star' : 'unstar'
         });
       }
     });

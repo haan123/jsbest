@@ -25,7 +25,7 @@ class Process {
 
   reloadIframe() {
     this._iframeIsReady = false;
-    this.context.location.reload(true);
+    this.iframe.src = this.iframe.src + '';
 
     this.iframe.onload = this._iframeLoaded.bind(this);
   }

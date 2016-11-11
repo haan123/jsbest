@@ -16,6 +16,10 @@ const EDITOR_CONFIG = {
   viewportMargin: Infinity,
   lineWrapping: true
 };
+const INDICATOR = {
+  primary: hogan.compile('<div class="rect rect1"></div><div class="rect rect2"></div><div class="rect rect3"></div>'),
+  secondary: hogan.compile('<div class="double-bounce1"></div><div class="double-bounce2"></div>')
+};
 
 let _cache = new Map();
 let _processes = DOM.$('processes');
@@ -226,7 +230,7 @@ class Base extends Handler {
         }).start();
 
         if(  config.raw_url ) {
-          utils.ajax(this.github.toRawUrl(data)).then((code) => {
+          utils.ajax(this.github.toRawUrl(data)).then(([code]) => {
             config.code = code;
             this.toStaticCode(config);
             resolve(code);
@@ -353,7 +357,7 @@ class Base extends Handler {
     configs.options = options;
 
     return {
-      templ: this.template('loader').render(configs),
+      templ: this.template('loader').render(configs, { indicator: INDICATOR[configs.indicator] || INDICATOR.primary }),
 
       start() {
         if( configs.fullFill ) {

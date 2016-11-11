@@ -77,7 +77,7 @@ class Github extends Base {
       }
     });
 
-    this._accessToken = PUBLIC_ACCESS_TOKEN.replace('.', '');
+    this._publicAccessToken = PUBLIC_ACCESS_TOKEN.replace('.', '');
 
     this.popup = _popup;
 
@@ -85,8 +85,15 @@ class Github extends Base {
 
     this._user = this._getUser();
 
+    if( this._user ) {
+      this._api('/user', {
+        access_token: this._user.access_token
+      }).then((user) => {
+        this._accessToken = this._user.access_token;
+      });
+    }
+
     let isSearch = this.isSearchPage();
-    if( isSearch ) this._authenticate();
 
     if( this._user ) this.renderUser();
     if( isSearch ) this.initSearch();
@@ -126,8 +133,12 @@ class Github extends Base {
       let path = '/gists';
 
       if( qualifier === '@' ) path = '/users/' + m[1] + path;
-      this._api(path).then((gists) => {
+      else if( qualifier === '#' ) path = path + '/' + m[1];
+
+      this._api(path).then(([gists]) => {
         let templ = this.template('search-item');
+
+        gists = utils.isArray(gists) ? gists : [gists];
 
         utils.forEach(gists, (gist) => {
           let arr = [];
@@ -152,20 +163,29 @@ class Github extends Base {
   /**
    * Handler: star gist
    */
-  star(url, starred) {
-    if( !this._authenticate() ) throw 'Not Athenticated';
+  star(url, starred, elem) {
+    if( !this._authenticate({
+      scopes: 'gist'
+    }) ) throw 'Not Athenticated';
+
+    this.loader({
+      target: elem,
+      fullFill: true,
+      indicator: 'secondary',
+      options: ['small', 'inline']
+    }).start();
 
     let method = 'PUT';
-    if( starred === true ) method = 'DELETE';
+    if( starred ) method = 'DELETE';
 
     return this._api(method, url);
   }
 
   isStarred(id) {
     return this._api('/gists/' + id + '/star').then(() => {
-      return true;
+      return 1;
     }).catch((err) => {
-      return false;
+      return 0;
     });
   }
 
@@ -175,7 +195,7 @@ class Github extends Base {
 
     this.loader({ target: elem, fullFill: true }).start();
 
-    utils.ajax(url).then((code) => {
+    utils.ajax(url).then(([code]) => {
       let config = {
         code: code,
         id: 1*(new Date()),
@@ -199,8 +219,6 @@ class Github extends Base {
    * @return {Promise}
    */
   _api(type, path, params) {
-    if( !this._accessToken ) return;
-
     let options = {};
     if( type[0] === '/' ) {
       params = path;
@@ -209,7 +227,18 @@ class Github extends Base {
       options.type = type;
     }
 
-    options.url = config.api + path + '?access_token=' + this._accessToken;
+    options.url = config.api + path;
+    let token;
+
+    if( params && params.access_token ) {
+      token = (params && params.access_token) || this._accessToken;
+
+      delete params.access_token;
+    } else token = this._accessToken || this._publicAccessToken;
+
+    if( token ) {
+      options.url += '?access_token=' + token;
+    }
 
     let arr = [];
     for( let name in params ) {
@@ -241,22 +270,29 @@ class Github extends Base {
     delete this._user;
     delete this._accessToken;
 
-    localStorage.setItem('user', JSON.stringify(this._user));
+    localStorage.removeItem('user');
   }
 
   auth() {
     DOM.$('message').style.display = 'none';
 
     let accessToken = DOM.$('ace').value;
+    let requredScopes = this.cel.getAttribute('data-scope');
 
     if( !accessToken ) return;
     this._accessToken = accessToken;
 
-    this._api('/user').then((user) => {
+    this._api('/user').then(([user, xhr]) => {
+      let scopes = xhr.getResponseHeader('X-OAuth-Scopes');
+      if( scopes.indexOf(requredScopes) < 0 ) {
+        return Promise.reject();
+      }
+
       this._user = {
         access_token: accessToken,
         avatar_url: user.avatar_url,
-        name: user.name
+        name: user.name,
+        scopes: scopes
       };
 
       localStorage.setItem('user', JSON.stringify(this._user));
@@ -268,6 +304,8 @@ class Github extends Base {
       this.renderUser();
     }).catch((err) => {
       DOM.$('message').style.display = 'block';
+      console.log(this._accessToken);
+      delete this._accessToken;
     });
   }
 
@@ -346,13 +384,13 @@ class Github extends Base {
     }, this.template('passcode-form'));
   }
 
-  enterAccessTokenModal(isStack) {
-    this.popup.modal({
+  enterAccessTokenModal(isStack, data) {
+    this.popup.modal(utils.extend({
       title: 'Authentication',
       ptype: 'enter',
       pbutton: 'Done',
       stack: isStack
-    }, this.template('login-form'), isStack);
+    }, data), this.template('login-form'), isStack);
   }
 
   toAvatarUrl(id) {
@@ -380,7 +418,7 @@ class Github extends Base {
     return user;
   }
 
-  _authenticate() {
+  _authenticate(data) {
     if( this._accessToken ) return true;
 
     let user = this._user;
@@ -394,11 +432,7 @@ class Github extends Base {
       }
 
       this.enterPasscodeModal();
-    } else if( user && user.access_token ) {
-      this._accessToken = user.access_token;
-
-      return true;
-    } else this.enterAccessTokenModal(true);
+    } else this.enterAccessTokenModal(true, data);
 
     return false;
   }

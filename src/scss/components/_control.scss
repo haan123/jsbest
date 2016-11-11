@@ -9,6 +9,8 @@
   float: left;
   padding: rem-calc(2 4);
   margin-right: rem-calc(4);
+  min-width: rem-calc(30);
+  text-align: center;
   color: $white;
   border-radius: $global-radius;
 
