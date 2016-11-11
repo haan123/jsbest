@@ -3,6 +3,7 @@ import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import hogan from 'hogan.js';
 
+const SEPARATOR = ',';
 const WORKING_NAME = 'working';
 const BENCHES_NAME = 'benches';
 const ROOT_URL = ~location.href.indexOf('haan123') ? 'https://haan123.github.io/jsbest/' : 'http://localhost:3000/';
@@ -19,14 +20,6 @@ class Bench extends Base {
     this.popup = _popup;
 
     this.setTemplate(['benches', 'pop-save', 'pop-remove']);
-
-    // get cached benches
-    let benches;
-    try {
-      benches = this.benches = JSON.parse(localStorage.getItem('benches'));
-    } catch(e) {}
-
-    if( !benches ) this.benches = [];
 
     this.isSearch = location.href.indexOf('/search') !== -1;
 
@@ -145,7 +138,6 @@ class Bench extends Base {
   addBench() {
     let name = DOM.$('bench-name').value.trim();
 
-    this._working = null;
     this._clearUrlBench();
 
     let bench = this.setBenchItem(this._createBlankBench(), name);
@@ -159,18 +151,19 @@ class Bench extends Base {
    * @public
    */
   showBenchList() {
-    let benches = this.benches;
+    let benches = this._getBenches();
     let lists = [];
+    let working = this._getWorkingId();
 
     utils.forEach(benches, (id) => {
       let bench = this.getBenchItem(id);
       let date = new Date(id);
-      let isActive = this._working === id;
+      let isActive = working === id;
       let data = {
         id: id,
         name: bench.name,
         time: date.toLocaleString('en-US'),
-        active: this._working === id
+        active: isActive
       };
 
       if( bench ) {
@@ -240,7 +233,7 @@ class Bench extends Base {
    *
    */
   removeBench() {
-    this._removeBenchItem(this._working);
+    this._removeBenchItem(this._getWorkingId());
     this._clearBenchItems();
     this._renderBenchItems();
 
@@ -310,7 +303,7 @@ class Bench extends Base {
       this._working = this._createBenchId();
       this._urlBench = working;
     } else {
-      let id = this._working || (this._working = this.benches[this.benches.length - 1]);
+      let id = this._getWorkingId();
       working = this.getBenchItem(id);
     }
 
@@ -322,13 +315,11 @@ class Bench extends Base {
   }
 
   setWorkingBench(id) {
-    let benches = this.benches;
+    let benches = this.getWorkingBench();
 
     if( this.removeFromArray(id, benches) !== -1 ) {
       benches.push(id);
       localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
-
-      this._working = id;
     }
   }
 
@@ -342,20 +333,18 @@ class Bench extends Base {
    */
   setBenchItem(bench, name) {
     let id = this._createBenchId();
-    let working = this._working;
-    let benches = this.benches;
+    let benches = this._getBenches();
+    let wid = this._getWorkingId(benches);
 
     bench.name = name || bench.name || 'Quick Bench';
 
     if( !this._urlBench ) {
-      this.removeFromArray(working, benches);
-      this._removeBenchItem(working);
+      this.removeFromArray(wid, benches);
+      this._removeBenchItem(wid);
       benches.push(id);
-      localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
+      localStorage.setItem(BENCHES_NAME, benches.join(SEPARATOR));
       localStorage.setItem(id, JSON.stringify(bench));
     }
-
-    this._working = id;
 
     return bench;
   }
@@ -367,10 +356,8 @@ class Bench extends Base {
    * @param {String} name
    */
   _removeBenchItem(name) {
-    let benches = this.benches;
+    let benches = this._getBenches();
     this.removeFromArray(name, benches);
-
-    this._working = benches[benches.length - 1];
 
     localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
     return localStorage.removeItem(name);
@@ -414,6 +401,22 @@ class Bench extends Base {
     } catch(e) {}
 
     return bench;
+  }
+
+  /**
+   * Get benches ids from DB
+   * @private
+   *
+   * @return {String}
+   */
+  _getBenches() {
+    let benches = localStorage.getItem('benches') || '';
+    return benches.split(SEPARATOR).map((id) => +id);
+  }
+
+  _getWorkingId(benches) {
+    benches = benches || this._getBenches();
+    return benches[benches.length - 1];
   }
 }
 

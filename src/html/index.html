@@ -123,11 +123,11 @@
     </div>
   </script>
   <script type="text/template" id="star-templ">
-    <span id="star-{{id}}" class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" href="/gists/{{gid}}/star" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
+    <span class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" data-url="/gists/{{gid}}/star" data-starred="{{starred}}" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
   </script>
   <script type="text/template" id="saved-templ">
     <div class="controls control--sample">
-      {{#hasOwner}}{{>star}}{{/hasOwner}}
+      {{#hasOwner}}<span id="star-{{id}}" class="js-sample control-item owner__star"><div class="spinner spinner--inline spinner--small"><div class="double-bounce1"></div><div class="double-bounce2"></div></div></span>{{/hasOwner}}
       <span class="js-{{handler}} control-item sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></span>
       {{^hasOwner}}
       <span class="js-{{handler}} control-item" data-type="edit{{name}}" href="#" title="Edit Sample"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"/></svg></span>
@@ -266,11 +266,12 @@
     </ul>
   </script>
   <script type="text/template" id="login-form-templ">
-    <p class="share__note">This feature require an authentication from <strong>Github</strong> to read public gists, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how, <strong>Please Note: </strong> you don't have to provide any <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">scope</a>, we just need to read your public infomations for this feature to work.</p>
+    <p class="share__note">This feature require an authentication from <strong>Github</strong>, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how.</p>
+    <p><a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">Scope(s)</a> required: <b>{{scopes}}</b></p>
     <input id="ace" type="text" placeholder="Personal Access Token">
-    <p id="message" class="message error">Your Personal Access Token is not valid, please try again with difference token.</p>
+    <p id="message" class="message error">Your Personal Access Token is not valid, please make sure all required <b>scopes</b> has been checked.</p>
     <div class="pop-bench__footer">
-      <button class="js-github button success small" data-type="auth">Sign In</button>
+      <button class="js-github button success small" data-type="auth" data-scope="{{scopes}}">Sign In</button>
       <button class="js-popup button secondary small" data-type="closeModal">Later</button>
     </div>
   </script>
@@ -295,7 +296,7 @@
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
   </script>
   <script type="text/template" id="loader-templ">
-    <div class="spinner{{#size}} spinner--{{size}}{{/size}}"><div class="rect rect1"></div><div class="rect rect2"></div><div class="rect rect3"></div></div>
+    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}</div>
   </script>
 
   <script src="js/benchmark.js"></script>

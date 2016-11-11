@@ -69,7 +69,7 @@ class Setup extends Base {
 
     if( !_bench || !_bench.setup ) return;
 
-    this._save(_bench.setup);
+    this._save(_bench.setup, null, true);
   }
 
   /**
@@ -136,11 +136,12 @@ class Setup extends Base {
    * Save and render setup data
    * @param  {Object} data
    */
-  _save(data, item) {
+  _save(data, item, fromDB) {
     let code = data.code;
     let urls = data.urls;
 
-    this._storeSetup(data);
+    if( !fromDB ) this._storeSetup(data);
+    this.storeCache(this._id, data);
 
     if( !code ) return;
 
@@ -178,9 +179,7 @@ class Setup extends Base {
       }]
     });
 
-    this.renderSavedState('setup', item, config);
-
-    return config;
+    return this.renderSavedState('setup', item, config);
   }
 
   /**
