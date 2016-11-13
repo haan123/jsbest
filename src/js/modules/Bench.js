@@ -2,6 +2,7 @@ import Base from './Base';
 import utils from '../utils/utils';
 import DOM from '../utils/dom';
 import hogan from 'hogan.js';
+import Promise from 'bluebird';
 
 const SEPARATOR = ',';
 const WORKING_NAME = 'working';
@@ -19,11 +20,13 @@ class Bench extends Base {
 
     this.popup = _popup;
 
-    this.setTemplate(['benches', 'pop-save', 'pop-remove']);
+    this.setTemplate(['benches', 'pop-save', 'pop-remove', 'pop-workspace']);
 
     this.isSearch = location.href.indexOf('/search') !== -1;
 
-    this._renderBenchName(this.getWorkingBench().name);
+    this.getWorkingBench().then(([bench]) => {
+      this._renderBenchName(bench.name);
+    });
   }
 
   /**
@@ -72,16 +75,17 @@ class Bench extends Base {
    */
   saveBenchPopUp() {
     let elem = this.cel;
-    let bench = this.getWorkingBench();
+    this.getWorkingBench().then(([bench]) => {
+      this.popup.modal({
+        title: 'Save Bench',
+        type: 'save'
+      }, this.template('pop-save'));
 
-    this.popup.modal({
-      title: 'Save Bench',
-      type: 'save'
-    }, this.template('pop-save'));
+      let field = DOM.$('bench-name');
+      field.focus();
+      field.value = bench.name;
+    });
 
-    let field = DOM.$('bench-name');
-    field.focus();
-    field.value = bench.name;
   }
 
   /**
@@ -120,15 +124,16 @@ class Bench extends Base {
    */
   saveBench() {
     let name = DOM.$('bench-name').value.trim();
-    let _bench = this.getWorkingBench();
 
     if( !name ) return;
 
-    this._clearUrlBench();
+    this.getWorkingBench().then(([bench]) => {
 
-    this.setBenchItem(_bench, name);
-    this._renderBenchName(name);
-    this.popup.closeModal();
+      this.setBenchItem(bench, name, true);
+      this._renderBenchName(name);
+      this._clearUrlBench();
+      this.popup.closeModal();
+    });
   }
 
   /**
@@ -140,7 +145,7 @@ class Bench extends Base {
 
     this._clearUrlBench();
 
-    let bench = this.setBenchItem(this._createBlankBench(), name);
+    let bench = this.setBenchItem(this._createBlankBench(), name, true);
     this._clearBenchItems();
     this._renderBenchName(bench.name);
     this.popup.closeModal();
@@ -218,13 +223,13 @@ class Bench extends Base {
    */
   removeBenchPopUp() {
     let elem = this.cel;
-    let bench = this.getWorkingBench();
-
-    this.popup.modal({
-      title: 'Remove Bench',
-      name: bench.name,
-      type: 'remove'
-    }, this.template('pop-remove'));
+    this.getWorkingBench().then(([bench]) => {
+      this.popup.modal({
+        title: 'Remove Bench',
+        name: bench.name,
+        type: 'remove'
+      }, this.template('pop-remove'));
+    });
   }
 
   /**
@@ -234,13 +239,17 @@ class Bench extends Base {
    */
   removeBench() {
     this._removeBenchItem(this._getWorkingId());
-    this._clearBenchItems();
-    this._renderBenchItems();
 
-    this._renderBenchName(this.getWorkingBench().name);
-    this.popup.closeModal();
+    this.getWorkingBench().then(([bench]) => {
+      this._clearBenchItems();
+      this._renderBenchItems();
 
-    this._clearUrlBench();
+      this._renderBenchName(bench.name);
+
+      this.popup.closeModal();
+
+      this._clearUrlBench();
+    });
   }
 
   /**
@@ -297,29 +306,33 @@ class Bench extends Base {
    * @return {Object}
    */
   getWorkingBench() {
-    let working = this._urlBench || this._getBenchFromUrl();
+    return new Promise((resolve, reject) => {
+      let bench = this._urlBench || this._getBenchFromUrl();
 
-    if( working ) {
-      this._working = this._createBenchId();
-      this._urlBench = working;
-    } else {
-      let id = this._getWorkingId();
-      working = this.getBenchItem(id);
-    }
+      if( bench ) {
+        this._wid = this._createBenchId();
+        this._urlBench = bench;
+      } else {
+        let id = this._getWorkingId();
+        bench = this.getBenchItem(id);
+      }
 
-    if( !working ) {
-      working = this.setBenchItem(this._createBlankBench());
-    }
+      if( !bench ) {
+        bench = this.setBenchItem(this._createBlankBench());
+      }
 
-    return working;
+      resolve([bench, this._wid]);
+    });
   }
 
   setWorkingBench(id) {
-    let benches = this.getWorkingBench();
+    let benches = this._getBenches();
 
     if( this.removeFromArray(id, benches) !== -1 ) {
       benches.push(id);
-      localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
+      this._saveBench(benches);
+
+      this._wid = id;
     }
   }
 
@@ -328,23 +341,32 @@ class Bench extends Base {
    * @public
    *
    * @param {Object} bench
+   * @param {String} name
+   * @param {Boolean} isAdd
    *
    * @return {Object} bench
    */
-  setBenchItem(bench, name) {
+  setBenchItem(bench, name, isAdd) {
     let id = this._createBenchId();
     let benches = this._getBenches();
     let wid = this._getWorkingId(benches);
 
     bench.name = name || bench.name || 'Quick Bench';
 
-    if( !this._urlBench ) {
-      this.removeFromArray(wid, benches);
-      this._removeBenchItem(wid);
+    // only save bench if it is not shared bench or
+    // when user saves shared bench from GUI
+    if( !this._urlBench || (this._urlBench && isAdd) ) {
+      if( !isAdd ) {
+        this.removeFromArray(wid, benches);
+        this._removeBenchItem(wid, true);
+      }
+
       benches.push(id);
-      localStorage.setItem(BENCHES_NAME, benches.join(SEPARATOR));
+      this._saveBench(benches);
       localStorage.setItem(id, JSON.stringify(bench));
     }
+
+    this._wid = id;
 
     return bench;
   }
@@ -355,12 +377,15 @@ class Bench extends Base {
    *
    * @param {String} name
    */
-  _removeBenchItem(name) {
+  _removeBenchItem(id, isUpdate) {
     let benches = this._getBenches();
-    this.removeFromArray(name, benches);
+    this.removeFromArray(+id, benches);
 
-    localStorage.setItem(BENCHES_NAME, JSON.stringify(benches));
-    return localStorage.removeItem(name);
+    if( !isUpdate ) this._saveBench(benches);
+
+    this._wid = benches[benches.length - 1];
+
+    return localStorage.removeItem(id);
   }
 
   /**
@@ -371,19 +396,20 @@ class Bench extends Base {
    * @return {String}
    */
   toUrl(ids) {
-    let bench = this.getWorkingBench();
-    ids = typeof ids === 'string' ? [ids] : ids;
-    let arr = [];
+    return this.getWorkingBench().then(([bench]) => {
+      ids = typeof ids === 'string' ? [ids] : ids;
+      let arr = [];
 
-    utils.forEach(bench.samples, (sample) => {
-      if( ~ids.indexOf(sample.id) ) {
-        arr.push(sample);
-      }
+      utils.forEach(bench.samples, (sample) => {
+        if( ~ids.indexOf(sample.id) ) {
+          arr.push(sample);
+        }
+      });
+
+      bench.samples = arr;
+
+      return ROOT_URL + '#/' + encodeURIComponent(JSON.stringify(bench));
     });
-
-    bench.samples = arr;
-
-    return ROOT_URL + '#/' + encodeURIComponent(JSON.stringify(bench));
   }
 
   /**
@@ -403,20 +429,46 @@ class Bench extends Base {
     return bench;
   }
 
+  _saveBench(benches) {
+    localStorage.setItem(BENCHES_NAME, benches.join(SEPARATOR));
+  }
+
   /**
    * Get benches ids from DB
    * @private
    *
    * @return {String}
+   *
    */
   _getBenches() {
-    let benches = localStorage.getItem('benches') || '';
+    let benches = localStorage.getItem(BENCHES_NAME) || '';
     return benches.split(SEPARATOR).map((id) => +id);
   }
 
   _getWorkingId(benches) {
     benches = benches || this._getBenches();
-    return benches[benches.length - 1];
+    let wid = benches[benches.length - 1];
+
+    if( this._urlBench ) return this._wid;
+
+    if( this._wid && this._wid !== wid ) {
+      // handle case when user switch workspace in another tab
+      if( benches.indexOf(this._wid) !== -1 ) {
+        wid = this._wid;
+
+      // handle case when current workspace has been changed or removed in another tab
+      } else {
+        this.popup.modal({
+          title: 'Unrecognized Workspace'
+        }, this.template('pop-workspace'));
+
+        throw 'Unrecognized Workspace';
+      }
+    }
+
+    this._wid = wid;
+
+    return wid;
   }
 }
 

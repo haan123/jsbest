@@ -126,23 +126,22 @@ class Sample extends Base {
    * @private
    */
   _initSamples() {
-    let isSearchPage = this.isSearchPage();
+    this.bench.getWorkingBench().then(([bench]) => {
+      let isSearchPage = this.isSearchPage();
 
-    let _bench = this.bench.getWorkingBench();
+      let samples = bench.samples;
 
-    if( !_bench ) return;
+      if( !samples.length ) return;
 
-    let samples = _bench.samples;
+      utils.forEach(samples, (sample) => {
+        if( !isSearchPage ) {
+          this._save(sample, null, true);
+        }
 
-    if( !samples.length ) return;
-
-    utils.forEach(samples, (sample) => {
-      if( !isSearchPage ) {
-        this._save(sample, null, true);
-      }
-
-      this.storeCache(sample.id, sample);
+        this.storeCache(sample.id, sample);
+      });
     });
+
   }
 
   /**
@@ -153,14 +152,17 @@ class Sample extends Base {
    * @param {Object} data - { name: String, code: String }
    */
   _storeSample(data) {
-    let _bench = this.bench.getWorkingBench();
-    let samples = _bench.samples;
+    if( !data.name || !data.code ) return;
 
-    this.removeFromArray(data.id, samples);
-    samples.push(data);
+    this.bench.getWorkingBench().then(([bench]) => {
+      let samples = bench.samples;
 
-    this.bench.setBenchItem(_bench);
-    this.storeCache(data.id, data);
+      this.removeFromArray(data.id, samples);
+      samples.push(data);
+
+      this.bench.setBenchItem(bench);
+      this.storeCache(data.id, data);
+    });
   }
 
   /**
@@ -170,13 +172,14 @@ class Sample extends Base {
    * @param  {String} name
    */
   _removeStoredSample(id) {
-    let _bench = this.bench.getWorkingBench();
-    let samples = _bench.samples;
+    this.bench.getWorkingBench().then(([bench]) => {
+      let samples = bench.samples;
 
-    this.removeFromArray(id, samples);
+      this.removeFromArray(id, samples);
 
-    this.bench.setBenchItem(_bench);
-    this.removeFromCache(id);
+      this.bench.setBenchItem(bench);
+      this.removeFromCache(id);
+    });
   }
 
   /**
@@ -345,46 +348,46 @@ class Sample extends Base {
   shareSamplePopUp() {
     let item = this.getItem(this.cel);
     let id = item.getAttribute('data-uid');
-    let url = this.bench.toUrl(id);
+    this.bench.toUrl(id).then((url) => {
+      this.popup.modal({
+        title: 'Share Sample',
+        url: url
+      }, this.template('pop-share-sample'));
 
-    this.popup.modal({
-      title: 'Share Sample',
-      url: url
-    }, this.template('pop-share-sample'));
-
-    this._setSelectionRange('share-sample');
+      this._setSelectionRange('share-sample');
+    });
   }
 
   shareSamplesPopUp() {
-    let bench = this.bench.getWorkingBench();
-
-    this.popup.modal({
-      title: 'Share Samples',
-      samples: bench.samples
-    }, this.template('pop-share-samples'));
+    this.bench.getWorkingBench().then(([bench]) => {
+      this.popup.modal({
+        title: 'Share Samples',
+        samples: bench.samples
+      }, this.template('pop-share-samples'));
+    });
   }
 
   chooseShareSample() {
     let elem = this.cel;
     let target = elem.getAttribute('data-target');
     let urlField = DOM.$(target);
-    let names = JSON.parse(urlField.getAttribute('data-names'));
+    let ids = JSON.parse(urlField.getAttribute('data-ids'));
 
     if( elem.checked ) {
-      names.push(elem.value);
+      ids.push(elem.value);
     } else {
-      this.removeFromArray(elem.value, names);
+      this.removeFromArray(elem.value, ids);
     }
 
-    let url = '';
-    if( !names.length ) {
+    if( !ids.length ) {
       urlField.value = '';
     } else {
-      url = this.bench.toUrl(names);
+      this.bench.toUrl(ids).then((url) => {
+        urlField.value = url;
+      });
     }
 
-    urlField.setAttribute('data-names', JSON.stringify(names));
-    urlField.value = url;
+    urlField.setAttribute('data-ids', JSON.stringify(ids));
     this._setSelectionRange(target);
 
     // stop preventDefault

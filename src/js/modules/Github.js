@@ -123,6 +123,7 @@ class Github extends Base {
   }
 
   search(value) {
+    value = value || DOM.$('search').value.trim();
     let results = DOM.$('search-results');
     let qualifier = value[0];
     let m = value.match(rqualifier);
@@ -135,9 +136,17 @@ class Github extends Base {
       if( qualifier === '@' ) path = '/users/' + m[1] + path;
       else if( qualifier === '#' ) path = path + '/' + m[1];
 
-      this._api(path).then(([gists]) => {
-        let templ = this.template('search-item');
+      this.loader({
+        target: results,
+        fullFill: true,
+        text: 'Searching...',
+        options: ['contrast']
+      }).start();
 
+      let items = [];
+      let templ = this.template('search-item');
+
+      this._api(path).then(([gists]) => {
         gists = utils.isArray(gists) ? gists : [gists];
 
         utils.forEach(gists, (gist) => {
@@ -153,9 +162,12 @@ class Github extends Base {
           gist.files = arr;
           gist.name = arr[0].filename;
 
-          let item = templ.render(gist);
-          results.appendChild(DOM.toDOM(item));
+          items.push(gist);
         });
+
+        results.innerHTML = templ.render({items});
+      }).catch(() => {
+        results.innerHTML = templ.render({items});
       });
     }
   }

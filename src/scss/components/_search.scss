@@ -13,6 +13,18 @@
   }
 }
 
+.search__top {
+  position: relative;
+}
+
+.search__button {
+  position: absolute;
+  top: rem-calc(14);
+  right: rem-calc(16);
+  color: rgba(255, 255, 255, 0.9);
+  transform: rotate(90deg);
+}
+
 .search__intro {
   padding-bottom: 2pc;
   font-size: rem-calc(13);

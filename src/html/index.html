@@ -250,10 +250,10 @@
     <h6 class="share__heading">Choose samples you want to Share</h6>
     <div class="share__content">
       {{#samples}}
-      <label class="share__label"><input class="js-sample" data-type="chooseShareSample" data-target="share-samples" type="checkbox" value="{{name}}"> {{name}}</label>
+      <label class="share__label"><input class="js-sample" data-type="chooseShareSample" data-target="share-samples" type="checkbox" value="{{id}}"> {{name}}</label>
       {{/samples}}
     </div>
-    <input id="share-samples" data-names="[]" type="text" value="{{url}}">
+    <input id="share-samples" data-ids="[]" type="text" value="{{url}}">
     <div class="pop-bench__footer">
       <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-samples">Copy</button>
     </div>
@@ -296,7 +296,14 @@
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
   </script>
   <script type="text/template" id="loader-templ">
-    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}</div>
+    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}} {{text}}</div>
+  </script>
+  <script type="text/template" id="pop-workspace-templ">
+    <p>Oops! Your working space has been changed, please refresh your browser, thanks!</p>
+    <div class="pop-bench__footer">
+      <button class="button success small" onclick="window.location.reload()" >Refresh Now</button>
+      <button class="js-popup button secondary small" data-type="closeModal">Cancel</button>
+    </div>
   </script>
 
   <script src="js/benchmark.js"></script>

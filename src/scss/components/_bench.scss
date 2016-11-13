@@ -86,11 +86,11 @@
     &::after {
       display: inline-block;
       margin-left: rem-calc(4);
+      font-size: $global-font-size * 1.2;
       color: map-get($foundation-palette, 'success');
-      content: '\2022';
-      font-size: $global-font-size * 1.5;
-      border-radius: 50%;
       vertical-align: middle;
+      content: '\2022';
+      border-radius: 50%;
     }
   }
 }

@@ -65,11 +65,12 @@ class Setup extends Base {
    * @private
    */
   _initSetup() {
-    let _bench = this.bench.getWorkingBench();
+    this.bench.getWorkingBench().then(([bench]) => {
+      if( !bench.setup ) return;
 
-    if( !_bench || !_bench.setup ) return;
+      this._save(bench.setup, null, true);
+    });
 
-    this._save(_bench.setup, null, true);
   }
 
   /**
@@ -79,12 +80,13 @@ class Setup extends Base {
    * @param {Object} data - { name: String, code: String }
    */
   _storeSetup(data) {
-    let _bench = this.bench.getWorkingBench();
+    this.bench.getWorkingBench().then(([bench]) => {
+      bench.setup = data;
 
-    _bench.setup = data;
+      this.bench.setBenchItem(bench);
+      this.storeCache(this._id, data);
+    });
 
-    this.bench.setBenchItem(_bench);
-    this.storeCache(this._id, data);
   }
 
   /**
@@ -94,12 +96,13 @@ class Setup extends Base {
    * @param  {String} name
    */
   _removeStoredSetup(id) {
-    let _bench = this.bench.getWorkingBench();
+    this.bench.getWorkingBench().then(([bench]) => {
+      bench.setup = {};
 
-    _bench.setup = {};
+      this.bench.setBenchItem(bench);
+      this.removeFromCache(id);
+    });
 
-    this.bench.setBenchItem(_bench);
-    this.removeFromCache(id);
   }
 
   /**
@@ -109,11 +112,11 @@ class Setup extends Base {
    * @param  {String} id
    */
   _removeStoredUrl(id) {
-    let _bench = this.bench.getWorkingBench();
+    this.bench.getWorkingBench().then(([bench]) => {
+      bench.setup.urls.splice(id, 1);
 
-    _bench.setup.urls.splice(id, 1);
-
-    this.bench.setBenchItem(_bench);
+      this.bench.setBenchItem(bench);
+    });
   }
 
   /**
@@ -123,13 +126,14 @@ class Setup extends Base {
    * @param  {Object} url`
    */
   _StoredUrl(url) {
-    let _bench = this.bench.getWorkingBench();
-    let urls = _bench.setup.urls;
+    this.bench.getWorkingBench().then(([bench]) => {
+      let urls = bench.setup.urls;
 
-    this.removeFromArray(url.id, urls);
-    urls.push(url);
+      this.removeFromArray(url.id, urls);
+      urls.push(url);
 
-    this.bench.setBenchItem(_bench);
+      this.bench.setBenchItem(bench);
+    });
   }
 
   /**

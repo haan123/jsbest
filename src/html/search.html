@@ -40,8 +40,11 @@
   <div class="container main">
     <div class="row">
       <div class="medium-7 medium-centered columns">
-        <input id="search" class="search" type="text" autocomplete="off" autocorrect="off" spellcheck="false">
-        <p class="search__intro">You can search by <svg class="icon" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.53 16 8c0-4.42-3.58-8-8-8z"/></svg> user name, e.g. <strong>@john</strong> or gist id, e.g. <strong>#11218ed60d09b213b537</strong></p>
+        <div class="search__top">
+          <input id="search" class="search" type="search" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button class="js-github search__button" data-type="search" type="button" name="button"><svg class="icon icon--lg" viewbox="0 0 16 16"><path d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg></button>
+        </div>
+        <p class="search__intro">You can search by <svg class="icon" viewbox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38C13.71 14.53 16 11.53 16 8c0-4.42-3.58-8-8-8z"/></svg> user name, e.g. <strong>@john</strong> or gist id, e.g. <strong>#11218ed60d09b213b537</strong></p>
 
         <div id="search-results"></div>
       </div>
@@ -133,6 +136,7 @@
     </ul>
   </script>
   <script type="text/template" id="search-item-templ">
+    {{#items}}
     <div class="sample-item si">
       <div class="media owner">
         <div class="media__left"><img class="media__object" src="{{owner.avatar_url}}" alt="@{{owner.login}}"></div>
@@ -152,6 +156,10 @@
       </div>
       {{/files}}
     </div>
+    {{/items}}
+    {{^items}}
+    <p class="text-center">We couldn't find any gists that matched your search.</p>
+    {{/items}}
   </script>
   <script type="text/template" id="code-templ">
     <pre class="file__code language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
@@ -160,7 +168,14 @@
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
   </script>
   <script type="text/template" id="loader-templ">
-    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}</div>
+    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}} {{text}}</div>
+  </script>
+  <script type="text/template" id="pop-workspace-templ">
+    <p>Oops! Your working space has been changed, please refresh your browser, thanks!</p>
+    <div class="pop-bench__footer">
+      <button class="button success small" onclick="window.location.reload()" >Refresh Now</button>
+      <button class="js-popup button secondary small" data-type="closeModal">Cancel</button>
+    </div>
   </script>
 
   <script src="js/vendor.js"></script>

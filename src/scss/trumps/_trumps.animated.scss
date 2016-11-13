@@ -182,14 +182,6 @@ $curve: cubic-bezier(0.650, 0, 0.450, 1);
   vertical-align: text-top;
 }
 
-.spinner--small {
-  height: rem-calc(15);
-}
-
-.spinner--inline {
-  display: inline-block;
-}
-
 .spinner > .rect {
   display: inline-block;
   width: 3px;
@@ -210,6 +202,20 @@ $curve: cubic-bezier(0.650, 0, 0.450, 1);
   animation-delay: -1s;
 }
 
+.spinner--small {
+  height: rem-calc(15);
+}
+
+.spinner--inline {
+  display: inline-block;
+}
+
+.spinner--contrast {
+  > .rect {
+    background-color: $white;
+  }
+}
+
 @keyframes sk-stretchdelay {
   0%, 40%, 100% {
     transform: scaleY(0.6);
@@ -222,26 +228,26 @@ $curve: cubic-bezier(0.650, 0, 0.450, 1);
   display: inline-block;
   width: rem-calc(12);
   height: rem-calc(12);
-  border-radius: 50%;
   background-color: $white;
+  border-radius: 50%;
   opacity: 0.5;
 
-  animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2s infinite ease-in-out;
 }
 
 .double-bounce2 {
   margin-left: rem-calc(-12);
-  animation-delay: -1.0s;
+  animation-delay: -1s;
 }
 
 @keyframes sk-bounce {
   0% {
-    transform: scale(0);
     opacity: 1;
+    transform: scale(0);
   } 50% {
     transform: scale(1);
   } 100% {
-    transform: scale(1.5);
     opacity: 0;
+    transform: scale(1.5);
   }
 }
