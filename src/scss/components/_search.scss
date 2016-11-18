@@ -31,6 +31,14 @@
   color: $white;
 }
 
+.search__more {
+    color: $white;
+
+    &:hover, &:focus {
+        color: $white;
+    }
+}
+
 .si {
   font-size: rem-calc(12);
 }

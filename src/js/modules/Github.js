@@ -13,6 +13,8 @@ const config = {
 // need to add `.` because github does not allow personal access token to be embed in public repository
 const PUBLIC_ACCESS_TOKEN = '5.25977683e0305126aa92929bc7bb6ead4f47d2f';
 const PAT = 'passcode_access_token';
+const REG_PAGER = /<(.+)>.+\"(\w+)\"/;
+const REG_METHODS = /^\s*(GET|POST|PUT|DELETE)\s*$/;
 
 function makeSand(secret) {
   return (1 * new Date()).toString().slice(-3) + secret;
@@ -81,7 +83,7 @@ class Github extends Base {
 
     this.popup = _popup;
 
-    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'passcode-setting']);
+    this.setTemplate(['login-form', 'user-menu', 'passcode-form', 'search-item', 'code', 'passcode-setting', 'load-more']);
 
     this._user = this._getUser();
 
@@ -125,10 +127,12 @@ class Github extends Base {
   search(value) {
     value = value || DOM.$('search').value.trim();
     let results = DOM.$('search-results');
+    let loadMore = DOM.$('load-more');
     let qualifier = value[0];
     let m = value.match(rqualifier);
 
     results.innerHTML = '';
+    loadMore.innerHTML = '';
 
     if( m ) {
       let path = '/gists';
@@ -143,33 +147,49 @@ class Github extends Base {
         options: ['contrast']
       }).start();
 
-      let items = [];
-      let templ = this.template('search-item');
+      this._api(path, {
+          per_page: 5
+      }).then(([gists, xhr]) => {
+        let pager = this._getPager(xhr.getResponseHeader('Link'));
 
-      this._api(path).then(([gists]) => {
-        gists = utils.isArray(gists) ? gists : [gists];
+        results.innerHTML = this._toGistItemsHTML(gists, xhr);
 
-        utils.forEach(gists, (gist) => {
-          let arr = [];
-
-          utils.forEach(gist.files, (file) => {
-            // create new sample object to add to sample list
-            this.sample.prepareSampleButtonForGist(file, gist);
-
-            arr.push(file);
-          });
-
-          gist.files = arr;
-          gist.name = arr[0].filename;
-
-          items.push(gist);
-        });
-
-        results.innerHTML = templ.render({items});
+        if( pager.next ) {
+          loadMore.innerHTML = this.template('load-more').render({ url: pager.next });
+        }
       }).catch(() => {
-        results.innerHTML = templ.render({items});
+        results.innerHTML = this.template('search-item').render({});
       });
     }
+  }
+
+  /**
+   * Handler: load more gist
+   */
+  loadMore() {
+    let url = this.cel.getAttribute('href');
+    let results = DOM.$('search-results');
+    let loadMore = DOM.$('load-more');
+
+    loadMore.innerHTML = '';
+
+    this._api(url).then(([gists, xhr]) => {
+      let pager = this._getPager(xhr.getResponseHeader('Link'));
+      let div = document.createElement('div');
+      let item;
+
+      div.innerHTML = this._toGistItemsHTML(gists, xhr);
+
+      while( (item = div.firstChild) ) {
+        results.appendChild(item);
+      }
+
+      if( pager.next ) {
+        loadMore.innerHTML = this.template('load-more').render({ url: pager.next });
+      }
+    }).catch(() => {
+      results.innerHTML = this.template('search-item').render({});
+    });
   }
 
   /**
@@ -232,14 +252,15 @@ class Github extends Base {
    */
   _api(type, path, params) {
     let options = {};
-    if( type[0] === '/' ) {
+
+    if( REG_METHODS.test(type) ) {
+      options.type = type;
+    } else {
       params = path;
       path = type;
-    } else {
-      options.type = type;
     }
 
-    options.url = config.api + path;
+    options.url = path.indexOf('http') !== -1 ? path : config.api + path;
     let token;
 
     if( params && params.access_token ) {
@@ -248,7 +269,7 @@ class Github extends Base {
       delete params.access_token;
     } else token = this._accessToken || this._publicAccessToken;
 
-    if( token ) {
+    if( token && options.url.indexOf('access_token') < 0 ) {
       options.url += '?access_token=' + token;
     }
 
@@ -449,6 +470,45 @@ class Github extends Base {
     return false;
   }
 
+  _getPager(value) {
+    let parts = value.split(',');
+    let obj = {};
+
+    utils.forEach(parts, (part) => {
+      let match = part.match(REG_PAGER);
+      let url, label;
+
+      if( match ) {
+        obj[match[2]] = match[1];
+      }
+    });
+
+    return obj;
+  }
+
+  _toGistItemsHTML(gists, xhr) {
+    gists = utils.isArray(gists) ? gists : [gists];
+
+    let items = [];
+
+    utils.forEach(gists, (gist) => {
+      let arr = [];
+
+      utils.forEach(gist.files, (file) => {
+        // create new sample object to add to sample list
+        this.sample.prepareSampleButtonForGist(file, gist);
+
+        arr.push(file);
+      });
+
+      gist.files = arr;
+      gist.name = arr[0].filename;
+
+      items.push(gist);
+    });
+
+    return this.template('search-item').render({items});
+  }
 }
 
 export default Github;
