@@ -135,5 +135,7 @@
 }
 
 .passcode__field {
+  width: rem-calc(150);
   margin-bottom: rem-calc(4);
+  font-size: rem-calc(13);
 }

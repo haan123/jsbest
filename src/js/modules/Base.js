@@ -51,7 +51,7 @@ class Base extends Handler {
     super(obj);
     this._templates = {};
 
-    this.setTemplate(['saved', 'loader']);
+    this.setTemplate(['saved', 'spinner']);
   }
 
   setTemplate(names=[]) {
@@ -225,7 +225,7 @@ class Base extends Handler {
 
       // render uneditable state's code editor
       utils.forEach(data.prism, (config) => {
-        this.loader({
+        this.spinner({
           target: DOM.$('static-' + config.id)
         }).start();
 
@@ -350,25 +350,32 @@ class Base extends Handler {
     return location.href.indexOf('/search') !== -1;
   }
 
-  loader(configs) {
+  spinner(configs) {
     let options = [];
     utils.forEach(configs.options || [], (option) => options.push({ option: option }));
 
     configs.options = options;
+    if( configs.text ) {
+      configs.text = ' ' + configs.text;
+    }
 
     return {
-      templ: this.template('loader').render(configs, { indicator: INDICATOR[configs.indicator] || INDICATOR.primary }),
+      templ: this.template('spinner').render(configs, { indicator: INDICATOR[configs.indicator] || INDICATOR.primary }),
 
       start() {
         if( configs.fullFill ) {
           configs.target.innerHTML = this.templ;
         } else {
-          configs.target.appendChild(DOM.toDOM(this.templ));
+          configs.target.appendChild(this.el = DOM.toDOM(this.templ));
         }
       },
 
       end() {
-        configs.target.removeChild(this.el);
+        if( configs.fullFill ) {
+          configs.target.innerHTML = '';
+        } else {
+          configs.target.removeChild(this.el);
+        }
       }
     };
   }

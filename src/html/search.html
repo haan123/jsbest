@@ -107,16 +107,17 @@
     </div>
   </script>
   <script type="text/template" id="login-form-templ">
-    <p class="share__note">We need your <strong>Github</strong> authentication to access Github's API, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how, <strong>Please Note: </strong> you don't have to provide any <a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">scope</a>, we just need to read your public infomations for this feature to work.</p>
+    <p class="share__note">This feature require an authentication from <strong>Github</strong>, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how.</p>
+    <p><a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">Scope(s)</a> required: <b>{{scopes}}</b></p>
     <input id="ace" type="text" placeholder="Personal Access Token">
-    <p id="message" class="message error">Your Personal Access Token is not valid, please try again with difference token.</p>
+    <p id="message" class="message error">Your Personal Access Token is not valid, please make sure all required <b>scopes</b> have been checked.</p>
     <div class="pop-bench__footer">
-      <button class="js-github button success small" data-type="auth" data-stack="{{stack}}">Authenticate</button>
+      <button class="js-github button success small" data-type="auth" data-scope="{{scopes}}">Authenticate</button>
       <button class="js-popup button secondary small" data-type="closeModal">Later</button>
     </div>
   </script>
   <script type="text/template" id="passcode-form-templ">
-    <p class="share__note">Passcode is used to enscript your Personal Access Token (PAT), instead of entering PAT every time, you just have to enter 5 digits of passcode.</p>
+    <p class="share__note">Passcode is used to enscript your Personal Access Token (PAT), instead of enterring PAT every time, you just have to enter 5 digits of passcode.</p>
     <input id="passcode" class="passcode__field" type="number" placeholder="Enter Your Passcode">
     <p class="info">Passcode must have 5 number, e.g. 12345</p>
     <p id="message" class="message error">Wrong passcode, please try again.</p>
@@ -142,8 +143,8 @@
       <div class="media owner">
         <div class="media__left"><img class="media__object" src="{{owner.avatar_url}}" alt="@{{owner.login}}"></div>
         <div class="media__body">
-          <a class="owner__path" href="{{owner.html_url}}">{{owner.login}}</a> / <a class="owner__path" href="{{html_url}}">{{name}}</a>
-          <div class="owner__description">{{description}}</div>
+          <a class="owner__path" href="{{owner.html_url}}" target="_blank">{{owner.login}}</a> / <a class="owner__path" href="{{html_url}}" target="_blank">{{name}}</a>
+          <div class="owner__description">{{{description}}}</div>
         </div>
       </div>
 
@@ -168,8 +169,8 @@
   <script type="text/template" id="dropdown-templ">
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
   </script>
-  <script type="text/template" id="loader-templ">
-    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}} {{text}}</div>
+  <script type="text/template" id="spinner-templ">
+    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}{{text}}</div>
   </script>
   <script type="text/template" id="pop-workspace-templ">
     <p>Oops! Your working space has been changed, please refresh your browser, thanks!</p>

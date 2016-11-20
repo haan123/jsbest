@@ -9,7 +9,8 @@ $pre-border-color:            #ccc !default;
 // Blocks of code
 pre {
   display: block;
-  font-size: 90%;
+  max-height: rem-calc(600);
+  font-size: rem-calc(12);
   color: $pre-color;
   background: $white;
   border-radius: $global-radius;

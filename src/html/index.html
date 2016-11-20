@@ -60,7 +60,7 @@
           </div>
           <div class="medium-6 columns">
             <div id="processes" class="sample-box process">
-              <iframe id="iframe" class="o-iframe"><p>Your browser does not support iframes.</p></iframe>
+              <iframe id="iframe" class="o-iframe" src="#"><p>Your browser does not support iframes.</p></iframe>
 
               <div class="process__content">
                 <h5>Process</h5>
@@ -123,7 +123,7 @@
     </div>
   </script>
   <script type="text/template" id="star-templ">
-    <span class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" data-url="/gists/{{gid}}/star" data-starred="{{starred}}" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
+    <span class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" data-gid="{{gid}}" data-url="/gists/{{gid}}/star" data-starred="{{starred}}" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
   </script>
   <script type="text/template" id="saved-templ">
     <div class="controls control--sample">
@@ -147,7 +147,7 @@
       <div class="media__left"><img class="media__object" src="{{avatar_url}}" alt="@{{login}}"></div>
       <div class="media__body">
         <a class="owner__path" href="https://github.com/{{login}}" target="_blank">{{login}}</a> / <a class="owner__path" href="https://gist.github.com/{{gid}}" target="_blank">{{name}}</a>
-        <div class="owner__description">{{description}}</div>
+        <div class="owner__description">{{{description}}}</div>
       </div>
     </div>
     {{/owner}}
@@ -167,7 +167,6 @@
       </div>
 
       <textarea id="sample-{{id}}-ta" class="sample-code" style="display:none;"></textarea>
-      <pre class="sample-item__static"><code class="language-html"></code></pre>
 
       <div class="button-group text-right">
         <button class="js-sample success button" data-type="{{type}}" type="button">Save</button>
@@ -180,6 +179,7 @@
       <div class="row">
         <div class="small-9 columns">
           <input id="setup-url-field" type="text" placeholder="http(s)://">
+          <p class="field__note">You can find CDN for library <a href="https://www.javascripting.com/" target="_blank">here</a></p>
         </div>
         <a id="setup-url-add" class="js-setup setup-url__button button" data-type="addUrl" href="#" title="Add external library">Add</a>
       </div>
@@ -228,7 +228,7 @@
   <script type="text/template" id="pop-save-templ">
     <input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
     <div class="pop-bench__footer">
-      <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench">Save</button>
+      <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench" data-id="{{id}}">Save</button>
     </div>
   </script>
   <script type="text/template" id="pop-remove-templ">
@@ -263,21 +263,23 @@
       {{#benches}}
       <li class="js-bench bench__item dropdown__item {{#active}}bench__item--active{{/active}}" data-type="openBench" data-id="{{id}}"><span class="bench__name">{{name}}</span><time>{{time}}</time></li>
       {{/benches}}
+      {{^benches}}
+      <li class="bench__item dropdown__item"><span class="bench__name">No Bench to Show.</span></li>
+      {{/benches}}
     </ul>
   </script>
   <script type="text/template" id="login-form-templ">
     <p class="share__note">This feature require an authentication from <strong>Github</strong>, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how.</p>
     <p><a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">Scope(s)</a> required: <b>{{scopes}}</b></p>
     <input id="ace" type="text" placeholder="Personal Access Token">
-    <p id="message" class="message error">Your Personal Access Token is not valid, please make sure all required <b>scopes</b> has been checked.</p>
+    <p id="message" class="message error">Your Personal Access Token is not valid, please make sure all required <b>scopes</b> have been checked.</p>
     <div class="pop-bench__footer">
-      <button class="js-github button success small" data-type="auth" data-scope="{{scopes}}">Sign In</button>
+      <button class="js-github button success small" data-type="auth" data-scope="{{scopes}}">Authenticate</button>
       <button class="js-popup button secondary small" data-type="closeModal">Later</button>
     </div>
   </script>
   <script type="text/template" id="passcode-form-templ">
-    <p class="share__note passcode__set {{ptype}}">You can choose to enter passcode or not, but this is our <strong>recommendation</strong>, once you enter passcode, we will encode your <strong>Personal Access Token</strong> and this passcode will be used to authenticate instead of enter your access token every time.</p>
-    <p class="share__note passcode__enter {{ptype}}">Please enter passcode to continue.</p>
+    <p class="share__note">Passcode is used to enscript your Personal Access Token (PAT), instead of enterring PAT every time, you just have to enter 5 digits of passcode.</p>
     <input id="passcode" class="passcode__field" type="number" placeholder="Enter Your Passcode">
     <p class="info">Passcode must have 5 number, e.g. 12345</p>
     <p id="message" class="message error">Wrong passcode, please try again.</p>
@@ -295,8 +297,8 @@
   <script type="text/template" id="dropdown-templ">
     <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
   </script>
-  <script type="text/template" id="loader-templ">
-    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}} {{text}}</div>
+  <script type="text/template" id="spinner-templ">
+    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}{{text}}</div>
   </script>
   <script type="text/template" id="pop-workspace-templ">
     <p>Oops! Your working space has been changed, please refresh your browser, thanks!</p>

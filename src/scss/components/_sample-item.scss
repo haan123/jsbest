@@ -101,3 +101,9 @@
   top: 8px;
   right: 8px;
 }
+
+.field__note {
+  margin-top: rem-calc(-12);
+  font-size: rem-calc(11);
+  color: $dark-gray;
+}

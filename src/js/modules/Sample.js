@@ -4,6 +4,7 @@ import DOM from '../utils/dom';
 import Promise from 'bluebird';
 
 const MAXIMUM_FILE_SIZE = 2000;
+const REG_URL = /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/g;
 
 class Sample extends Base {
   constructor(_process, _bench, _popup, github) {
@@ -134,11 +135,11 @@ class Sample extends Base {
       if( !samples.length ) return;
 
       utils.forEach(samples, (sample) => {
+        this.storeCache(sample.id, sample);
+
         if( !isSearchPage ) {
           this._save(sample, null, true);
         }
-
-        this.storeCache(sample.id, sample);
       });
     });
 
@@ -152,9 +153,9 @@ class Sample extends Base {
    * @param {Object} data - { name: String, code: String }
    */
   _storeSample(data) {
-    if( !data.name || !data.code ) return;
+    if( !data.owner && (!data.name || !data.code) ) return;
 
-    this.bench.getWorkingBench().then(([bench]) => {
+    return this.bench.getWorkingBench().then(([bench]) => {
       let samples = bench.samples;
 
       this.removeFromArray(data.id, samples);
@@ -172,7 +173,7 @@ class Sample extends Base {
    * @param  {String} name
    */
   _removeStoredSample(id) {
-    this.bench.getWorkingBench().then(([bench]) => {
+    return this.bench.getWorkingBench().then(([bench]) => {
       let samples = bench.samples;
 
       this.removeFromArray(id, samples);
@@ -216,6 +217,7 @@ class Sample extends Base {
 
   renderSampleItem(data, item) {
     let partials = {};
+
     let config = {
       handler: 'sample',
       name: 'Sample',
@@ -232,6 +234,10 @@ class Sample extends Base {
     if( config.hasOwner ) {
       partials.star = this.template('star');
       ownerModel = this.toOwnerModel(data);
+
+      config.description = data.description.replace(REG_URL, (link) => {
+        return `<a href="${link}" target="_blank">${link}</a>`;
+      });
     }
 
     return this.renderSavedState('sample', item, utils.extend({}, data, ownerModel, config), partials);
@@ -251,14 +257,6 @@ class Sample extends Base {
         starred: starred ? 0 : 1
       }))), this.cel);
       parent.removeChild(this.cel);
-
-      if( window.ga ) {
-        ga('send', {
-          hitType: 'event',
-          eventCategory: 'GitHub',
-          eventAction: starred ? 'star' : 'unstar'
-        });
-      }
     });
   }
 
@@ -291,13 +289,11 @@ class Sample extends Base {
 
     // handle remove sample
     if( this._exist(data.id) ) {
-      this._removeStoredSample(data.id);
+      this._removeStoredSample(data.id).then(button);
     // handle add sample
     } else {
-      this._storeSample(data);
+      this._storeSample(data).then(button);
     }
-
-    button();
   }
 
   prepareSampleButtonForGist(file, gist) {

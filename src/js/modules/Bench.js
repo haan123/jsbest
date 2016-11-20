@@ -127,9 +127,9 @@ class Bench extends Base {
 
     if( !name ) return;
 
-    this.getWorkingBench().then(([bench]) => {
+    this.getWorkingBench().then(([bench, wid]) => {
 
-      this.setBenchItem(bench, name, true);
+      this.setBenchItem(bench, name, this._urlBench ? true : false);
       this._renderBenchName(name);
       this._clearUrlBench();
       this.popup.closeModal();
@@ -441,7 +441,9 @@ class Bench extends Base {
    *
    */
   _getBenches() {
-    let benches = localStorage.getItem(BENCHES_NAME) || '';
+    let benches = localStorage.getItem(BENCHES_NAME);
+    if( !benches ) return [];
+
     return benches.split(SEPARATOR).map((id) => +id);
   }
 

@@ -4,6 +4,7 @@ import Sample from './modules/Sample';
 import Setup from './modules/Setup';
 import Github from './modules/Github';
 import Process from './modules/Process';
+import GA from './modules/GA';
 
 require.ensure([], function() {
   window.CodeMirror = require('codemirror');
@@ -19,8 +20,9 @@ require.ensure([], function() {
 let _popup = new PopUp();
 let _process = new Process();
 let _bench = new Bench(_popup);
+let _ga = new GA();
 
-let github = new Github(_popup);
+let github = new Github(_popup, _ga);
 let setup = new Setup(_process, _bench, _popup);
 let sample = new Sample(_process, _bench, _popup, github);
 

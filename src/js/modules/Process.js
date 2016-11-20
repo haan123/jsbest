@@ -25,7 +25,7 @@ class Process {
 
   reloadIframe() {
     this._iframeIsReady = false;
-    this.iframe.src = this.iframe.src + '';
+    this.iframe.src = '';
 
     this.iframe.onload = this._iframeLoaded.bind(this);
   }
@@ -153,11 +153,14 @@ class Process {
 
     context.document.head.appendChild(DUMP_SCRIPT);
 
-    utils.forEach(this._iframeQueue, (fn) => {
-      fn();
-    });
+    if( this._iframeQueue ) {
+      utils.forEach(this._iframeQueue, (fn) => {
+        fn();
+      });
 
-    delete this._iframeQueue;
+      delete this._iframeQueue;
+    }
+    
     this.refreshSuite();
 
     this._iframeIsReady = true;

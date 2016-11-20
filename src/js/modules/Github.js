@@ -15,6 +15,7 @@ const PUBLIC_ACCESS_TOKEN = '5.25977683e0305126aa92929bc7bb6ead4f47d2f';
 const PAT = 'passcode_access_token';
 const REG_PAGER = /<(.+)>.+\"(\w+)\"/;
 const REG_METHODS = /^\s*(GET|POST|PUT|DELETE)\s*$/;
+const REG_URL = /https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/g;
 
 function makeSand(secret) {
   return (1 * new Date()).toString().slice(-3) + secret;
@@ -71,7 +72,7 @@ function decode(secret, token, sand, seq) {
 const rqualifier = /[@#]([\w-]+)/;
 
 class Github extends Base {
-  constructor(_popup) {
+  constructor(_popup, _ga) {
     super({
       mid: 'github',
       events: {
@@ -79,6 +80,7 @@ class Github extends Base {
       }
     });
 
+    this._ga = _ga;
     this._publicAccessToken = PUBLIC_ACCESS_TOKEN.replace('.', '');
 
     this.popup = _popup;
@@ -115,6 +117,8 @@ class Github extends Base {
     let field = this.searchField = DOM.$('search');
     field.focus();
 
+    this._keywords = {};
+
     this.on(field, 'keyup', (e) => {
       let keyCode = e.get('keyCode');
 
@@ -131,16 +135,19 @@ class Github extends Base {
     let qualifier = value[0];
     let m = value.match(rqualifier);
 
-    results.innerHTML = '';
-    loadMore.innerHTML = '';
-
     if( m ) {
       let path = '/gists';
+      let q = m[1];
 
-      if( qualifier === '@' ) path = '/users/' + m[1] + path;
-      else if( qualifier === '#' ) path = path + '/' + m[1];
+      if( this._keywords[q] ) return;
 
-      this.loader({
+      results.innerHTML = '';
+      loadMore.innerHTML = '';
+
+      if( qualifier === '@' ) path = '/users/' + q + path;
+      else if( qualifier === '#' ) path = path + '/' + q;
+
+      this.spinner({
         target: results,
         fullFill: true,
         text: 'Searching...',
@@ -148,7 +155,7 @@ class Github extends Base {
       }).start();
 
       this._api(path, {
-          per_page: 5
+          per_page: 15
       }).then(([gists, xhr]) => {
         let pager = this._getPager(xhr.getResponseHeader('Link'));
 
@@ -157,6 +164,8 @@ class Github extends Base {
         if( pager.next ) {
           loadMore.innerHTML = this.template('load-more').render({ url: pager.next });
         }
+
+        this._ga.ghSearch(qualifier === '@' ? 'By User Name' : 'By ID');
       }).catch(() => {
         results.innerHTML = this.template('search-item').render({});
       });
@@ -171,12 +180,20 @@ class Github extends Base {
     let results = DOM.$('search-results');
     let loadMore = DOM.$('load-more');
 
-    loadMore.innerHTML = '';
+    let spinner = this.spinner({
+      target: loadMore,
+      fullFill: true,
+      options: ['contrast']
+    });
+
+    spinner.start();
 
     this._api(url).then(([gists, xhr]) => {
       let pager = this._getPager(xhr.getResponseHeader('Link'));
       let div = document.createElement('div');
       let item;
+
+      spinner.end();
 
       div.innerHTML = this._toGistItemsHTML(gists, xhr);
 
@@ -200,7 +217,7 @@ class Github extends Base {
       scopes: 'gist'
     }) ) throw 'Not Athenticated';
 
-    this.loader({
+    this.spinner({
       target: elem,
       fullFill: true,
       indicator: 'secondary',
@@ -210,7 +227,9 @@ class Github extends Base {
     let method = 'PUT';
     if( starred ) method = 'DELETE';
 
-    return this._api(method, url);
+    return this._api(method, url).then(() => {
+      this._ga.ghStar(this._user.login + ' - ' + (!starred ? 'Starred' : 'Unstarred') + ' - ' + elem.getAttribute('data-gid'));
+    });
   }
 
   isStarred(id) {
@@ -225,7 +244,7 @@ class Github extends Base {
     let elem = this.cel;
     let url = elem.getAttribute('data-raw');
 
-    this.loader({ target: elem, fullFill: true }).start();
+    this.spinner({ target: elem, fullFill: true }).start();
 
     utils.ajax(url).then(([code]) => {
       let config = {
@@ -300,6 +319,8 @@ class Github extends Base {
   signOut() {
     DOM.$('userMenu').style.display = 'none';
 
+    this._ga.ghAuth(this._user.login + ' - Logged Out');
+
     delete this._user;
     delete this._accessToken;
 
@@ -325,19 +346,17 @@ class Github extends Base {
         access_token: accessToken,
         avatar_url: user.avatar_url,
         name: user.name,
+        login: user.login,
         scopes: scopes
       };
 
       localStorage.setItem('user', JSON.stringify(this._user));
 
-      if( this.cel.getAttribute('data-stack') === 'true' ) {
-        this.enterPasscodeView();
-      } else this.popup.closeModal();
-
+      this.popup.closeModal();
       this.renderUser();
+      this._ga.ghAuth(user.login + ' - Logged In');
     }).catch((err) => {
       DOM.$('message').style.display = 'block';
-      console.log(this._accessToken);
       delete this._accessToken;
     });
   }
@@ -417,13 +436,12 @@ class Github extends Base {
     }, this.template('passcode-form'));
   }
 
-  enterAccessTokenModal(isStack, data) {
+  enterAccessTokenModal(data) {
     this.popup.modal(utils.extend({
       title: 'Authentication',
       ptype: 'enter',
-      pbutton: 'Done',
-      stack: isStack
-    }, data), this.template('login-form'), isStack);
+      pbutton: 'Done'
+    }, data), this.template('login-form'));
   }
 
   toAvatarUrl(id) {
@@ -465,13 +483,13 @@ class Github extends Base {
       }
 
       this.enterPasscodeModal();
-    } else this.enterAccessTokenModal(true, data);
+    } else this.enterAccessTokenModal(data);
 
     return false;
   }
 
   _getPager(value) {
-    let parts = value.split(',');
+    let parts = value ? value.split(',') : [];
     let obj = {};
 
     utils.forEach(parts, (part) => {
@@ -503,6 +521,9 @@ class Github extends Base {
 
       gist.files = arr;
       gist.name = arr[0].filename;
+      gist.description = gist.description.replace(REG_URL, (link) => {
+        return `<a href="${link}" target="_blank">${link}</a>`;
+      });
 
       items.push(gist);
     });

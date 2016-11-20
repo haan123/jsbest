@@ -1,6 +1,8 @@
 # Javascript Benchmark Test (JSBest)
 Client side testing for javascript performance, compare with multiple sample to get the best appoach.
 
+Web app can find here: [jsbest](https://haan123.github.io/jsbest/)
+
 ## Dependencies
 - [Code Mirror](https://github.com/codemirror/CodeMirror)
 - [Hogan.js](https://github.com/twitter/hogan.js/)
@@ -15,23 +17,11 @@ Client side testing for javascript performance, compare with multiple sample to 
 - [Sass](http://sass-lang.com/)
 - Handler (DOM event handling)
 
-## Tools
+## Development
 - [Webpack](https://webpack.github.io/)
 - [Gulp](http://gulpjs.com/)
 - [Browsersync](https://www.browsersync.io/)
 - [Babel](https://babeljs.io/)
-
-## Future Releases
-- [x] Local Storage
-- [x] Allow to save url to share samples with others people
-- [ ] Get sample code from gist of Github
-- [ ] Chart visualization
-
-
-## Dev
-```
-$ git clone
-```
 
 ### Install
 ```

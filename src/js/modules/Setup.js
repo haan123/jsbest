@@ -68,6 +68,7 @@ class Setup extends Base {
     this.bench.getWorkingBench().then(([bench]) => {
       if( !bench.setup ) return;
 
+      this.storeCache(this._id, bench.setup);
       this._save(bench.setup, null, true);
     });
 
@@ -100,7 +101,7 @@ class Setup extends Base {
       bench.setup = {};
 
       this.bench.setBenchItem(bench);
-      this.removeFromCache(id);
+      this.storeCache(this._id, bench.setup);
     });
 
   }
@@ -145,9 +146,8 @@ class Setup extends Base {
     let urls = data.urls;
 
     if( !fromDB ) this._storeSetup(data);
-    this.storeCache(this._id, data);
 
-    if( !code ) return;
+    if( !code || (!code.html && !code.js && !urls) ) return;
 
     if( !item  ) {
       item = this.createSampleItem(DOM.$('setup-add'));
@@ -234,25 +234,6 @@ class Setup extends Base {
   }
 
   /**
-   * Check existing url
-   *
-   * @private
-   * @param {Object} urls
-   * @param {String} url
-   *
-   * @return {Boolean}
-   */
-  _existUrl(urls, url) {
-    let i = urls.length;
-
-    while ( i-- ) {
-      if( urls[i] === url ) return true;
-    }
-
-    return false;
-  }
-
-  /**
    * Add url handler
    *
    * @public
@@ -293,7 +274,7 @@ class Setup extends Base {
 
     if( !cache.urls ) cache.urls = [];
 
-    if( this._existUrl(cache.urls, url.url) ) return;
+    if( utils.indexOf(cache.urls, 'url', url.url) !== -1 ) return;
     url.id = cache.urls.length;
 
     cache.urls.push(url);
@@ -345,6 +326,8 @@ class Setup extends Base {
     this.removeSetupView(item, id);
 
     this._removeStoredSetup(id);
+
+    this.process.reloadIframe();
   }
 
   /**
