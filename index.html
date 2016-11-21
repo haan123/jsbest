@@ -1,132 +1,9 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Javascript Benmark</title>
-  <meta name="description" content="jsbest, javascript best performance and approach test">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-  <meta content="index, follow" name="robots">
-  <link rel="canonical" href="https://haan123.github.io/jsbest">
-  <link rel="icon" href="favicon.ico" />
-
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-
-  <link rel="stylesheet" href="css/main-d637984abf.css">
-</head>
-
-<body class="js-popup" data-type="closeDropdown">
-  <div id="top-bar" class="top-bar">
-    <div class="row top-bar-inner">
-      <div class="small-12 columns">
-        <div class="benches-content controls controls--top">
-          <div class="js-bench button control-item" data-type="showBenchList"><svg class="icon" viewbox="0 0 12 16"><path d="M2 13c0 .59 0 1-.59 1H.59C0 14 0 13.59 0 13c0-.59 0-1 .59-1h.81c.59 0 .59.41.59 1H2zm2.59-9h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1H4.59C4 2 4 2.41 4 3c0 .59 0 1 .59 1zM1.41 7H.59C0 7 0 7.41 0 8c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0-5H.59C0 2 0 2.41 0 3c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm10 5H4.59C4 7 4 7.41 4 8c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0 5H4.59C4 12 4 12.41 4 13c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01z"/></svg> Benches</div>
-          <a class="button control-item button--dark" href="/search"><svg class="icon" viewbox="0 0 16 16"><path d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg></a>
-        </div>
-        <div class="controls controls--top">
-          <button class="js-bench button control-item button--dark" data-type="removeBenchPopUp" title="Remove Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/></svg></button>
-          <button class="js-sample button control-item" data-type="shareSamplesPopUp" title="Share Benches"><svg class="icon" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></button>
-          <button class="js-bench button control-item" data-type="newBenchPopUp" title="Add New Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg> <span class="hide-for-small-only">New Bench</span></button>
-          <button id="userMenu" class="js-github button control-item control-item--user" data-type="userMenu" style="display:none;"><svg class="icon" viewbox="0 0 12 16"><path d="M0 5l6 6 6-6z"/></svg></button>
-        </div>
-
-        <a class="logo" href="/jsbest"><svg viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a>
-      </div>
-    </div>
-  </div>
-
-  <!--[if lt IE 8]>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="ie=edge"><title>Javascript Benmark</title><meta name="description" content="jsbest, javascript best performance and approach test"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta content="index, follow" name="robots"><link rel="canonical" href="https://haan123.github.io/jsbest"><link rel="icon" href="favicon.ico"><script async defer="defer" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="css/main-06bce8e77a.css"></head><body class="js-popup" data-type="closeDropdown"><div id="top-bar" class="top-bar"><div class="row top-bar-inner"><div class="small-12 columns"><div class="benches-content controls controls--top"><div class="js-bench button control-item" data-type="showBenchList"><svg class="icon" viewbox="0 0 12 16"><path d="M2 13c0 .59 0 1-.59 1H.59C0 14 0 13.59 0 13c0-.59 0-1 .59-1h.81c.59 0 .59.41.59 1H2zm2.59-9h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1H4.59C4 2 4 2.41 4 3c0 .59 0 1 .59 1zM1.41 7H.59C0 7 0 7.41 0 8c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0-5H.59C0 2 0 2.41 0 3c0 .59 0 1 .59 1h.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm10 5H4.59C4 7 4 7.41 4 8c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01zm0 5H4.59C4 12 4 12.41 4 13c0 .59 0 1 .59 1h6.81c.59 0 .59-.41.59-1 0-.59 0-1-.59-1h.01z"/></svg> Benches</div><a class="button control-item button--dark" href="/jsbest/search"><svg class="icon" viewbox="0 0 16 16"><path d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg></a></div><div class="controls controls--top"><button class="js-bench button control-item button--dark" data-type="removeBenchPopUp" title="Remove Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"/></svg></button> <button class="js-sample button control-item" data-type="shareSamplesPopUp" title="Share Benches"><svg class="icon" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></button> <button class="js-bench button control-item" data-type="newBenchPopUp" title="Add New Bench"><svg class="icon" viewbox="0 0 12 16"><path d="M12 9H7v5H5V9H0V7h5V2h2v5h5z"/></svg> <span class="hide-for-small-only">New Bench</span></button> <button id="userMenu" class="js-github button control-item control-item--user" data-type="userMenu" style="display:none"><svg class="icon" viewbox="0 0 12 16"><path d="M0 5l6 6 6-6z"/></svg></button></div><a class="logo" href="/jsbest"><svg viewbox="0 0 20.107966 13.857789"><g><path d="M0 11.772l1.857-1.124c.36.636.685 1.173 1.467 1.173.75 0 1.222-.292 1.222-1.432L4.52 4.94l-1.443.31.03-.953 1.44-1.665h2.28v7.788c0 2.362-1.385 3.438-3.406 3.438-1.823 0-2.882-.945-3.42-2.086M8.066 11.528l1.857-1.075c.49.798 1.124 1.385 2.248 1.385.946 0 1.55-.473 1.55-1.125 0-.782-.62-1.06-1.663-1.515l-.57-.244c-1.646-.7-2.737-1.58-2.737-3.438 0-1.71 1.303-3.014 3.34-3.014 1.45 0 2.493.505 3.242 1.825l-1.776 1.14c-.39-.7-.814-.977-1.466-.977-.668 0-1.092.423-1.092.977 0 .684.424.96 1.4 1.385l.57.244C14.91 7.926 16 8.776 16 10.68c0 2.054-1.613 3.178-3.78 3.178-2.118 0-3.487-1.01-4.154-2.33"/></g><text x="17.521" y="13.289" transform="matrix(1.16876 0 0 .8556 -4.508 -5.676)" style="line-height:125%" font-size="9.478" font-family="sans-serif" letter-spacing="0" word-spacing="0"><tspan x="17.521" y="13.289">t</tspan></text></svg></a></div></div></div><!--[if lt IE 8]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
-
-  <!-- Add your site or application content here -->
-  <div class="container main">
-    <div class="row">
-      <div class="medium-12 medium-centered columns">
-        <div class="row small-12 columns">
-          <h1 id="bench-heading" class="bench__heading"></h1>
-          <a class="js-bench bench__edit" data-type="saveBenchPopUp" href="#">Save</a>
-        </div>
-
-        <div class="row">
-          <div class="medium-6 columns">
-            <h5>Setup (Optional)</h5>
-            <div id="setup-add" class="js-setup sample-box sample-item--idle animated setup" data-type="openSetup">Add Setup Code…</div>
-
-            <h5>Samples</h5>
-
-            <div id="sample-add" class="js-sample sample-box sample-item--idle animated" data-type="openSample">Add Sample…</div>
-          </div>
-          <div class="medium-6 columns">
-            <div id="processes" class="sample-box process">
-              <iframe id="iframe" class="o-iframe" src="#"><p>Your browser does not support iframes.</p></iframe>
-
-              <div class="process__content">
-                <h5>Process</h5>
-                <div class="process__list">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th class="cell-name">Name</th>
-                        <th class="cell-rank">Rank</th>
-                        <th class="cell-ops">Ops/Sec</th>
-                      </tr>
-                    </thead>
-                    <tbody id="process"></tbody>
-                  </table>
-                </div>
-
-                <div class="button-group text-right">
-                  <button class="js-sample button" data-type="run" type="button">Run</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <div class="github">
-      <a class="github-button" href="https://github.com/haan123/jsbest" data-count-href="/haan123/jsbest/stargazers" data-count-api="/repos/haan123/jsbest#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star haan123/jsbest on GitHub">Star</a>
-      <a class="github-button" href="https://github.com/haan123/jsbest/fork" data-icon="octicon-repo-forked" data-count-href="/haan123/jsbest/network" data-count-api="/repos/haan123/jsbest#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork haan123/jsbest on GitHub">Fork</a>
-    </div>
-    <div class="social">
-      <span class="social-button social-button__tw"><a href="https://twitter.com/haquangngocan" target="_blank"><svg class="icon" viewbox="0 0 300.00006 244.18703" height="244.187" width="300"><path d="M94.72 243.187c112.46 0 173.955-93.168 173.955-173.956 0-2.646-.054-5.28-.173-7.902 11.938-8.63 22.315-19.4 30.498-31.66-10.955 4.87-22.744 8.147-35.11 9.625 12.623-7.57 22.314-19.543 26.885-33.817-11.813 7.003-24.895 12.093-38.824 14.84C240.795 8.433 224.91 1 207.323 1c-33.763 0-61.144 27.38-61.144 61.132 0 4.798.537 9.465 1.586 13.94-50.816-2.556-95.874-26.885-126.026-63.88-5.25 9.036-8.278 19.532-8.278 30.73 0 21.213 10.793 39.94 27.207 50.894-10.03-.31-19.453-3.063-27.69-7.647-.01.256-.01.506-.01.78 0 29.61 21.076 54.332 49.052 59.934-5.138 1.4-10.544 2.152-16.123 2.152-3.934 0-7.766-.387-11.49-1.103 7.783 24.294 30.354 41.97 57.114 42.466-20.924 16.4-47.286 26.17-75.936 26.17-4.93 0-9.798-.28-14.584-.847 27.06 17.344 59.19 27.464 93.722 27.464"/></svg></a></span>
-      <span class="social-button"><a href="https://www.facebook.com/hana.printle" target="_blank"><svg class="icon social-button__fb" viewbox="0 0 208.41797 42.736328"><path d="M111.23 20.77c-1.784 0-3.07.584-4.374  1.18v13.486c1.25.12 1.965.12 3.15.12 4.283 0 4.87-1.962 4.87-4.7v-6.442c0-2.02-.67-3.645-3.646-3.645zm-28.438-.737c-2.97 0-3.65 1.63-3.65 3.65v1.135h7.296v-1.134c0-2.02-.678-3.65-3.646-3.65zM27.702 34.07c0 1.598.755 2.428 2.42 2.428 1.784 0 2.84-.582 4.143-1.18v-3.2h-3.903c-1.847 0-2.66.345-2.66 1.952zm111.192-13.3c-2.976 0-4.007 1.623-4.007 3.644v7.38c0 2.026 1.03 3.655 4.007 3.655 2.967 0 4.006-1.63 4.006-3.657v-7.38c0-2.02-1.04-3.644-4.006-3.644zM13.12 42.343H4.37V21.17H0v-7.297h4.372v-4.38C4.372 3.54 6.84 0 13.852 0h5.836v7.298H16.04c-2.73 0-2.91 1.02-2.91 2.923l-.01 3.653h6.61l-.774 7.296H13.12v21.174zm29.896.054h-7.29l-.316-1.843c-3.33 1.843-6.3 2.142-8.26 2.142-5.347 0-8.194-3.572-8.194-8.51 0-5.83 3.32-7.91 9.262-7.91h6.047v-1.26c0-2.974-.34-3.848-4.915-3.848h-7.48l.73-7.297h8.177c10.038 0 12.24 3.17 12.24 11.203v17.322zM67.81 21.705c-4.538-.778-5.84-.95-8.024-.95-3.92 0-5.106.867-5.106 4.196v6.3c0 3.33 1.185 4.2 5.106 4.2 2.183 0 3.486-.175 8.023-.956v7.117c-3.975.892-6.564 1.126-8.752 1.126-9.392 0-13.126-4.94-13.126-12.074v-5.11c0-7.142 3.734-12.09 13.126-12.09 2.188 0 4.777.235 8.75 1.13v7.113zm27.375 8.957H79.143v.588c0 3.33 1.186 4.2 5.107 4.2 3.524 0 5.675-.175 10.204-.956v7.117c-4.368.892-6.644 1.126-10.93 1.126-9.392 0-13.128-4.94-13.128-12.074v-5.844c0-6.242 2.772-11.356 12.396-11.356 9.625 0 12.393 5.054 12.393 11.356v5.844zm28.437.135c0 6.896-1.97 11.926-13.91 11.926-4.313 0-6.842-.38-11.6-1.112V2.19l8.744-1.46v13.79c1.89-.702 4.336-1.058 6.563-1.058 8.745 0 10.202 3.92 10.202 10.222v7.113zm28.033.15c0 5.95-2.456 11.72-12.732 11.72-10.28 0-12.783-5.77-12.783-11.72v-5.744c0-5.952 2.502-11.723 12.783-11.723 10.276 0 12.732 5.77 12.732 11.723v5.744zm28.014 0c0 5.95-2.46 11.72-12.734 11.72-10.282 0-12.784-5.77-12.784-11.72v-5.744c0-5.952 2.502-11.723 12.784-11.723 10.274 0 12.733 5.77 12.733 11.723v5.744zm28.748 11.397h-9.48l-8.016-13.383v13.384h-8.748V2.19l8.748-1.46v25.85l8.016-12.707h9.48l-8.752 13.867 8.752 14.604zM166.906 20.77c-2.97 0-4.002 1.623-4.002 3.644v7.38c0 2.026 1.032 3.655 4.002 3.655 2.967 0 4.017-1.63 4.017-3.657v-7.38c0-2.02-1.05-3.644-4.017-3.644z"/></svg></a></span>
-    </div>
-    <span class="made-with-heart">
-      <svg class="icon" viewbox="0 0 14 16" aria-hidden="true"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"></path></svg> with <svg class="icon" viewbox="0 0 12 16" aria-hidden="true"><path d="M11.2 3c-.52-.63-1.25-.95-2.2-1-.97 0-1.69.42-2.2 1-.51.58-.78.92-.8 1-.02-.08-.28-.42-.8-1-.52-.58-1.17-1-2.2-1-.95.05-1.69.38-2.2 1-.52.61-.78 1.28-.8 2 0 .52.09 1.52.67 2.67C1.25 8.82 3.01 10.61 6 13c2.98-2.39 4.77-4.17 5.34-5.33C11.91 6.51 12 5.5 12 5c-.02-.72-.28-1.39-.8-2.02V3z"></path></svg> by <a href="https://github.com/haan123" target="_blank">An Ha</a>
-    </span>
-  </div>
-
-  <div class="modal-wrapper" style="display: none;">
-    <div class="modal-overlay js-popup" data-type="closeModal"></div>
-    <div id="modal"></div>
-  </div>
-
-  <script type="text/template" id="checkmark-templ">
-    <svg id="checkmark" class="status__icon checkmark" viewbox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
-  </script>
-  <script type="text/template" id="cross-templ">
-    <svg id="cross" class="status__icon cross" viewbox="0 0 68 68"><circle class="cross__circle" cx="34" cy="34" r="33" fill="none"/><path d="m35,35l-9.3,-9.3"></path><path d="m35,35l9.3,9.3"></path><path d="m35,35l-9.3,9.3"></path><path d="m35,35l9.3,-9.3"></path></svg>
-  </script>
-  <script type="text/template" id="process-row-templ">
-    <tr id="sample-{{id}}"><td class="cell-name"><a class="cell-name__link" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr>
-  </script>
-  <script type="text/template" id="setup-url-templ">
-    <div class="setup-url">
+  <![endif]--><!-- Add your site or application content here --><div class="container main"><div class="row"><div class="medium-12 medium-centered columns"><div class="row small-12 columns"><h1 id="bench-heading" class="bench__heading"></h1><a class="js-bench bench__edit" data-type="saveBenchPopUp" href="#">Save</a></div><div class="row"><div class="medium-6 columns"><h5>Setup (Optional)</h5><div id="setup-add" class="js-setup sample-box sample-item--idle animated setup" data-type="openSetup">Add Setup Code…</div><h5>Samples</h5><div id="sample-add" class="js-sample sample-box sample-item--idle animated" data-type="openSample">Add Sample…</div></div><div class="medium-6 columns"><div id="processes" class="sample-box process"><iframe id="iframe" class="o-iframe" src="#"><p>Your browser does not support iframes.</p></iframe><div class="process__content"><h5>Process</h5><div class="process__list"><table class="table"><thead><tr><th class="cell-name">Name</th><th class="cell-rank">Rank</th><th class="cell-ops">Ops/Sec</th></tr></thead><tbody id="process"></tbody></table></div><div class="button-group text-right"><button class="js-sample button" data-type="run" type="button">Run</button></div></div></div></div></div></div></div></div><div class="footer"><div class="github"><a class="github-button" href="https://github.com/haan123/jsbest" data-count-href="/haan123/jsbest/stargazers" data-count-api="/repos/haan123/jsbest#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star haan123/jsbest on GitHub">Star</a> <a class="github-button" href="https://github.com/haan123/jsbest/fork" data-icon="octicon-repo-forked" data-count-href="/haan123/jsbest/network" data-count-api="/repos/haan123/jsbest#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork haan123/jsbest on GitHub">Fork</a></div><div class="social"><span class="social-button social-button__tw"><a href="https://twitter.com/haquangngocan" target="_blank"><svg class="icon" viewbox="0 0 300.00006 244.18703" height="244.187" width="300"><path d="M94.72 243.187c112.46 0 173.955-93.168 173.955-173.956 0-2.646-.054-5.28-.173-7.902 11.938-8.63 22.315-19.4 30.498-31.66-10.955 4.87-22.744 8.147-35.11 9.625 12.623-7.57 22.314-19.543 26.885-33.817-11.813 7.003-24.895 12.093-38.824 14.84C240.795 8.433 224.91 1 207.323 1c-33.763 0-61.144 27.38-61.144 61.132 0 4.798.537 9.465 1.586 13.94-50.816-2.556-95.874-26.885-126.026-63.88-5.25 9.036-8.278 19.532-8.278 30.73 0 21.213 10.793 39.94 27.207 50.894-10.03-.31-19.453-3.063-27.69-7.647-.01.256-.01.506-.01.78 0 29.61 21.076 54.332 49.052 59.934-5.138 1.4-10.544 2.152-16.123 2.152-3.934 0-7.766-.387-11.49-1.103 7.783 24.294 30.354 41.97 57.114 42.466-20.924 16.4-47.286 26.17-75.936 26.17-4.93 0-9.798-.28-14.584-.847 27.06 17.344 59.19 27.464 93.722 27.464"/></svg></a></span><span class="social-button"><a href="https://www.facebook.com/hana.printle" target="_blank"><svg class="icon social-button__fb" viewbox="0 0 208.41797 42.736328"><path d="M111.23 20.77c-1.784 0-3.07.584-4.374  1.18v13.486c1.25.12 1.965.12 3.15.12 4.283 0 4.87-1.962 4.87-4.7v-6.442c0-2.02-.67-3.645-3.646-3.645zm-28.438-.737c-2.97 0-3.65 1.63-3.65 3.65v1.135h7.296v-1.134c0-2.02-.678-3.65-3.646-3.65zM27.702 34.07c0 1.598.755 2.428 2.42 2.428 1.784 0 2.84-.582 4.143-1.18v-3.2h-3.903c-1.847 0-2.66.345-2.66 1.952zm111.192-13.3c-2.976 0-4.007 1.623-4.007 3.644v7.38c0 2.026 1.03 3.655 4.007 3.655 2.967 0 4.006-1.63 4.006-3.657v-7.38c0-2.02-1.04-3.644-4.006-3.644zM13.12 42.343H4.37V21.17H0v-7.297h4.372v-4.38C4.372 3.54 6.84 0 13.852 0h5.836v7.298H16.04c-2.73 0-2.91 1.02-2.91 2.923l-.01 3.653h6.61l-.774 7.296H13.12v21.174zm29.896.054h-7.29l-.316-1.843c-3.33 1.843-6.3 2.142-8.26 2.142-5.347 0-8.194-3.572-8.194-8.51 0-5.83 3.32-7.91 9.262-7.91h6.047v-1.26c0-2.974-.34-3.848-4.915-3.848h-7.48l.73-7.297h8.177c10.038 0 12.24 3.17 12.24 11.203v17.322zM67.81 21.705c-4.538-.778-5.84-.95-8.024-.95-3.92 0-5.106.867-5.106 4.196v6.3c0 3.33 1.185 4.2 5.106 4.2 2.183 0 3.486-.175 8.023-.956v7.117c-3.975.892-6.564 1.126-8.752 1.126-9.392 0-13.126-4.94-13.126-12.074v-5.11c0-7.142 3.734-12.09 13.126-12.09 2.188 0 4.777.235 8.75 1.13v7.113zm27.375 8.957H79.143v.588c0 3.33 1.186 4.2 5.107 4.2 3.524 0 5.675-.175 10.204-.956v7.117c-4.368.892-6.644 1.126-10.93 1.126-9.392 0-13.128-4.94-13.128-12.074v-5.844c0-6.242 2.772-11.356 12.396-11.356 9.625 0 12.393 5.054 12.393 11.356v5.844zm28.437.135c0 6.896-1.97 11.926-13.91 11.926-4.313 0-6.842-.38-11.6-1.112V2.19l8.744-1.46v13.79c1.89-.702 4.336-1.058 6.563-1.058 8.745 0 10.202 3.92 10.202 10.222v7.113zm28.033.15c0 5.95-2.456 11.72-12.732 11.72-10.28 0-12.783-5.77-12.783-11.72v-5.744c0-5.952 2.502-11.723 12.783-11.723 10.276 0 12.732 5.77 12.732 11.723v5.744zm28.014 0c0 5.95-2.46 11.72-12.734 11.72-10.282 0-12.784-5.77-12.784-11.72v-5.744c0-5.952 2.502-11.723 12.784-11.723 10.274 0 12.733 5.77 12.733 11.723v5.744zm28.748 11.397h-9.48l-8.016-13.383v13.384h-8.748V2.19l8.748-1.46v25.85l8.016-12.707h9.48l-8.752 13.867 8.752 14.604zM166.906 20.77c-2.97 0-4.002 1.623-4.002 3.644v7.38c0 2.026 1.032 3.655 4.002 3.655 2.967 0 4.017-1.63 4.017-3.657v-7.38c0-2.02-1.05-3.644-4.017-3.644z"/></svg></a></span></div><span class="made-with-heart"><svg class="icon" viewbox="0 0 14 16" aria-hidden="true"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"></path></svg> with <svg class="icon" viewbox="0 0 12 16" aria-hidden="true"><path d="M11.2 3c-.52-.63-1.25-.95-2.2-1-.97 0-1.69.42-2.2 1-.51.58-.78.92-.8 1-.02-.08-.28-.42-.8-1-.52-.58-1.17-1-2.2-1-.95.05-1.69.38-2.2 1-.52.61-.78 1.28-.8 2 0 .52.09 1.52.67 2.67C1.25 8.82 3.01 10.61 6 13c2.98-2.39 4.77-4.17 5.34-5.33C11.91 6.51 12 5.5 12 5c-.02-.72-.28-1.39-.8-2.02V3z"></path></svg> by <a href="https://github.com/haan123" target="_blank">An Ha</a></span></div><div class="modal-wrapper" style="display: none"><div class="modal-overlay js-popup" data-type="closeModal"></div><div id="modal"></div></div><script type="text/template" id="checkmark-templ"><svg id="checkmark" class="status__icon checkmark" viewbox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg></script><script type="text/template" id="cross-templ"><svg id="cross" class="status__icon cross" viewbox="0 0 68 68"><circle class="cross__circle" cx="34" cy="34" r="33" fill="none"/><path d="m35,35l-9.3,-9.3"></path><path d="m35,35l9.3,9.3"></path><path d="m35,35l-9.3,9.3"></path><path d="m35,35l9.3,-9.3"></path></svg></script><script type="text/template" id="process-row-templ"><tr id="sample-{{id}}"><td class="cell-name"><a class="cell-name__link" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr></script><script type="text/template" id="setup-url-templ"><div class="setup-url">
       <span class="setup-url__value">{{url}}</span>
       <a class="js-setup setup-url__remove" data-type="removeUrl" data-url-id="{{id}}" href="#">Remove</a>
-    </div>
-  </script>
-  <script type="text/template" id="star-templ">
-    <span class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" data-gid="{{gid}}" data-url="/gists/{{gid}}/star" data-starred="{{starred}}" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
-  </script>
-  <script type="text/template" id="saved-templ">
-    <div class="controls control--sample">
+    </div></script><script type="text/template" id="star-templ"><span class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" data-gid="{{gid}}" data-url="/gists/{{gid}}/star" data-starred="{{starred}}" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span></script><script type="text/template" id="saved-templ"><div class="controls control--sample">
       {{#hasOwner}}<span id="star-{{id}}" class="js-sample control-item owner__star"><div class="spinner spinner--inline spinner--small"><div class="double-bounce1"></div><div class="double-bounce2"></div></div></span>{{/hasOwner}}
       <span class="js-{{handler}} control-item sample-share--{{handler}}" data-type="shareSamplePopUp" href="#" title="Share Sample"><svg class="icon icon--lg" viewbox="0 0 12 16"><path d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"/></svg></span>
       {{^hasOwner}}
@@ -156,10 +33,7 @@
 
     {{#prism}}
     <pre class="sample-item__static language-{{language}}"><code id="static-{{id}}" class="language-{{language}}"></code></pre>
-    {{/prism}}
-  </script>
-  <script type="text/template" id="sample-form-templ">
-    <div class="sample-item__form">
+    {{/prism}}</script><script type="text/template" id="sample-form-templ"><div class="sample-item__form">
       <div class="row">
         <div class="medium-6 columns sample__top">
           <input id="sample-{{id}}-name" class="sample__name" type="text" placeholder="Name">
@@ -172,10 +46,7 @@
         <button class="js-sample success button" data-type="{{type}}" type="button">Save</button>
         <button class="js-sample warning button" data-type="cancel" type="button">Cancel</button>
       </div>
-    </div>
-  </script>
-  <script type="text/template" id="setup-form-templ">
-    <div class="setup__form">
+    </div></script><script type="text/template" id="setup-form-templ"><div class="setup__form">
       <div class="row">
         <div class="small-9 columns">
           <input id="setup-url-field" type="text" placeholder="http(s)://">
@@ -201,13 +72,7 @@
         <button class="js-setup success button" data-type="{{type}}" type="button">Save</button>
         <button class="js-setup warning button" data-type="cancel" type="button">Cancel</button>
       </div>
-    </div>
-  </script>
-  <script type="text/template" id="error-templ">
-    <svg class="icon" viewBox="0 0 16 16"><path d="M11 10h3V9h-3V8l3.17-1.03-.34-.94L11 7V6c0-.55-.45-1-1-1V4c0-.48-.36-.88-.83-.97L10.2 2H12V1H9.8l-2 2h-.59L5.2 1H3v1h1.8l1.03 1.03C5.36 3.12 5 3.51 5 4v1c-.55 0-1 .45-1 1v1l-2.83-.97-.34.94L4 8v1H1v1h3v1L.83 12.03l.34.94L4 12v1c0 .55.45 1 1 1h1l1-1V6h1v7l1 1h1c.55 0 1-.45 1-1v-1l2.83.97.34-.94L11 11v-1zM9 5H6V4h3v1z"/></svg>
-  </script>
-  <script type="text/template" id="pop-bench-templ">
-    <div class="dialog animated fade-in-down pop-bench pop-bench--{{type}}">
+    </div></script><script type="text/template" id="error-templ"><svg class="icon" viewBox="0 0 16 16"><path d="M11 10h3V9h-3V8l3.17-1.03-.34-.94L11 7V6c0-.55-.45-1-1-1V4c0-.48-.36-.88-.83-.97L10.2 2H12V1H9.8l-2 2h-.59L5.2 1H3v1h1.8l1.03 1.03C5.36 3.12 5 3.51 5 4v1c-.55 0-1 .45-1 1v1l-2.83-.97-.34.94L4 8v1H1v1h3v1L.83 12.03l.34.94L4 12v1c0 .55.45 1 1 1h1l1-1V6h1v7l1 1h1c.55 0 1-.45 1-1v-1l2.83.97.34-.94L11 11v-1zM9 5H6V4h3v1z"/></svg></script><script type="text/template" id="pop-bench-templ"><div class="dialog animated fade-in-down pop-bench pop-bench--{{type}}">
       <div tabindex="0"></div>
       <div class="pop-bench__head">
         <button class="js-popup pop-bench__back" data-type="prevView"><svg class="icon icon--lg" viewBox="0 0 8 16"><path d="M5.5 3L7 4.5 3.25 8 7 11.5 5.5 13l-5-5z"/></svg></button>
@@ -217,36 +82,21 @@
       <div class="pop-bench__content">
         {{>content}}
       </div>
-    </div>
-  </script>
-  <script type="text/template" id="user-menu-templ">
-    <div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
+    </div></script><script type="text/template" id="user-menu-templ"><div class="dropdown__item"><img class="user-menu__img" src="{{avatar_url}}" alt="{{name}}" /> <span class="user-menu__name">{{name}}</span></div>
     <div class="js-github dropdown__item" data-type="enterAccessTokenModal">Personal Access Token</div>
     <div class="js-github dropdown__item" data-type="passcodeSetting">Passcode</div>
-    <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div>
-  </script>
-  <script type="text/template" id="pop-save-templ">
-    <input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
+    <div class="js-github dropdown__item" class="js-github" data-type="signOut">Sign Out</div></script><script type="text/template" id="pop-save-templ"><input id="bench-name" class="pop-bench__text" type="text" placeholder="Bench Name">
     <div class="pop-bench__footer">
       <button class="js-bench button success small pop-bench__save" data-type="{{type}}Bench" data-id="{{id}}">Save</button>
-    </div>
-  </script>
-  <script type="text/template" id="pop-remove-templ">
-    <p>Are your sure you want to remove <strong>{{name}}</strong>?</p>
+    </div></script><script type="text/template" id="pop-remove-templ"><p>Are your sure you want to remove <strong>{{name}}</strong>?</p>
     <div class="pop-bench__footer">
       <button class="js-bench button alert small" data-type="{{type}}Bench">Yes</button>
       <button class="js-popup button secondary small" data-type="closeModal">No</button>
-    </div>
-  </script>
-  <script type="text/template" id="pop-share-sample-templ">
-    <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
+    </div></script><script type="text/template" id="pop-share-sample-templ"><p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
     <input id="share-sample" type="text" value="{{url}}">
     <div class="pop-bench__footer">
       <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-sample">Copy</button>
-    </div>
-  </script>
-  <script type="text/template" id="pop-share-samples-templ">
-    <p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
+    </div></script><script type="text/template" id="pop-share-samples-templ"><p class="share__note"><strong>Please Note:</strong> this feature will store data in url, some browser will limit the url's length, we recommend you to use Google Chrome for best support.</p>
     <h6 class="share__heading">Choose samples you want to Share</h6>
     <div class="share__content">
       {{#samples}}
@@ -256,74 +106,38 @@
     <input id="share-samples" data-ids="[]" type="text" value="{{url}}">
     <div class="pop-bench__footer">
       <button class="js-sample button success small" data-type="copyUrlSample" data-target="share-samples">Copy</button>
-    </div>
-  </script>
-  <script type="text/template" id="benches-templ">
-    <ul>
+    </div></script><script type="text/template" id="benches-templ"><ul>
       {{#benches}}
       <li class="js-bench bench__item dropdown__item {{#active}}bench__item--active{{/active}}" data-type="openBench" data-id="{{id}}"><span class="bench__name">{{name}}</span><time>{{time}}</time></li>
       {{/benches}}
       {{^benches}}
       <li class="bench__item dropdown__item"><span class="bench__name">No Bench to Show.</span></li>
       {{/benches}}
-    </ul>
-  </script>
-  <script type="text/template" id="login-form-templ">
-    <p class="share__note">This feature require an authentication from <strong>Github</strong>, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how.</p>
+    </ul></script><script type="text/template" id="login-form-templ"><p class="share__note">This feature require an authentication from <strong>Github</strong>, please <a href="https://github.com/settings/tokens" target="_blank">Create Personal Access Token</a> for your account or read <a href="https://help.github.com/articles/creating-an-access-token-for-command-line-use/" target="_blank">How to Create Personal Access Token</a> to see how.</p>
     <p><a href="https://developer.github.com/v3/oauth/#scopes" target="_blank">Scope(s)</a> required: <b>{{scopes}}</b></p>
     <input id="ace" type="text" placeholder="Personal Access Token">
     <p id="message" class="message error">Your Personal Access Token is not valid, please make sure all required <b>scopes</b> have been checked.</p>
     <div class="pop-bench__footer">
       <button class="js-github button success small" data-type="auth" data-scope="{{scopes}}">Authenticate</button>
       <button class="js-popup button secondary small" data-type="closeModal">Later</button>
-    </div>
-  </script>
-  <script type="text/template" id="passcode-form-templ">
-    <p class="share__note">Passcode is used to enscript your Personal Access Token (PAT), instead of enterring PAT every time, you just have to enter 5 digits of passcode.</p>
+    </div></script><script type="text/template" id="passcode-form-templ"><p class="share__note">Passcode is used to enscript your Personal Access Token (PAT), instead of enterring PAT every time, you just have to enter 5 digits of passcode.</p>
     <input id="passcode" class="passcode__field" type="number" placeholder="Enter Your Passcode">
     <p class="info">Passcode must have 5 number, e.g. 12345</p>
     <p id="message" class="message error">Wrong passcode, please try again.</p>
     <div class="pop-bench__footer">
       <button class="js-github button success small" data-type="{{ptype}}Passcode" data-target="share-samples">{{pbutton}}</button>
       <button class="js-popup button secondary small" data-type="closeModal" data-target="share-samples">Maybe Later</button>
-    </div>
-  </script>
-  <script type="text/template" id="passcode-setting-templ">
-    <div class="gist-choose">
+    </div></script><script type="text/template" id="passcode-setting-templ"><div class="gist-choose">
       <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="enterPasscodeView" href="#">Add/Edit Passcode <small>Add or Edit your passcode</small></a></div>
       <div class="gist-choose__item"><a class="js-github gist-choose__link" data-type="turnOffPasscode" href="#">Turn off Passcode <small><b>Warning:</b> other person can see your original Personal Access Token</small></a></div>
-  </div>
-  </script>
-  <script type="text/template" id="dropdown-templ">
-    <div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div>
-  </script>
-  <script type="text/template" id="spinner-templ">
-    <div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}{{text}}</div>
-  </script>
-  <script type="text/template" id="pop-workspace-templ">
-    <p>Oops! Your working space has been changed, please refresh your browser, thanks!</p>
+  </div></script><script type="text/template" id="dropdown-templ"><div class="dropdown animated {{className}}"><div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div></div></div></script><script type="text/template" id="spinner-templ"><div class="spinner{{#options}} spinner--{{option}}{{/options}}">{{>indicator}}{{text}}</div></script><script type="text/template" id="pop-workspace-templ"><p>Oops! Your working space has been changed, please refresh your browser, thanks!</p>
     <div class="pop-bench__footer">
       <button class="button success small" onclick="window.location.reload()" >Refresh Now</button>
       <button class="js-popup button secondary small" data-type="closeModal">Cancel</button>
-    </div>
-  </script>
-
-  <script src="js/benchmark.js"></script>
-  <script src="js/platform.js"></script>
-  <script src="js/vendor-dee911701fda9b5bbaa4.js"></script>
-  <script src="js/main-dee911701fda9b5bbaa4.js"></script>
-
-  <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
-  <script>
-    window.ga = function() {
+    </div></script><script src="js/benchmark.js"></script><script src="js/platform.js"></script><script src="js/vendor-dee911701fda9b5bbaa4.js"></script><script src="js/main-dee911701fda9b5bbaa4.js"></script><!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. --><script>window.ga = function() {
       ga.q.push(arguments)
     };
     ga.q = [];
     ga.l = +new Date;
     ga('create', 'UA-42880559-1', 'auto');
-    ga('send', 'pageview')
-  </script>
-  <script src="https://www.google-analytics.com/analytics.js" async defer></script>
-</body>
-
-</html>
+    ga('send', 'pageview')</script><script src="https://www.google-analytics.com/analytics.js" async defer="defer"></script></body></html>
