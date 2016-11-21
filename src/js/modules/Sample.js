@@ -328,6 +328,8 @@ class Sample extends Base {
     let name = DOM.$('sample-add-name').value;
     let code = this.getEditor('sample-add').getValue().trim();
 
+    if( !code || !name ) return;
+
     this._save({
       id: new Date().getTime() + '',
       name: name,
