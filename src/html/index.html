@@ -60,7 +60,7 @@
           </div>
           <div class="medium-6 columns">
             <div id="processes" class="sample-box process">
-              <iframe id="iframe" class="o-iframe" src="#"><p>Your browser does not support iframes.</p></iframe>
+              <iframe id="iframe" class="o-iframe"><p>Your browser does not support iframes.</p></iframe>
 
               <div class="process__content">
                 <h5>Process</h5>
@@ -116,12 +116,6 @@
   <script type="text/template" id="process-row-templ">
     <tr id="sample-{{id}}"><td class="cell-name"><a class="cell-name__link" href="#{{name}}">{{name}}</a><span class="kits"></span></td><td class="cell-rank"></td><td class="cell-ops">0</td></tr>
   </script>
-  <script type="text/template" id="setup-url-templ">
-    <div class="setup-url">
-      <span class="setup-url__value">{{url}}</span>
-      <a class="js-setup setup-url__remove" data-type="removeUrl" data-url-id="{{id}}" href="#">Remove</a>
-    </div>
-  </script>
   <script type="text/template" id="star-templ">
     <span class="js-sample control-item owner__star {{#starred}}is-starred{{/starred}}" data-type="star" data-id="{{id}}" data-gid="{{gid}}" data-url="/gists/{{gid}}/star" data-starred="{{starred}}" title="{{#starred}}Unstar{{/starred}}{{^starred}}Star{{/starred}}"><svg class="icon icon--lg" viewbox="0 0 14 16"><path d="M14 6l-4.9-.64L7 1 4.9 5.36 0 6l3.6 3.26L2.67 14 7 11.67 11.33 14l-.93-4.74z"/></svg></span>
   </script>
@@ -174,6 +168,14 @@
       </div>
     </div>
   </script>
+  <script type="text/template" id="setup-url-templ">
+    {{#urls}}
+    <div class="setup-url">
+      <span class="setup-url__value">{{url}}</span>
+      <a class="js-setup setup-url__remove" data-type="removeUrl" data-url="{{url}}" href="#">Remove</a>
+    </div>
+    {{/urls}}
+  </script>
   <script type="text/template" id="setup-form-templ">
     <div class="setup__form">
       <div class="row">
@@ -184,12 +186,7 @@
         <a id="setup-url-add" class="js-setup setup-url__button button" data-type="addUrl" href="#" title="Add external library">Add</a>
       </div>
 
-      {{#urls}}
-      <div class="setup-url">
-        <span class="setup-url__value">{{url}}</span>
-        <a class="js-setup setup-url__remove" data-type="removeUrl" data-url-id="{{id}}" href="#">Remove</a>
-      </div>
-      {{/urls}}
+      {{>urls}}
 
       <h6 class="setup__heading">HTML</h6>
       <textarea id="setup-html-{{type}}-ta" class="setup" style="display:none;"></textarea>

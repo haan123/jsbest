@@ -25,7 +25,7 @@ class Process {
 
   reloadIframe() {
     this._iframeIsReady = false;
-    this.iframe.src = '';
+    this.context.location.reload(true);
 
     this.iframe.onload = this._iframeLoaded.bind(this);
   }
@@ -160,7 +160,7 @@ class Process {
 
       delete this._iframeQueue;
     }
-    
+
     this.refreshSuite();
 
     this._iframeIsReady = true;

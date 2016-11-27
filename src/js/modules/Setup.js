@@ -41,6 +41,10 @@ class Setup extends Base {
     let id = edit || 'add';
     let cache = this.getCacheItem(this._id);
 
+    if( !this._urls ) {
+      this._urls = cache.urls ? cache.urls.slice(0) : [];
+    }
+
     this.showForm(item, 'setup', [{
       name: 'setup-html',
       lang: 'html',
@@ -54,8 +58,8 @@ class Setup extends Base {
     }], {
       type: edit || 'add',
       id: id,
-      urls: cache.urls || ''
-    }, edit);
+      urls: this._toUrlModel(cache.urls)
+    }, edit, { urls: this.template('setup-url') });
 
     this.getEditor('setup-html-' + id).focus();
   }
@@ -87,7 +91,6 @@ class Setup extends Base {
       this.bench.setBenchItem(bench);
       this.storeCache(this._id, data);
     });
-
   }
 
   /**
@@ -103,7 +106,6 @@ class Setup extends Base {
       this.bench.setBenchItem(bench);
       this.storeCache(this._id, bench.setup);
     });
-
   }
 
   /**
@@ -137,6 +139,12 @@ class Setup extends Base {
     });
   }
 
+  _toUrlModel(urls=[]) {
+    return urls.map((url) => {
+      return {url};
+    });
+  }
+
   /**
    * Save and render setup data
    * @param  {Object} data
@@ -163,7 +171,8 @@ class Setup extends Base {
 
     this.process.bmSetup(code.js);
 
-    this.renderSetup(data, item);
+    this.renderSetup(data, item).then(() => {
+    });
   }
 
   renderSetup(data, item) {
@@ -171,7 +180,7 @@ class Setup extends Base {
       id: 'setup',
       handler: 'setup',
       name: 'Setup',
-      urls: data.urls,
+      urls: this._toUrlModel(data.urls),
       prism: [{
         id: 'setup-html',
         language: 'markup',
@@ -191,15 +200,24 @@ class Setup extends Base {
    */
   add(edit) {
     let type = edit || 'add';
-    let html = this.getEditor('setup-html-' + type);
-    let js = this.getEditor('setup-js-' + type);
+    let html = this.getEditor('setup-html-' + type).getValue().trim();
+    let js = this.getEditor('setup-js-' + type).getValue().trim();
     let item = this.getItem(this.cel);
     let cache = this.getCacheItem(this._id);
+    let data = { code: {} };
+
+    if( !html && !js && !this._urls.length ) {
+      if( edit ) this.removeSetup(item);
+      return;
+    }
+
+    cache.urls = this._urls;
+    delete this._urls;
 
     this._save({
       code: {
-        html: html.getValue().trim(),
-        js: js.getValue().trim()
+        html: html,
+        js: js
       },
       urls: cache.urls
     }, item);
@@ -224,10 +242,12 @@ class Setup extends Base {
     let cache = this.getCacheItem(this._id);
     let code = cache.code;
 
+    delete this._urls;
+
     if( isAdd ) {
       item.parentNode.removeChild(item);
       this.revealAddButton('setup');
-      cache.urls = [];
+      delete cache.urls;
     } else {
       this.renderSetup(cache, item);
     }
@@ -239,6 +259,7 @@ class Setup extends Base {
    * @public
    */
   addUrl() {
+    let cache = this.getCacheItem(this._id);
     let elem = this.cel;
     let form = DOM.closest(elem, '.setup__form');
     let field = DOM.$('setup-url-field');
@@ -246,13 +267,12 @@ class Setup extends Base {
 
     if( !url ) return;
 
-    let obj = this._cachedUrl(url);
-
-    if( !obj ) return;
+    if( this._urls.indexOf(url) < 0 ) {
+      this._urls.push(url);
+    }
 
     let urlItem = DOM.toDOM(this.template('setup-url').render({
-      id: obj.id,
-      url: url
+      urls: {url}
     }));
 
     form.insertBefore(urlItem, elem.parentNode.nextSibling);
@@ -265,21 +285,15 @@ class Setup extends Base {
    *
    * @private
    * @param {String} url
-   *
-   * @return {Number}
    */
   _cachedUrl(url) {
     let cache = this.getCacheItem(this._id);
-    url = typeof url === 'string' ? { url: url} : url;
 
     if( !cache.urls ) cache.urls = [];
 
-    if( utils.indexOf(cache.urls, 'url', url.url) !== -1 ) return;
-    url.id = cache.urls.length;
+    if( cache.urls.indexOf(url) !== -1 ) return;
 
     cache.urls.push(url);
-
-    return url;
   }
 
   /**
@@ -288,12 +302,15 @@ class Setup extends Base {
    * @public
    */
   removeUrl() {
-    let id = this.cel.getAttribute('data-url-id');
     let cache = this.getCacheItem(this._id);
-
+    let url = this.cel.getAttribute('data-url');
     let setup = this.cel.parentNode;
+    let idx = this._urls.indexOf(url);
 
-    cache.urls.splice(id, 1);
+    if( idx !== -1 ) {
+      this._urls.splice(idx, 1);
+    }
+
     setup.parentNode.removeChild(setup);
   }
 
@@ -309,7 +326,7 @@ class Setup extends Base {
 
     for( let i = 0, len = urls.length; i < len; i++ ) {
       let temp = script.cloneNode(true);
-      temp.src = urls[i].url;
+      temp.src = urls[i];
       this.context.document.body.appendChild(temp);
     }
   }
@@ -319,8 +336,8 @@ class Setup extends Base {
    *
    * @public
    */
-  removeSetup() {
-    let item = this.getItem(this.cel);
+  removeSetup(item) {
+    item = item || this.getItem(this.cel);
     let id = item.getAttribute('data-uid');
 
     this.removeSetupView(item, id);

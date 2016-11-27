@@ -1,9 +1,10 @@
 .setup-url {
-  margin-bottom: $global-margin;
+  margin-bottom: $global-margin / 2;
+  font-size: $small-font-size;
 }
 
 .setup-url__remove {
-  font-size: $small-font-size;
+  font-size: $global-font-size;
   color: $dark-gray;
   text-decoration: underline;
 

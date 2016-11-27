@@ -90,7 +90,7 @@ class Base extends Handler {
    * @param  {String} name
    * @param  {Array} arr
    */
-  removeFromArray(id, arr) {
+  removeFromArray(id, arr=[]) {
     let type = typeof arr[0];
     let i = type.toLowerCase() !== 'object' ? arr.indexOf(id) : utils.indexOf(arr, 'id', id);
 
@@ -130,12 +130,12 @@ class Base extends Handler {
     return cache;
   }
 
-  showForm(elem, name, editors, obj, type) {
+  showForm(elem, name, editors, obj, type, paritals) {
     let item = DOM.closest(elem, '.' + SAMPLE_ITEM_CLASS);
     let id = item.getAttribute('data-uid');
     type = type || 'add';
 
-    item.innerHTML = this.template(name + '-form').render(obj);
+    item.innerHTML = this.template(name + '-form').render(obj, paritals);
     this._setStateClass(item, type);
 
     utils.forEach(editors, (editor) => {
