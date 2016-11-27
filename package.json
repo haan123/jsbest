@@ -3,6 +3,7 @@
   "version": "1.2.2",
   "description": "Javascript Benchmark Test",
   "author": "An Ha",
+  "repository": "https://github.com/haan123/jsbest",
   "scripts": {
     "setup": "npm install && bower install",
     "production": "NODE_ENV=production gulp production",
