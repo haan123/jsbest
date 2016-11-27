@@ -20,6 +20,8 @@ let rev = require('gulp-rev');
 let revReplace = require('gulp-rev-replace');
 let htmlmin = require('gulp-htmlmin');
 let uglify = require('gulp-uglify');
+let hogan = require('hogan.js');
+var through = require('through2');
 
 
 let env = process.env.NODE_ENV == 'production';
@@ -191,11 +193,30 @@ gulp.task('webpack:production', function(callback) {
   });
 });
 
+var compiler = function(data) {
+    var templates = {};
+
+    var bufferContents = function(file, enc, cb) {
+      if (file.isNull()) return cb(null, file);
+
+      // customized delimiter used for production only
+      let compiled = hogan.compile(['{{={{{ }}}=}}', file.contents.toString('utf8')].join());
+
+      file.contents = new Buffer(compiled.render(data));
+
+      cb(null, file);
+    };
+
+    return through.obj(bufferContents);
+};
 
 gulp.task('html', () => {
   return gulp.src('./src/html/**/*.html')
     .pipe(gulpif(process.env.NODE_ENV == 'production', htmlmin({
       "collapseWhitespace": true
+    })))
+    .pipe(gulpif(process.env.NODE_ENV == 'production', compiler({
+      root_path: '/jsbest'
     })))
     .pipe(gulp.dest('./public'))
     .pipe(browserSync.stream());
