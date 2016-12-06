@@ -14,7 +14,6 @@ require.ensure([], function() {
 });
 
 require.ensure([], function() {
-  require("chart.js");
 });
 
 let _popup = new PopUp();
