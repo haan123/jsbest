@@ -1,10 +1,13 @@
-node_modules
 /public
 /src/lib
+
+# API keys and secrets
+.env
+
+# Dependency directory
+node_modules
+bower_components
+
+# OS metadata
 .DS_Store
-npm-debug.log
-*.sublime-project
-*.sublime-workspace
-.remote-sync.json
-sftp-config.json
-/styleguide
+Thumbs.db
