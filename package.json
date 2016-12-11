@@ -22,6 +22,7 @@
     "gulp-htmlmin": "^2.0.0",
     "gulp-if": "^2.0.1",
     "gulp-imagemin": "^3.0.1",
+    "gulp-load-plugins": "^1.4.0",
     "gulp-notify": "^2.2.0",
     "gulp-postcss": "^6.1.1",
     "gulp-rename": "^1.2.2",
@@ -33,6 +34,7 @@
     "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
+    "require-dir": "^0.3.1",
     "through2": "^2.0.1",
     "webpack": "1.12.14"
   },
