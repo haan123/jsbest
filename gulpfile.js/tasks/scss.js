@@ -16,7 +16,7 @@ module.exports = function(gulp, plugins) {
         .pipe(plugins.autoprefixer({
             browsers: ['last 3 versions']
         }))
-        .pipe(plugins.util.env.env !== 'production' ? plugins.sourcemaps.write() : cssmin())
+        .pipe(plugins.util.env.dev ? plugins.sourcemaps.write() : plugins.cssmin())
         .pipe(gulp.dest('public/css/'))
         .pipe(plugins.browserSync.stream());
     };

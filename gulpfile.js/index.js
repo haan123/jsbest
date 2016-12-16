@@ -16,47 +16,34 @@ Object.keys(dir).forEach(function(name) {
   }
 });
 
-
-gulp.task('release:after', function() {
-    return gulp.src('./release')
-    .pipe(plugins.shell([
-        'cd ./release && zip -r ../release/webapp.zip ./laverna',
-    ]));
-});
-
-/**
- * Unit tests.
- */
-gulp.task('test', ['mocha']);
-
 /**
  * Build the app.
  * ``gulp build --dev`` to build without minifying.
  */
 gulp.task('build', plugins.sequence(
-    'test',
-    'clean:dist',
-    ['less'],
-    ['copy', 'require', 'htmlmin', 'cssmin'],
-    'htmlManifest'
+    'clean',
+    ['scss', 'html'],
+    // Bundle js files and create rev-manifest.json for revision
+    ['webpack'],
+    ['copy']
 ));
 
 /**
- * Prepare the release files.
+ * Package production files
  */
-gulp.task('release', plugins.sequence(
-    'build',
-    'clean:release',
-    ['copyDist', 'copyRelease'],
-    'npm:install',
-    'release:after'
+gulp.task('production', plugins.sequence(
+    ['build'],
+    // Make revision from rev-manifest.json
+    ['rev:css', 'rev:html']
 ));
+
 
 /**
  * Gulp server.
  * ``gulp --root dist`` to serve dist folder.
  */
 gulp.task('default', plugins.sequence(
-    ['scss'],
+    'clean',
+    ['scss', 'html', 'copy'],
     ['serve:start', 'serve:watch']
 ));

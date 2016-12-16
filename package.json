@@ -6,8 +6,7 @@
   "repository": "https://github.com/haan123/jsbest",
   "scripts": {
     "setup": "npm install && bower install",
-    "production": "NODE_ENV=production gulp production",
-    "production_pc": "set NODE_ENV=production&&gulp production"
+    "build:prod": "gulp build --prod"
   },
   "devDependencies": {
     "babel-core": "6.7.2",
@@ -20,23 +19,23 @@
     "gulp-autoprefixer": "^3.1.0",
     "gulp-cssmin": "^0.1.7",
     "gulp-htmlmin": "^2.0.0",
-    "gulp-if": "^2.0.1",
+    "gulp-if": "^2.0.2",
     "gulp-imagemin": "^3.0.1",
     "gulp-load-plugins": "^1.4.0",
     "gulp-notify": "^2.2.0",
-    "gulp-postcss": "^6.1.1",
-    "gulp-rename": "^1.2.2",
     "gulp-rev": "^7.1.0",
     "gulp-rev-replace": "^0.4.3",
-    "gulp-run": "^1.7.1",
     "gulp-sass": "^2.3.2",
     "gulp-sequence": "^0.4.5",
     "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.7",
+    "merge-stream": "^1.0.1",
     "require-dir": "^0.3.1",
     "through2": "^2.0.1",
-    "webpack": "1.12.14"
+    "webpack": "1.12.14",
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-hot-middleware": "^2.13.2"
   },
   "dependencies": {
     "bluebird": "^3.4.6",

@@ -50,7 +50,7 @@ class Base extends Handler {
   constructor(obj) {
     super(obj);
     this._templates = {};
-
+console.log('asa adss');
     this.setTemplate(['saved', 'spinner']);
   }
 
